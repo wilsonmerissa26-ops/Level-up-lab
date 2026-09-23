@@ -10,7 +10,7 @@
 8. **Target-device persistence gate passed for the current pilot environment:** iPad Home Screen / standalone passed non-reload, crash/reload, mirror recovery, persistent-storage grant, full app close/reopen, and full iPad restart. Regular Safari tab remains best-effort and is not the preferred pilot environment.
 9. **Patch M next:** run the synthetic end-to-end learner-path smoke test in the cleared iPad Home Screen environment. Michael remains blocked until the synthetic browser smoke passes.
 10. **After Patch M browser pass:** deliberately switch student runtime on for Michael's iPad-only pilot.
-11. **Then extract reusable learner configuration and module boundaries** so Michael remains an isolated learner instance while the Level-Up core can power Aaliyah, Alaya, AStarryia, and future client sites.
+11. **Patch O foundation implemented:** reusable Pilot Learner Blueprint, learner-specific isolation keys, clean starter-state generation, adaptive/neurodivergent learning preferences, Interest Worlds, Low-Stimulation availability, and guarded new-learner transfer packages. Michael remains an isolated learner instance. Full runtime UI extraction remains a separate audited slice.
 12. Add ELA, Social Studies, Study Coach, and School Success / School Radar modules.
 13. Add SAT, Essay Coach, Scholarship Discovery, and college-planning modules as reusable Level-Up modules.
 14. Add managed cloud persistence later when cross-device sync, off-device recovery, or commercial scale requires it. Until then, the supported pilot environment is the installed iPad Home Screen app.
