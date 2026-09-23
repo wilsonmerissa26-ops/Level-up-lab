@@ -28,6 +28,7 @@ jobs:
           node --check audit-browser.js
           node --check synthetic-e2e-core.js
           node --check synthetic-e2e.js
+          node --check learner-config.js
       - name: Run frozen-vocabulary and persistence regression
         run: node tests/audit-regression.test.mjs
       - name: Run Track B persistence slice D regression
@@ -64,3 +65,5 @@ jobs:
         run: node tests/synthetic-e2e-m.test.mjs
       - name: Run Patch N audited iPad pilot runtime gate
         run: node tests/runtime-gate-n.test.mjs
+      - name: Run Patch O pilot learner config and transfer regression
+        run: node tests/learner-config-transfer-o.test.mjs
