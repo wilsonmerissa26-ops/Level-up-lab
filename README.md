@@ -33,11 +33,13 @@ Track B is implemented first so Michael can receive immediate school-recovery in
 - Parent View
 - Evidence Log
 - JSON backup / restore
+- reusable Pilot Learner Blueprint for creating isolated pilot students without transferring another learner's evidence/history
+- adaptive learner-profile configuration for interests, communication/response modes, Interest Worlds, Low-Stimulation presentation, retention, transfer, and generalization
 - fail-stop behavior when a required save fails
 
 ## Current storage decision
 
-For the Michael pilot, browser persistence remains the local source of truth while we test the self-contained learner-instance model. A server/cloud database is **not required just to continue building**. Cloud persistence can be added later for cross-device sync, off-device recovery, and commercial scale.
+For the Michael pilot, browser persistence remains the local source of truth while we test the self-contained learner-instance model. A server/cloud database is **not required just to continue building**. Cloud persistence can be added later for cross-device sync, off-device recovery, and commercial scale. Patch O adds a reusable configuration/transfer boundary so new pilot learners can be created from clean starter packages without changing the evidence schema or copying another learner's history.
 
 Local persistence must still be treated seriously: a learner session may not continue after a failed required write, health checks may never touch the learner record key, and synthetic crash/reload tests must pass before runtime is enabled.
 
