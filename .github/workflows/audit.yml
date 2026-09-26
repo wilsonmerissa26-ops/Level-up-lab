@@ -16,6 +16,7 @@ jobs:
         run: |
           node --check app.js
           node --check storage-durability.js
+          node --check local-durable-file.js
           node --check runtime-gate.js
           node --check state-integrity.js
           node --check review-engine.js
@@ -72,3 +73,7 @@ jobs:
         run: node tests/shared-persistence-o1.test.mjs
       - name: Run Patch O.1 shared runtime gate integration
         run: node tests/runtime-gate-o1.test.mjs
+      - name: Run Patch O.2 local durable file adapter regression
+        run: node tests/local-durable-file-o2.test.mjs
+      - name: Run Patch O.2 Windows local durability integration
+        run: node tests/runtime-gate-o2.test.mjs
