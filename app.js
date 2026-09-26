@@ -9,6 +9,7 @@
   const TRACK_A_MASTERY = window.LEVEL_UP_TRACK_A_MASTERY;
   const STATE_INTEGRITY = window.LEVEL_UP_STATE_INTEGRITY;
   const STORAGE_DURABILITY = window.LEVEL_UP_STORAGE_DURABILITY;
+  const SHARED_PERSISTENCE = window.LEVEL_UP_SHARED_PERSISTENCE;
   const RUNTIME_GATE = window.LEVEL_UP_RUNTIME_GATE;
   const DB_NAME = "MichaelLevelUpLab";
   const DB_VERSION = 1;
@@ -32,6 +33,9 @@
   let storageRecoveryIssue = null;
   let firstRunDecisionRequired = false;
   let persistenceStatus = {state:"UNKNOWN_OR_UNSUPPORTED",supported:false,canRequest:false,checked:false,error:null};
+  let sharedStore = null;
+  let sharedPersistenceStatus = {state:"DISABLED",configured:false,error:null};
+  let lastRemoteRevision = 0;
   let writeSequence = Promise.resolve();
   let draftSaveTimer = null;
 
@@ -136,7 +140,12 @@
   function runtimeGateStatus(){
     const standalone=STORAGE_DURABILITY?STORAGE_DURABILITY.isStandaloneEnvironment(window):false;
     if(!RUNTIME_GATE)return {allowed:false,reason:"BUILD_LOCKED"};
-    return RUNTIME_GATE.evaluate({buildEnabled:RUNTIME_ENABLED,standalone,persistenceState:persistenceStatus?.state||"UNKNOWN_OR_UNSUPPORTED"});
+    return RUNTIME_GATE.evaluate({
+      buildEnabled:RUNTIME_ENABLED,
+      standalone,
+      persistenceState:persistenceStatus?.state||"UNKNOWN_OR_UNSUPPORTED",
+      sharedBackendState:sharedPersistenceStatus?.state||"DISABLED"
+    });
   }
   function studentRuntimeAllowed(){return !!runtimeGateStatus().allowed}
   function runtimeBlockMessage(){const result=runtimeGateStatus();return RUNTIME_GATE?RUNTIME_GATE.message(result):"Student runtime gate is unavailable."}
@@ -150,9 +159,27 @@
       const revision=STATE_INTEGRITY.nextRevision(lastDurableRevision);
       candidate.schemaVersion=STATE_INTEGRITY.SUPPORTED_SCHEMA_VERSION;
       candidate.stateRevision=revision;
+
+      if(sharedPersistenceStatus?.state==="READY" && sharedStore){
+        const remote=await sharedStore.save(CONTENT.student.id,candidate,{expectedRevision:lastRemoteRevision});
+        if(!remote?.ok)throw new Error(`Shared backend save failed: ${remote?.error||"unknown error"}`);
+        lastRemoteRevision=revision;
+        try{
+          await idbPut(candidate,STATE_KEY);
+        }catch(localErr){
+          lastDurableRevision=revision;
+          lastDurableState=JSON.parse(JSON.stringify(candidate));
+          state=JSON.parse(JSON.stringify(candidate));
+          saveHealthy=false;
+          throw Object.assign(new Error(`Shared backend saved revision ${revision}, but local cache failed: ${localErr?.message||localErr}`),{sharedSaved:true});
+        }
+        const backupOk=mirrorWriteAndReadback(candidate);
+        return {backupOk,revision,snapshot:JSON.parse(JSON.stringify(candidate)),shared:true};
+      }
+
       await idbPut(candidate,STATE_KEY);
       const backupOk=mirrorWriteAndReadback(candidate);
-      return {backupOk,revision,snapshot:JSON.parse(JSON.stringify(candidate))};
+      return {backupOk,revision,snapshot:JSON.parse(JSON.stringify(candidate)),shared:false};
     });
     writeSequence=task;
     try{
@@ -165,6 +192,12 @@
       saveHealthy=true;renderSaveStatus();
       return true;
     }catch(err){
+      if(err?.sharedSaved){
+        renderSaveStatus();
+        alert("The learner state reached the shared backend, but this device could not refresh its local cache. Do not continue on this device until Level-Up is reloaded and storage is healthy.");
+        console.error(reason,err);
+        return false;
+      }
       if(lastDurableState){state=JSON.parse(JSON.stringify(lastDurableState));rebindLiveStateReferences()}
       saveHealthy=false;renderSaveStatus();
       alert("Saving failed. This change was rolled back to the last durable learner state. Do not continue until persistence is working.");
@@ -980,7 +1013,7 @@
   function backupView(){
     const standalone=STORAGE_DURABILITY?STORAGE_DURABILITY.isStandaloneEnvironment(window):false;
     const mirrorText=sameOriginRedundancyDegraded()?`Degraded (${escapeHTML(redundancyComparison)})`:`Synced at revision ${escapeHTML(state.stateRevision??"pre-revision")}`;
-    return shell(`<div class="grid"><div class="card c6"><h2>External JSON backup</h2><p class="muted">This is the only protection layer here that survives total loss of this origin's browser storage.</p><button class="btn primary" onclick="window.MLUL.exportBackup()">Attempt portable backup export</button><p class="tiny muted">Last export attempt: ${state.backup?.lastExportAttemptedAt?fmt(state.backup.lastExportAttemptedAt):"none yet"}</p></div><div class="card c6"><h2>Restore JSON</h2><input type="file" id="importFile" accept="application/json,.json"><div class="spacer"></div><button class="btn" onclick="window.MLUL.importBackup()">Restore JSON backup</button></div><div class="card c6"><h3>Home Screen layer</h3><p class="small">Current display mode: <strong>${standalone?"Home Screen / standalone":"browser tab"}</strong>.</p><p class="tiny muted">Home Screen installation and persistent-storage mode address different browser-storage mechanisms. Neither replaces the external JSON backup.</p></div><div class="card c6"><h3>Persistent storage layer</h3><p class="small"><strong>${escapeHTML(persistenceLabel())}</strong></p><button class="btn" ${persistenceStatus?.canRequest?"":"disabled"} onclick="window.MLUL.requestPersistentStorage()">Request persistent storage</button><p class="tiny muted">This request only runs from this parent-facing button, never during init().</p></div><div class="card c6"><h3>Same-origin integrity</h3><p class="small">IndexedDB is authoritative. localStorage is a synchronization mirror, not an off-origin backup.</p><p class="small"><strong>Mirror:</strong> ${mirrorText}</p>${sameOriginRedundancyDegraded()&&!redundancyOverrideAcknowledged()?`<button class="btn" onclick="window.MLUL.acknowledgeRedundancyOverride()">Acknowledge degraded redundancy</button>`:""}</div><div class="card c6"><h3>Persistence health</h3><p id="healthText" class="small">Checking…</p><button class="btn" onclick="window.MLUL.checkPersistenceUI()">Run primary persistence test</button></div></div>`)
+    return shell(`<div class="grid"><div class="card c6"><h2>External JSON backup</h2><p class="muted">This is the only protection layer here that survives total loss of this origin's browser storage.</p><button class="btn primary" onclick="window.MLUL.exportBackup()">Attempt portable backup export</button><p class="tiny muted">Last export attempt: ${state.backup?.lastExportAttemptedAt?fmt(state.backup.lastExportAttemptedAt):"none yet"}</p></div><div class="card c6"><h2>Restore JSON</h2><input type="file" id="importFile" accept="application/json,.json"><div class="spacer"></div><button class="btn" onclick="window.MLUL.importBackup()">Restore JSON backup</button></div><div class="card c6"><h3>Home Screen layer</h3><p class="small">Current display mode: <strong>${standalone?"Home Screen / standalone":"browser tab"}</strong>.</p><p class="tiny muted">Home Screen installation and persistent-storage mode address different browser-storage mechanisms. Neither replaces the external JSON backup.</p></div><div class="card c6"><h3>Persistent storage layer</h3><p class="small"><strong>${escapeHTML(persistenceLabel())}</strong></p><button class="btn" ${persistenceStatus?.canRequest?"":"disabled"} onclick="window.MLUL.requestPersistentStorage()">Request persistent storage</button><p class="tiny muted">This request only runs from this parent-facing button, never during init().</p></div><div class="card c6"><h3>Shared backend layer</h3><p class="small"><strong>${escapeHTML(sharedPersistenceLabel())}</strong></p><button class="btn" onclick="window.MLUL.checkSharedPersistenceUI()">Recheck shared backend</button><p class="tiny muted">Desktop/cross-device learner use requires authenticated shared persistence when the browser cannot grant persistent local storage.</p></div><div class="card c6"><h3>Same-origin integrity</h3><p class="small">IndexedDB is authoritative. localStorage is a synchronization mirror, not an off-origin backup.</p><p class="small"><strong>Mirror:</strong> ${mirrorText}</p>${sameOriginRedundancyDegraded()&&!redundancyOverrideAcknowledged()?`<button class="btn" onclick="window.MLUL.acknowledgeRedundancyOverride()">Acknowledge degraded redundancy</button>`:""}</div><div class="card c6"><h3>Persistence health</h3><p id="healthText" class="small">Checking…</p><button class="btn" onclick="window.MLUL.checkPersistenceUI()">Run primary persistence test</button></div></div>`)
   }
 
   async function exportBackup(){
@@ -1001,6 +1034,101 @@
     if(!STORAGE_DURABILITY){persistenceStatus={state:"UNKNOWN_OR_UNSUPPORTED",supported:false,canRequest:false,checked:true,error:"module unavailable"};return persistenceStatus}
     persistenceStatus=await STORAGE_DURABILITY.getPersistenceStatus(navigator.storage);
     return persistenceStatus;
+  }
+
+  function sharedPersistenceLabel(){
+    const name=sharedPersistenceStatus?.state||"DISABLED";
+    if(name==="READY")return "Shared backend verified";
+    if(name==="AUTH_REQUIRED")return "Shared backend configured · parent sign-in required";
+    if(name==="CONFIG_REQUIRED")return "Shared backend configuration incomplete";
+    if(name==="ERROR")return `Shared backend error${sharedPersistenceStatus?.error?": "+sharedPersistenceStatus.error:""}`;
+    return "Shared backend not configured";
+  }
+
+  async function refreshSharedPersistenceStatus(){
+    if(!SHARED_PERSISTENCE){
+      sharedStore=null;
+      sharedPersistenceStatus={state:"ERROR",configured:false,error:"shared persistence module unavailable"};
+      return sharedPersistenceStatus;
+    }
+    sharedStore=SHARED_PERSISTENCE.createWindowStore(window);
+    sharedPersistenceStatus=await sharedStore.health();
+    return sharedPersistenceStatus;
+  }
+
+  async function writeSharedSnapshotToLocal(snapshot){
+    await idbPut(snapshot,STATE_KEY);
+    backupMirrorHealthy=mirrorWriteAndReadback(snapshot);
+    redundancyComparison=backupMirrorHealthy?"IN_SYNC":"MIRROR_STALE";
+    lastDurableRevision=STATE_INTEGRITY.revisionOf(snapshot)||0;
+    lastDurableState=JSON.parse(JSON.stringify(snapshot));
+    saveHealthy=true;
+  }
+
+  async function reconcileSharedPersistence(){
+    await refreshSharedPersistenceStatus();
+    if(sharedPersistenceStatus?.state!=="READY" || !sharedStore)return sharedPersistenceStatus;
+
+    const remote=await sharedStore.load(CONTENT.student.id);
+    if(!remote?.ok){
+      sharedPersistenceStatus={state:"ERROR",configured:true,error:remote?.error||"shared learner-state read failed"};
+      return sharedPersistenceStatus;
+    }
+
+    if(!remote.record){
+      const localRevision=STATE_INTEGRITY.revisionOf(state);
+      if(localRevision!=null && !firstRunDecisionRequired){
+        const pushed=await sharedStore.save(CONTENT.student.id,state,{expectedRevision:0});
+        if(!pushed?.ok){
+          sharedPersistenceStatus={state:"ERROR",configured:true,error:pushed?.error||"initial shared learner-state save failed"};
+          return sharedPersistenceStatus;
+        }
+        lastRemoteRevision=localRevision;
+      }else{
+        lastRemoteRevision=0;
+      }
+      return sharedPersistenceStatus;
+    }
+
+    const remoteState=prepareLoadedStateSafe(remote.record.state_json,"PRIMARY");
+    if(!remoteState){
+      sharedPersistenceStatus={state:"ERROR",configured:true,error:"shared learner state failed integrity validation"};
+      return sharedPersistenceStatus;
+    }
+
+    const remoteRevision=STATE_INTEGRITY.revisionOf(remoteState);
+    const localRevision=STATE_INTEGRITY.revisionOf(state);
+    lastRemoteRevision=remoteRevision||0;
+
+    if(firstRunDecisionRequired || localRevision==null || (remoteRevision!=null && remoteRevision>localRevision)){
+      state=normalizeStateShape(remoteState);
+      firstRunDecisionRequired=false;
+      storageRecoveryIssue=null;
+      await writeSharedSnapshotToLocal(state);
+      return sharedPersistenceStatus;
+    }
+
+    if(remoteRevision===localRevision){
+      if(JSON.stringify(remoteState)!==JSON.stringify(state)){
+        sharedPersistenceStatus={state:"ERROR",configured:true,error:"shared/local revision conflict; same revision contains different learner state"};
+      }
+      return sharedPersistenceStatus;
+    }
+
+    if(localRevision!=null && remoteRevision!=null && localRevision>remoteRevision){
+      const pushed=await sharedStore.save(CONTENT.student.id,state,{expectedRevision:remoteRevision});
+      if(!pushed?.ok){
+        sharedPersistenceStatus={state:"ERROR",configured:true,error:pushed?.error||"shared/local revision conflict"};
+        return sharedPersistenceStatus;
+      }
+      lastRemoteRevision=localRevision;
+    }
+    return sharedPersistenceStatus;
+  }
+
+  async function checkSharedPersistenceUI(){
+    await reconcileSharedPersistence();
+    render();
   }
 
   async function acknowledgeRedundancyOverride(){
@@ -1135,6 +1263,8 @@
       state=normalizeStateShape(freshState());firstRunDecisionRequired=true;saveHealthy=false;backupMirrorHealthy=false;redundancyComparison="UNVERIFIED";
     }
     if(state?.stateRevision){lastDurableRevision=state.stateRevision;lastDurableState=JSON.parse(JSON.stringify(state))}
+    await reconcileSharedPersistence();
+    if(state?.stateRevision){lastDurableRevision=state.stateRevision;lastDurableState=JSON.parse(JSON.stringify(state))}
     window.addEventListener("hashchange",async()=>{speechSynthesis?.cancel?.();if(current){clearTimeout(draftSaveTimer);captureDraftFromUI();if(!await save("navigation draft"))return}if(currentTrackA){currentTrackA.session.status="PAUSED";currentTrackA.session.pausedAt=now();state.trackAActiveSession=currentTrackA.session;if(!await save("Track A navigation pause"))return}current=null;currentTrackA=null;render()});
     if(!firstRunDecisionRequired&&!storageRecoveryIssue&&state.activeSession && state.activeSession.status==="ACTIVE"){
       state.activeSession.status="INTERRUPTED_PRESERVED";state.activeSession.interruptedAt=now();upsertSessionRecord(state.activeSession);await save("recover interrupted session");
@@ -1145,6 +1275,6 @@
     render();
   }
 
-  window.MLUL={startLesson,readTeach,beginChecks,readQuestion,submitAnswer,nextQuestion,startReview,readReviewQuestion,submitReviewAnswer,startTrackADiagnostic,readTrackAQuestion,submitTrackAAnswer,startTrackARepair,readTrackARepairTeach,beginTrackARepairChecks,readTrackARepairQuestion,submitTrackARepairAnswer,nextTrackARepairCheck,startTrackAVerification,readTrackAVerificationQuestion,submitTrackAVerificationAnswer,initializeTrackAMastery,startTrackAMasteryTask,readTrackAMasteryQuestion,submitTrackAMasteryAnswer,replaceTrackAMasteryTask,finalizeTrackAMastery,resumeTrackAPath,resumeTrackADiagnostic,saveAndExitTrackA,endTrackAPath,endTrackADiagnostic,manualSave,saveAndExit,resumeInterruptedSession,endPreservedSession,exportBackup,importBackup,checkPersistenceUI,requestPersistentStorage,acknowledgeRedundancyOverride,createNewLearnerRecord,resolveMirrorAhead,restoreMirrorAsAuthoritative,markAccessObserved,__audit:{RUNTIME_ENABLED,STATE_KEY,PROBE_KEY,ASSISTANCE_LEVELS,ACCESS_CONDITIONS,isValidLearnerState,assistanceLevelForSession,validAccessCondition,accessSourceFor,recoverableSession,captureDraftFromUI,upsertSessionRecord,answersMatch,memoryStrengthForReview,reviewOutcomeFromScore,trackAPriorInstruction,trackAPromptIsFresh,trackAActiveRecoverable,trackARouteForSkill,ensureTrackAMasterySchedule,masteryRouteInfo,maybeFinalizeTrackAMastery,sameOriginRedundancyDegraded,runtimeGateStatus,studentRuntimeAllowed,runtimeBlockMessage}};
+  window.MLUL={startLesson,readTeach,beginChecks,readQuestion,submitAnswer,nextQuestion,startReview,readReviewQuestion,submitReviewAnswer,startTrackADiagnostic,readTrackAQuestion,submitTrackAAnswer,startTrackARepair,readTrackARepairTeach,beginTrackARepairChecks,readTrackARepairQuestion,submitTrackARepairAnswer,nextTrackARepairCheck,startTrackAVerification,readTrackAVerificationQuestion,submitTrackAVerificationAnswer,initializeTrackAMastery,startTrackAMasteryTask,readTrackAMasteryQuestion,submitTrackAMasteryAnswer,replaceTrackAMasteryTask,finalizeTrackAMastery,resumeTrackAPath,resumeTrackADiagnostic,saveAndExitTrackA,endTrackAPath,endTrackADiagnostic,manualSave,saveAndExit,resumeInterruptedSession,endPreservedSession,exportBackup,importBackup,checkPersistenceUI,requestPersistentStorage,checkSharedPersistenceUI,acknowledgeRedundancyOverride,createNewLearnerRecord,resolveMirrorAhead,restoreMirrorAsAuthoritative,markAccessObserved,__audit:{RUNTIME_ENABLED,STATE_KEY,PROBE_KEY,ASSISTANCE_LEVELS,ACCESS_CONDITIONS,isValidLearnerState,assistanceLevelForSession,validAccessCondition,accessSourceFor,recoverableSession,captureDraftFromUI,upsertSessionRecord,answersMatch,memoryStrengthForReview,reviewOutcomeFromScore,trackAPriorInstruction,trackAPromptIsFresh,trackAActiveRecoverable,trackARouteForSkill,ensureTrackAMasterySchedule,masteryRouteInfo,maybeFinalizeTrackAMastery,sameOriginRedundancyDegraded,runtimeGateStatus,studentRuntimeAllowed,runtimeBlockMessage,sharedPersistenceStatus:()=>sharedPersistenceStatus}};
   init();
 })();

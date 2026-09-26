@@ -13,6 +13,7 @@
 11. **Patch O foundation implemented:** reusable Pilot Learner Blueprint, learner-specific isolation keys, clean starter-state generation, adaptive/neurodivergent learning preferences, Interest Worlds, Low-Stimulation availability, and guarded new-learner transfer packages. Michael remains an isolated learner instance. Full runtime UI extraction remains a separate audited slice.
 12. Add ELA, Social Studies, Study Coach, and School Success / School Radar modules.
 13. Add SAT, Essay Coach, Scholarship Discovery, and college-planning modules as reusable Level-Up modules.
-14. Add managed cloud persistence later when cross-device sync, off-device recovery, or commercial scale requires it. Until then, the supported pilot environment is the installed iPad Home Screen app.
+14. **Patch O.1 launch hardening:** add the authenticated shared-persistence contract for desktop/cross-device use without weakening the audited local iPad path. Supabase configuration and parent authentication must be verified before real desktop learner evidence is allowed.
+15. **Patch P remains the next product build:** Pilot Intake + Personalized Diagnostic Generator. Patch O.1 does not replace or rename Patch P.
 
 No real learner records, credentials, or school-session secrets belong in Git.
