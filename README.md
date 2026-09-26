@@ -1,6 +1,6 @@
 # Michael Level-Up Lab — v1 Foundation
 
-> **AUDIT HOLD — DO NOT USE WITH MICHAEL YET.** Student lesson runtime is hard-disabled until the local persistence path and recovery behavior pass a final synthetic-data audit.
+> **PILOT SAFETY STATUS.** The installed-iPad local-persistence path is audited. Patch O.2 adds a Windows/Edge local-only durability path using a verified learner backup file, but Michael's laptop still requires a real target-device close/reopen + Windows-restart audit before real learner evidence is collected there.
 
 This repository is the permanent foundation for Michael's individualized Level-Up Lab instance and the first reusable pilot of the broader Level-Up engine.
 
@@ -33,13 +33,21 @@ Track B is implemented first so Michael can receive immediate school-recovery in
 - Parent View
 - Evidence Log
 - JSON backup / restore
+- reusable Pilot Learner Blueprint for creating isolated pilot students without transferring another learner's evidence/history
+- adaptive learner-profile configuration for interests, communication/response modes, Interest Worlds, Low-Stimulation presentation, retention, transfer, and generalization
 - fail-stop behavior when a required save fails
+- Patch O.1 shared-persistence adapter and Supabase/RLS migration contract for the cross-device path
+- Patch O.2 Windows/Edge local durable-file fallback with revision guards and fail-stop writes
 
 ## Current storage decision
 
-For the Michael pilot, browser persistence remains the local source of truth while we test the self-contained learner-instance model. A server/cloud database is **not required just to continue building**. Cloud persistence can be added later for cross-device sync, off-device recovery, and commercial scale.
+The installed iPad pilot retains the audited local `PERSISTENT` browser-storage path.
 
-Local persistence must still be treated seriously: a learner session may not continue after a failed required write, health checks may never touch the learner record key, and synthetic crash/reload tests must pass before runtime is enabled.
+Windows/Edge may also run local-only without Supabase when the installed app connects and verifies the Level-Up learner backup file added in Patch O.2. Required learner saves then write IndexedDB, the same-origin mirror, and the parent-selected local backup file; a failed or conflicting file write stops student work.
+
+For automatic cross-device sync, the longer-term platform direction remains an authenticated **shared Supabase backend** from Patch O.1. Supabase is optional for a one-device local pilot but is still the planned shared persistence layer when the same learner record must automatically follow the student across devices.
+
+A learner session may not continue after a failed required write. Every target device must pass its applicable durability audit before real learner evidence is collected.
 
 ## Running locally for audit only
 

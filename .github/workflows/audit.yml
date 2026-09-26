@@ -16,6 +16,7 @@ jobs:
         run: |
           node --check app.js
           node --check storage-durability.js
+          node --check local-durable-file.js
           node --check runtime-gate.js
           node --check state-integrity.js
           node --check review-engine.js
@@ -28,6 +29,8 @@ jobs:
           node --check audit-browser.js
           node --check synthetic-e2e-core.js
           node --check synthetic-e2e.js
+          node --check learner-config.js
+          node --check shared-persistence.js
       - name: Run frozen-vocabulary and persistence regression
         run: node tests/audit-regression.test.mjs
       - name: Run Track B persistence slice D regression
@@ -64,3 +67,13 @@ jobs:
         run: node tests/synthetic-e2e-m.test.mjs
       - name: Run Patch N audited iPad pilot runtime gate
         run: node tests/runtime-gate-n.test.mjs
+      - name: Run Patch O pilot learner config and transfer regression
+        run: node tests/learner-config-transfer-o.test.mjs
+      - name: Run Patch O.1 shared persistence adapter regression
+        run: node tests/shared-persistence-o1.test.mjs
+      - name: Run Patch O.1 shared runtime gate integration
+        run: node tests/runtime-gate-o1.test.mjs
+      - name: Run Patch O.2 local durable file adapter regression
+        run: node tests/local-durable-file-o2.test.mjs
+      - name: Run Patch O.2 Windows local durability integration
+        run: node tests/runtime-gate-o2.test.mjs
