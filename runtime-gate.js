@@ -26,7 +26,7 @@
   function message(result){
     switch(result?.reason){
       case REASONS.HOME_SCREEN_REQUIRED:
-        return "Michael's pilot is unlocked only in the installed Level-Up app. Open Level-Up from its installed app icon.";
+        return "Michael's pilot is unlocked only in the installed Level-Up Home Screen app. Open Level-Up from its installed app icon.";
       case REASONS.SHARED_BACKEND_REQUIRED:
         return "This device needs a verified shared Level-Up backend before learner evidence can begin. The local browser-storage gate is not sufficient on this device.";
       case REASONS.PERSISTENT_STORAGE_REQUIRED:
