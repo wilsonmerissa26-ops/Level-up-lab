@@ -1,6 +1,6 @@
 # Michael Level-Up Lab — v1 Foundation
 
-> **AUDIT HOLD — DO NOT USE WITH MICHAEL YET.** Student lesson runtime is hard-disabled until the local persistence path and recovery behavior pass a final synthetic-data audit.
+> **PILOT SAFETY STATUS.** The audited installed-iPad local-persistence path exists, but desktop/cross-device learner evidence remains blocked until the shared backend is authenticated, verified, and passes synthetic cross-device tests. Do not collect Michael's real learner evidence on desktop yet.
 
 This repository is the permanent foundation for Michael's individualized Level-Up Lab instance and the first reusable pilot of the broader Level-Up engine.
 
@@ -36,12 +36,15 @@ Track B is implemented first so Michael can receive immediate school-recovery in
 - reusable Pilot Learner Blueprint for creating isolated pilot students without transferring another learner's evidence/history
 - adaptive learner-profile configuration for interests, communication/response modes, Interest Worlds, Low-Stimulation presentation, retention, transfer, and generalization
 - fail-stop behavior when a required save fails
+- Patch O.1 shared-persistence adapter and Supabase/RLS migration contract for the cross-device path
 
 ## Current storage decision
 
-For the Michael pilot, browser persistence remains the local source of truth while we test the self-contained learner-instance model. A server/cloud database is **not required just to continue building**. Cloud persistence can be added later for cross-device sync, off-device recovery, and commercial scale. Patch O adds a reusable configuration/transfer boundary so new pilot learners can be created from clean starter packages without changing the evidence schema or copying another learner's history.
+The installed iPad pilot retains the audited local `PERSISTENT` browser-storage path as a legacy-safe runtime option.
 
-Local persistence must still be treated seriously: a learner session may not continue after a failed required write, health checks may never touch the learner record key, and synthetic crash/reload tests must pass before runtime is enabled.
+For desktop, cross-device use, and the reusable Level-Up platform, the locked direction is an authenticated **shared Supabase backend**. Patch O.1 adds the provider adapter, Row Level Security schema, and revision-conflict contract without weakening the existing evidence rules. The repository configuration remains disabled until the private Supabase project and parent authentication are configured and audited.
+
+A learner session may not continue after a failed required write. Desktop learner evidence stays blocked unless either the audited local `PERSISTENT` path or the authenticated shared backend is verified.
 
 ## Running locally for audit only
 
