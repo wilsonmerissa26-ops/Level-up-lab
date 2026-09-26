@@ -68,11 +68,33 @@
     }
   }
 
-  async function writeSnapshot(handle,snapshot){
+  async function writeSnapshot(handle,snapshot,{expectedRevision=null}={}){
     if(!handle)throw new Error('No local backup file is connected.');
     const permission=await permissionState(handle);
     if(permission!=='granted')return {ok:false,permission,state:STATES.NEEDS_PERMISSION,error:null};
     try{
+      if(expectedRevision!=null){
+        const existingFile=await handle.getFile();
+        const existingText=await existingFile.text();
+        let existing=null;
+        if(existingText.trim()){
+          try{existing=JSON.parse(existingText)}catch(_){
+            return {ok:false,permission,state:STATES.CONFLICT,error:'Local backup file is not valid JSON.',revisionConflict:true};
+          }
+        }
+        const existingRevision=Number.isInteger(existing?.stateRevision)?existing.stateRevision:0;
+        if(existingRevision!==expectedRevision){
+          return {
+            ok:false,
+            permission,
+            state:existingRevision>expectedRevision?STATES.FILE_AHEAD:STATES.CONFLICT,
+            error:`Local backup revision conflict: expected ${expectedRevision}, found ${existingRevision}.`,
+            revisionConflict:true,
+            existingRevision
+          };
+        }
+      }
+
       const text=JSON.stringify(snapshot,null,2);
       const writable=await handle.createWritable();
       await writable.write(text);
