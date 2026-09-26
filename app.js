@@ -162,7 +162,7 @@
     const candidate=JSON.parse(JSON.stringify(state));
     const task=writeSequence.catch(()=>{}).then(async()=>{
       const previousRevision=lastDurableRevision;
-      const revision=STATE_INTEGRITY.nextRevision(previousRevision);
+      const revision=STATE_INTEGRITY.nextRevision(lastDurableRevision);
       candidate.schemaVersion=STATE_INTEGRITY.SUPPORTED_SCHEMA_VERSION;
       candidate.stateRevision=revision;
 
