@@ -1,6 +1,6 @@
 # Michael Level-Up Lab — v1 Foundation
 
-> **PILOT SAFETY STATUS.** The audited installed-iPad local-persistence path exists, but desktop/cross-device learner evidence remains blocked until the shared backend is authenticated, verified, and passes synthetic cross-device tests. Do not collect Michael's real learner evidence on desktop yet.
+> **PILOT SAFETY STATUS.** The installed-iPad local-persistence path is audited. Patch O.2 adds a Windows/Edge local-only durability path using a verified learner backup file, but Michael's laptop still requires a real target-device close/reopen + Windows-restart audit before real learner evidence is collected there.
 
 This repository is the permanent foundation for Michael's individualized Level-Up Lab instance and the first reusable pilot of the broader Level-Up engine.
 
@@ -37,14 +37,17 @@ Track B is implemented first so Michael can receive immediate school-recovery in
 - adaptive learner-profile configuration for interests, communication/response modes, Interest Worlds, Low-Stimulation presentation, retention, transfer, and generalization
 - fail-stop behavior when a required save fails
 - Patch O.1 shared-persistence adapter and Supabase/RLS migration contract for the cross-device path
+- Patch O.2 Windows/Edge local durable-file fallback with revision guards and fail-stop writes
 
 ## Current storage decision
 
-The installed iPad pilot retains the audited local `PERSISTENT` browser-storage path as a legacy-safe runtime option.
+The installed iPad pilot retains the audited local `PERSISTENT` browser-storage path.
 
-For desktop, cross-device use, and the reusable Level-Up platform, the locked direction is an authenticated **shared Supabase backend**. Patch O.1 adds the provider adapter, Row Level Security schema, and revision-conflict contract without weakening the existing evidence rules. The repository configuration remains disabled until the private Supabase project and parent authentication are configured and audited.
+Windows/Edge may also run local-only without Supabase when the installed app connects and verifies the Level-Up learner backup file added in Patch O.2. Required learner saves then write IndexedDB, the same-origin mirror, and the parent-selected local backup file; a failed or conflicting file write stops student work.
 
-A learner session may not continue after a failed required write. Desktop learner evidence stays blocked unless either the audited local `PERSISTENT` path or the authenticated shared backend is verified.
+For automatic cross-device sync, the longer-term platform direction remains an authenticated **shared Supabase backend** from Patch O.1. Supabase is optional for a one-device local pilot but is still the planned shared persistence layer when the same learner record must automatically follow the student across devices.
+
+A learner session may not continue after a failed required write. Every target device must pass its applicable durability audit before real learner evidence is collected.
 
 ## Running locally for audit only
 
