@@ -29,6 +29,7 @@ jobs:
           node --check synthetic-e2e-core.js
           node --check synthetic-e2e.js
           node --check learner-config.js
+          node --check shared-persistence.js
       - name: Run frozen-vocabulary and persistence regression
         run: node tests/audit-regression.test.mjs
       - name: Run Track B persistence slice D regression
@@ -67,3 +68,7 @@ jobs:
         run: node tests/runtime-gate-n.test.mjs
       - name: Run Patch O pilot learner config and transfer regression
         run: node tests/learner-config-transfer-o.test.mjs
+      - name: Run Patch O.1 shared persistence adapter regression
+        run: node tests/shared-persistence-o1.test.mjs
+      - name: Run Patch O.1 shared runtime gate integration
+        run: node tests/runtime-gate-o1.test.mjs
