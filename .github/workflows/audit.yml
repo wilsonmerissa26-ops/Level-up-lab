@@ -31,6 +31,7 @@ jobs:
           node --check synthetic-e2e.js
           node --check learner-config.js
           node --check shared-persistence.js
+          node --check school-plan.js
       - name: Run frozen-vocabulary and persistence regression
         run: node tests/audit-regression.test.mjs
       - name: Run Track B persistence slice D regression
@@ -79,3 +80,5 @@ jobs:
         run: node tests/runtime-gate-o2.test.mjs
       - name: Run Patch O.2.1 installed app update regression
         run: node tests/installed-app-update-o21.test.mjs
+      - name: Run Patch O.2.2 LA test school plan regression
+        run: node tests/school-plan-o22.test.mjs

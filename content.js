@@ -161,5 +161,96 @@ window.LEVEL_UP_CONTENT = {
         {id:"ml3",q:"Solve y = mx + b for x.",choices:["x = (y − b) ÷ m","x = (y + b) ÷ m","x = y − (b ÷ m)"],answer:0,why:"Subtract b, then divide by m."}
       ]
     }
-  ]
+  ],
+  schoolPlan:{
+    urgent:{
+      id:"ELA.WTMMTM.TEST.2026-09-29",
+      subject:"Language Arts",
+      title:"Where the Mountain Meets the Moon — Test Tomorrow",
+      testDate:"2026-09-29",
+      priority:"TEST_TOMORROW",
+      supportLane:"SCHOOL_SUCCESS",
+      evidencePolicy:"SCHOOL_SUPPORT_ONLY_NO_FORMAL_BASELINE",
+      sources:["WTMMTM Knowledge Organizer","Where the Mountain Meets the Moon Review"],
+      studyBlocks:[
+        {
+          minutes:10,
+          title:"Storytelling, fantasy + culture vocabulary",
+          terms:[
+            ["oral tradition","knowledge, ideas, and stories passed by word of mouth from one generation to another"],
+            ["folktale","a story a culture repeats over time; often based in truth but becomes more fictional as it is retold"],
+            ["origin story","a story explaining how a person, place, thing, or idea came to exist"],
+            ["myth","a fictional story that explains things in nature or answers big questions about life"],
+            ["magic and the supernatural","things or events that seem impossible in real life"],
+            ["quest","a long, often difficult journey to find something or someone"],
+            ["young protagonist","a young main character; fantasy protagonists are often young and more willing to believe in magic"],
+            ["fatal flaw","a negative trait that leads to a character's downfall"],
+            ["non-human characters","talking animals or creatures that do not exist in real life, such as dragons"],
+            ["empire","territories controlled by one authority, usually an emperor or empress"],
+            ["dynasty","one family ruling a country or empire for a long period, passing power to children"],
+            ["animal symbolism","animals carrying symbolic meaning in stories, images, architecture, and culture"]
+          ]
+        },
+        {
+          minutes:10,
+          title:"Literary + language terms",
+          terms:[
+            ["embedded narrative","a story-within-a-story told inside the larger novel"],
+            ["parallel narrative","two or more different storylines that connect or share something in common"],
+            ["cliffhanger","an abrupt ending at a moment of surprise, danger, excitement, or tension"],
+            ["simile","a comparison between unlike things using like or as"],
+            ["symbol","an object, person, or idea with meaning beyond its literal meaning"],
+            ["lesson","a message about life or a piece of advice a reader can learn from a text"],
+            ["independent clause","a group of words with a subject and verb that expresses a complete thought"],
+            ["fragment","an incomplete sentence missing a subject, verb, or complete thought"],
+            ["subject","who or what a sentence is about"],
+            ["verb","what the subject does or is"],
+            ["compound sentence","two or more independent clauses joined with a coordinating conjunction and a comma"],
+            ["coordinating conjunctions","and joins; but contrasts; or shows choice; so shows result/consequence"],
+            ["dependent clause","a group with a noun and verb that cannot stand alone because it does not express a complete thought"],
+            ["subordinating conjunctions","because/since/if; before/after/when/while/since; even though/although"],
+            ["complex sentence","one independent clause plus at least one dependent clause"],
+            ["run-on sentence","two or more independent clauses connected improperly"]
+          ]
+        },
+        {
+          minutes:8,
+          title:"Plot sequence + borrowed line",
+          sequence:[
+            "Dragon receives the borrowed line from the guardian lions.",
+            "Dragon cannot cross the bridge to see the Old Man of the Moon.",
+            "Minli helps Dragon reach the Old Man of the Moon.",
+            "Dragon uses the borrowed line and finally learns to fly.",
+            "Dragon flies Minli back home to Fruitless Mountain."
+          ],
+          quickFacts:[
+            ["What gift did the guardian lions give Dragon?","The Borrowed Line."],
+            ["Why is the borrowed line significant?","The review shows Dragon later uses the borrowed line and finally learns to fly."],
+            ["How does Dragon fulfill his destiny?","The review sequence shows Dragon learns to fly and then flies Minli home."]
+          ]
+        },
+        {
+          minutes:12,
+          title:"Teacher review questions — explain out loud",
+          prompts:[
+            {q:"What is foreshadowing?",studyHelp:"Standard study definition: hints or clues that suggest what may happen later in a story.",sourceNote:"The teacher review asks this question but does not provide the definition."},
+            {q:"What are examples of foreshadowing in the novel?",studyHelp:"Use specific events from the novel and explain what later event each one hints at.",sourceNote:"The teacher review asks for examples but does not provide them."},
+            {q:"What is abundance?",studyHelp:"Standard study definition: a very large amount; more than enough.",sourceNote:"The teacher review asks this question but does not provide the definition."},
+            {q:"How do Minli's beliefs about abundance change throughout the story?",studyHelp:"Answer with beginning → change → end. Use a specific event from the novel for evidence.",sourceNote:"The teacher review asks this question but does not provide a model answer."},
+            {q:"How do kindness and generosity play into the themes of the novel?",studyHelp:"Name an act of kindness or generosity, then explain what it teaches about the novel's message.",sourceNote:"The teacher review asks this question but does not provide a model answer."},
+            {q:"Which events best support the theme that storytelling has the power to guide and heal?",studyHelp:"Choose events where a story changes what a character understands, decides, or feels, and explain the connection.",sourceNote:"The teacher review asks this question but does not provide the events/answer."}
+          ]
+        }
+      ],
+      finalCheck:[
+        "Define oral tradition, folktale, myth, quest, embedded narrative, parallel narrative, symbol, and lesson without notes.",
+        "Tell the five Dragon events in order without looking.",
+        "Explain independent vs dependent clause.",
+        "Explain compound vs complex sentence.",
+        "Name the coordinating conjunctions: and, but, or, so.",
+        "Name at least two subordinating conjunctions.",
+        "Answer the foreshadowing, abundance, Minli, kindness/generosity, and storytelling-theme questions in complete sentences."
+      ]
+    }
+  }
 };
