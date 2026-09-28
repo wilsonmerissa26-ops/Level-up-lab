@@ -32,6 +32,7 @@ jobs:
           node --check learner-config.js
           node --check shared-persistence.js
           node --check school-plan.js
+          node --check quest-engine.js
       - name: Run frozen-vocabulary and persistence regression
         run: node tests/audit-regression.test.mjs
       - name: Run Track B persistence slice D regression
@@ -84,3 +85,7 @@ jobs:
         run: node tests/school-plan-o22.test.mjs
       - name: Run Patch O.2.3 School Quest game regression
         run: node tests/school-quest-o23.test.mjs
+      - name: Run Patch O.2.4 reusable quest engine regression
+        run: node tests/quest-engine-o24.test.mjs
+      - name: Run Patch O.2.4 Michael block-game challenge regression
+        run: node tests/school-quest-o24.test.mjs
