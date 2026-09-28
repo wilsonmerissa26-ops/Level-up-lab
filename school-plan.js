@@ -252,7 +252,7 @@
       missionHeader(escapeHTML,progress,"boss","BOSS ARENA",idx+1,prompts.length)+
       "<div class=\"boss-arena\"><div class=\"boss-name\">🌑 REVIEW BEAST</div><div class=\"boss-health\"><div style=\"width:"+health+"%\"></div></div><div class=\"boss-health-label\">"+health+"% BOSS HEALTH</div><div class=\"boss-character\">👾</div><div class=\"player-character\">"+companion(progress).emoji+"</div></div>"+
       "<div class=\"mission-panel boss-question-panel\"><div class=\"objective-tag\">⚔️ DEAL DAMAGE WITH A COMPLETE ANSWER</div><div class=\"challenge-question\">"+escapeHTML(item.q||"")+"</div>"+
-      "<div class=\"boss-rule\"><strong>No fake grading:</strong> say the answer out loud in complete sentences. The teacher slide asks this question but does not provide an official model answer.</div>"+
+      "<div class=\"boss-rule\"><strong>No fake grading:</strong> say the answer out loud in complete sentences. The teacher slide asks this question but does not provide an official model answer, so Level-Up will not pretend to auto-grade it.</div>"+
       "<details class=\"hint-crate\"><summary>🧰 OPEN HINT CRATE</summary><p>"+escapeHTML(item.studyHelp||"")+"</p><p class=\"tiny muted\">"+escapeHTML(item.sourceNote||"")+"</p></details>"+
       "<div class=\"mission-tools\"><button class=\"btn\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.readChallenge()\">🔊 READ BOSS QUESTION</button><button class=\"btn game-cta\" "+(done?"disabled":"")+" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.markBossDone("+idx+")\">"+(done?"DAMAGE DEALT ✓":"I EXPLAINED IT ⚔️")+"</button>"+(done?"<button class=\"btn good\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.next()\">NEXT ATTACK ▶</button>":"")+"</div></div></div>";
   }
