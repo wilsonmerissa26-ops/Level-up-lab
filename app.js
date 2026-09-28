@@ -511,7 +511,16 @@
     </div>`)
   }
 
-  function schoolPlanView(){\n    return shell(SCHOOL_PLAN?SCHOOL_PLAN.render(escapeHTML):"<div class=\"card\"><h2>School Plan</h2><p class=\"muted\">School Plan module unavailable.</p></div>");\n  }\n\n  function readSchoolPlan(){\n    if(!SCHOOL_PLAN)return;\n    speak(SCHOOL_PLAN.readText());\n  }\n\n  function trackB(){
+  function schoolPlanView(){
+    return shell(SCHOOL_PLAN?SCHOOL_PLAN.render(escapeHTML):"<div class=\"card\"><h2>School Plan</h2><p class=\"muted\">School Plan module unavailable.</p></div>");
+  }
+
+  function readSchoolPlan(){
+    if(!SCHOOL_PLAN)return;
+    speak(SCHOOL_PLAN.readText());
+  }
+
+  function trackB(){
     return shell(`<div class="grid">
       <div class="card c8"><h2>Track B · Immediate Learning</h2><p class="muted">Teaching sequence: <strong>SEE IT → DO IT → SAY IT → SOLVE IT → EXPLAIN IT → RETRIEVE LATER.</strong></p><div class="callout green small"><strong>No more full Unit 1 retest.</strong> Michael starts at the beginning, gets taught, answers fresh checks, and returns later for delayed retrieval.</div></div>
       <div class="card c4"><div class="label">Current priority</div><div class="big">Science</div><div class="small muted">Unit 1 Energy Recovery</div></div>
