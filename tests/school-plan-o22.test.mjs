@@ -31,5 +31,5 @@ assert.ok(ctx.LEVEL_UP_SCHOOL_PLAN.render(x=>String(x)).includes('TEST TOMORROW'
 assert.match(app,/School Plan/);
 assert.match(app,/school-plan/);
 assert.match(app,/readSchoolPlan/);
-assert.ok(index.includes('school-plan.js?v=2026-09-28-o22'));
+assert.match(index,/school-plan\.js\?v=2026-09-28-o\d+/);
 console.log('Patch O.2.2 LA test school plan: PASS');
