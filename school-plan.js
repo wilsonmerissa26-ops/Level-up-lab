@@ -302,11 +302,46 @@
     refresh();
   }
 
+  function rewardForWorld(id){
+    const rewards={
+      story:{badge:WORLD_META.story.badge,chestCoins:20,chestGems:1},
+      grammar:{badge:WORLD_META.grammar.badge,chestCoins:25,chestGems:1},
+      dragon:{badge:WORLD_META.dragon.badge,chestCoins:35,chestGems:1},
+      boss:{badge:WORLD_META.boss.badge,chestCoins:40,chestGems:2},
+      final:{badge:WORLD_META.final.badge,chestCoins:50,chestGems:3}
+    };
+    return rewards[id]||{badge:null,chestCoins:20,chestGems:1};
+  }
+
+  function completeWorld(progress,id){
+    if(QUEST)return QUEST.completeWorld(progress,id,rewardForWorld(id));
+    const first=progress.completed[id]!==true;
+    progress.completed[id]=true;
+    if(first)progress.pendingReward={worldId:id,...rewardForWorld(id)};
+    return {progress,first};
+  }
+
+  function openChest(){
+    const progress=loadProgress();
+    if(!progress.pendingReward)return;
+    if(QUEST)QUEST.openPendingReward(progress);
+    else{
+      const reward=progress.pendingReward;
+      progress.coins=(progress.coins||0)+(reward.chestCoins||0);
+      progress.gems=(progress.gems||0)+(reward.chestGems||0);
+      progress.openedChests=[...(progress.openedChests||[]),reward.worldId];
+      progress.pendingReward=null;
+    }
+    saveProgress(progress);refresh();
+  }
+
   function startWorld(id){
     const progress=loadProgress();
-    if(!["story","grammar","dragon","boss","final"].includes(id))return;
+    if(!WORLD_ORDER.includes(id))return;
+    if(!worldUnlocked(progress,id))return;
     progress.activeWorld=id;
     progress.feedback=null;
+    progress.hearts=progress.maxHearts||3;
     if(id==="story"||id==="grammar"||id==="dragon"){
       const map=id==="dragon"?progress.answered.dragon:progress.answered[id];
       let next=0;
@@ -323,7 +358,7 @@
 
   function exitWorld(){
     const progress=loadProgress();
-    progress.activeWorld=null;progress.index=0;progress.feedback=null;
+    progress.activeWorld=null;progress.index=0;progress.feedback=null;progress.hearts=progress.maxHearts||3;
     saveProgress(progress);refresh();
   }
 
@@ -333,12 +368,19 @@
     if(progress.activeWorld!==id||index!==progress.index||!items[index])return;
     const correct=selected===items[index][0];
     if(correct){
-      if(progress.answered[id]?.[index]!==true){progress.xp+=10;progress.streak+=1}
+      if(progress.answered[id]?.[index]!==true){
+        if(QUEST)QUEST.awardCorrect(progress,{xp:10,coins:3});
+        else{progress.xp+=10;progress.coins=(progress.coins||0)+3;progress.streak+=1}
+      }
       progress.answered[id][index]=true;
-      progress.feedback={correct:true,message:"Correct: "+items[index][0]+". +10 XP"};
+      progress.feedback={correct:true,message:"Platform unlocked! "+items[index][0]+" · +10 XP · +3 coins"};
     }else{
-      progress.streak=0;
-      progress.feedback={correct:false,message:"That term does not match this definition yet. Read the wording again and try another block."};
+      const miss=QUEST?QUEST.registerMiss(progress):{respawned:false};
+      if(!QUEST){progress.streak=0;progress.hearts=Math.max(1,(progress.hearts||3)-1)}
+      progress.feedback={
+        correct:false,
+        message:miss.respawned?"Respawn! Hearts refilled. Read the clue and jump again.":"That block broke. Read the clue again and choose another platform."
+      };
     }
     saveProgress(progress);refresh();
   }
@@ -349,12 +391,16 @@
     if(progress.activeWorld!=="dragon"||index!==progress.index||!seq[index])return;
     const correct=selected===seq[index];
     if(correct){
-      if(progress.answered.dragon?.[index]!==true){progress.xp+=15;progress.streak+=1}
+      if(progress.answered.dragon?.[index]!==true){
+        if(QUEST)QUEST.awardCorrect(progress,{xp:15,coins:5});
+        else{progress.xp+=15;progress.coins=(progress.coins||0)+5;progress.streak+=1}
+      }
       progress.answered.dragon[index]=true;
-      progress.feedback={correct:true,message:"Checkpoint "+(index+1)+" is in the teacher's sequence. +15 XP"};
+      progress.feedback={correct:true,message:"Checkpoint "+(index+1)+" landed! +15 XP · +5 coins"};
     }else{
-      progress.streak=0;
-      progress.feedback={correct:false,message:"That event belongs somewhere else on the path. Try the sequence again."};
+      const miss=QUEST?QUEST.registerMiss(progress):{respawned:false};
+      if(!QUEST){progress.streak=0;progress.hearts=Math.max(1,(progress.hearts||3)-1)}
+      progress.feedback={correct:false,message:miss.respawned?"You fell, respawned, and your hearts refilled. Try the path again.":"Wrong platform. That event belongs somewhere else in the obby."};
     }
     saveProgress(progress);refresh();
   }
@@ -368,7 +414,8 @@
     else if(id==="boss")total=p?.studyBlocks?.[3]?.prompts?.length||0;
     if(id==="boss"&&!progress.bossDone?.[progress.index])return;
     if(progress.index+1>=total){
-      progress.completed[id]=true;progress.activeWorld=null;progress.index=0;
+      completeWorld(progress,id);
+      progress.activeWorld=null;progress.index=0;progress.hearts=progress.maxHearts||3;
     }else progress.index+=1;
     saveProgress(progress);refresh();
   }
@@ -377,19 +424,22 @@
     const p=plan();const prompts=p?.studyBlocks?.[3]?.prompts||[];
     const progress=loadProgress();
     if(progress.activeWorld!=="boss"||index!==progress.index||!prompts[index])return;
-    if(!progress.bossDone[index]){progress.bossDone[index]=true;progress.xp+=5;progress.streak+=1}
-    if(Object.keys(progress.bossDone).filter(k=>progress.bossDone[k]).length>=prompts.length)progress.completed.boss=true;
+    if(!progress.bossDone[index]){
+      progress.bossDone[index]=true;
+      if(QUEST)QUEST.awardCorrect(progress,{xp:8,coins:4});
+      else{progress.xp+=8;progress.coins=(progress.coins||0)+4;progress.streak+=1}
+    }
     saveProgress(progress);refresh();
   }
 
   function toggleFinal(index){
     const p=plan();const finals=p?.finalCheck||[];const progress=loadProgress();
-    if(progress.activeWorld!=="final"||!finals[index])return;
-    const was=!!progress.finalDone[index];
-    progress.finalDone[index]=!was;
-    if(!was)progress.xp+=5;else progress.xp=Math.max(0,progress.xp-5);
-    if(Object.keys(progress.finalDone).filter(k=>progress.finalDone[k]).length>=finals.length)progress.completed.final=true;
-    else progress.completed.final=false;
+    if(progress.activeWorld!=="final"||!finals[index]||progress.finalDone[index])return;
+    progress.finalDone[index]=true;
+    if(QUEST)QUEST.awardCorrect(progress,{xp:5,coins:2});
+    else{progress.xp+=5;progress.coins=(progress.coins||0)+2;progress.streak+=1}
+    const done=Object.keys(progress.finalDone).filter(k=>progress.finalDone[k]).length;
+    if(done>=finals.length)completeWorld(progress,"final");
     saveProgress(progress);refresh();
   }
 
@@ -440,8 +490,8 @@
 
   const api={
     render,readText,readChallenge,chooseCompanion,startWorld,exitWorld,chooseTerm,chooseDragon,next,
-    markBossDone,toggleFinal,openGuide,closeGuide,resetGame,
-    __test:{freshProgress,flattenTermWorlds,choicesFor,dragonChoices,rankFor,worldCount}
+    markBossDone,toggleFinal,openChest,openGuide,closeGuide,resetGame,
+    __test:{freshProgress,flattenTermWorlds,choicesFor,dragonChoices,rankFor,worldCount,worldUnlocked,rewardForWorld,bossHealth}
   };
   if(typeof window!=="undefined")window.LEVEL_UP_SCHOOL_PLAN=api;
   if(typeof globalThis!=="undefined")globalThis.LEVEL_UP_SCHOOL_PLAN=api;
