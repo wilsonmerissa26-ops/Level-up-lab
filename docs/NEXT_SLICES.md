@@ -15,6 +15,7 @@
 13. Add SAT, Essay Coach, Scholarship Discovery, and college-planning modules as reusable Level-Up modules.
 14. **Patch O.1 launch hardening:** add the authenticated shared-persistence contract for desktop/cross-device use without weakening the audited local iPad path. Supabase configuration and parent authentication must be verified before real desktop learner evidence is allowed.
 15. **Patch O.2 Windows/Edge local durability:** allow a verified local learner backup file to satisfy the installed-app durability gate when browser Persistent mode is unavailable. Complete a real laptop close/reopen + Windows-restart audit before Michael collects evidence there.
-16. **Patch P remains the next product build:** Pilot Intake + Personalized Diagnostic Generator. Patches O.1/O.2 do not replace or rename Patch P.
+16. **Patch O.2.2–O.2.4 urgent School Quest line:** teacher-file Language Arts test support, Michael's gamified reference experience, then extraction of reusable game mechanics (world locks, rewards, hearts/respawn, badges/chests, boss health) while keeping game progress outside formal diagnostic evidence.
+17. **Patch P remains the next product build:** Pilot Intake + Personalized Diagnostic Generator. Patches O.1–O.2.4 do not replace or rename Patch P.
 
 No real learner records, credentials, or school-session secrets belong in Git.
