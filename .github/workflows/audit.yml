@@ -82,3 +82,5 @@ jobs:
         run: node tests/installed-app-update-o21.test.mjs
       - name: Run Patch O.2.2 LA test school plan regression
         run: node tests/school-plan-o22.test.mjs
+      - name: Run Patch O.2.3 School Quest game regression
+        run: node tests/school-quest-o23.test.mjs
