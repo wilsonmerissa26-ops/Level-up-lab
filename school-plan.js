@@ -6,8 +6,8 @@
     story:{emoji:"🦊",title:"Story Safari",subtitle:"Storytelling, fantasy, culture, and animal symbolism",badge:"Story Safari Scout",reward:"Safari Crate"},
     grammar:{emoji:"🐼",title:"Grammar Zoo",subtitle:"Literary terms, clauses, sentences, and conjunctions",badge:"Grammar Keeper",reward:"Zoo Vault"},
     dragon:{emoji:"🐉",title:"Dragon Obby",subtitle:"Jump through the five Dragon events in the teacher's order",badge:"Dragon Path Runner",reward:"Dragon Chest"},
-    boss:{emoji:"🐯",title:"Review Boss Arena",subtitle:"Foreshadowing, abundance, generosity, Minli, and storytelling",badge:"Boss Breaker",reward:"Arena Chest"},
-    final:{emoji:"🌙",title:"Final Moon Gate",subtitle:"No-notes readiness check before tomorrow's test",badge:"Moon Gate Master",reward:"Moon Vault"}
+    boss:{emoji:"🐯",title:"Review Boss Battle",subtitle:"Foreshadowing, abundance, generosity, Minli, and storytelling",badge:"Boss Breaker",reward:"Arena Chest"},
+    final:{emoji:"🌙",title:"Final Moon Boss",subtitle:"No-notes readiness check before tomorrow's test",badge:"Moon Gate Master",reward:"Moon Vault"}
   });
   const COMPANIONS=Object.freeze([
     {id:"fox",emoji:"🦊",name:"Fox",line:"Fast thinker. Look for clues."},
@@ -140,7 +140,7 @@
   }
 
   function renderCompanions(escapeHTML,progress){
-    return "<div class=\"game-panel companion-panel\"><div class=\"row between\"><div><div class=\"game-kicker\">TEAM LOADOUT</div><h3>Choose your animal teammate</h3></div><span class=\"pill purple\">Cosmetic teammate</span></div><div class=\"companion-grid\">"+
+    return "<div class=\"game-panel companion-panel\"><div class=\"row between\"><div><div class=\"game-kicker\">TEAM LOADOUT</div><h3>Pick your animal teammate</h3></div><span class=\"pill purple\">Cosmetic teammate</span></div><div class=\"companion-grid\">"+
       COMPANIONS.map(c=>"<button class=\"companion-btn "+(progress.companion===c.id?"selected":"")+"\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.chooseCompanion('"+c.id+"')\"><span>"+c.emoji+"</span><strong>"+escapeHTML(c.name)+"</strong><small>"+escapeHTML(c.line)+"</small></button>").join("")+
       "</div></div>";
   }
