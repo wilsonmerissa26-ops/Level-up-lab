@@ -38,6 +38,9 @@ Track B is implemented first so Michael can receive immediate school-recovery in
 - fail-stop behavior when a required save fails
 - Patch O.1 shared-persistence adapter and Supabase/RLS migration contract for the cross-device path
 - Patch O.2 Windows/Edge local durable-file fallback with revision guards and fail-stop writes
+- Patch O.2.2 urgent teacher-file School Plan for Michael's Sept. 29 Language Arts test
+- Patch O.2.3 Michael School Quest game wrapper for that urgent plan
+- Patch O.2.4 reusable challenge-game engine with levels, world locks, hearts/respawn, coins, gems, badges, treasure chests, boss health, and backward-compatible game-progress migration
 
 ## Current storage decision
 
@@ -63,6 +66,6 @@ Student lessons remain disabled in code until the final local-persistence audit 
 
 ## Commercial direction
 
-The future product should reuse a shared Level-Up core while keeping every learner's experience and data isolated. SAT, Essay Coach, Scholarship Discovery, School Radar, ELA, Social Studies, and future modules should plug into the same engine rather than become separate technology stacks.
+The future product should reuse a shared Level-Up core while keeping every learner's experience and data isolated. SAT, Essay Coach, Scholarship Discovery, School Radar, ELA, Social Studies, and future modules should plug into the same engine rather than become separate technology stacks. Patch O.2.4 establishes the same rule for game experiences: reusable game mechanics underneath learner-specific worlds, themes, content, and progress. Michael is the reference implementation, not a source of content/history to copy into another learner.
 
 Do not commit real student records, credentials, or school-session secrets to this repository. Use synthetic fixtures in code.
