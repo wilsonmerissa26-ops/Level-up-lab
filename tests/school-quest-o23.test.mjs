@@ -38,6 +38,9 @@ for(const label of ['Moon Mountain Challenge','Story Safari','Grammar Zoo','Drag
 for(const animal of ['🦊','🐼','🐯','🦉']) assert.ok(rendered.includes(animal),animal);
 assert.match(rendered,/practice progress only, not a diagnostic score/i);
 
+const legacyProgress=JSON.parse(store.get('MLUL_WTMMTM_SCHOOL_QUEST_V1')||'{}');
+legacyProgress.completed={...(legacyProgress.completed||{}),story:true,grammar:true,dragon:true};
+store.set('MLUL_WTMMTM_SCHOOL_QUEST_V1',JSON.stringify(legacyProgress));
 api.startWorld('boss');
 const boss=api.render(x=>String(x));
 assert.match(boss,/will not pretend to auto-grade/i);
