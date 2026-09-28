@@ -121,7 +121,7 @@
   function topBar(escapeHTML,progress){
     const pet=companion(progress);
     return "<div class=\"quest-top\">"+
-      "<div><div class=\"label\">School Quest</div><h2>🏔️ Moon Mountain Challenge</h2><p class=\"muted\">Roblox-style obby energy + animal companions. Teacher material stays the source.</p></div>"+
+      "<div><span class=\"pill warn\">TEST TOMORROW · SEPT. 29</span><div class=\"label\" style=\"margin-top:8px\">School Quest</div><h2>🏔️ Moon Mountain Challenge</h2><p class=\"muted\">Roblox-style obby energy + animal companions. Teacher material stays the source.</p></div>"+
       "<div class=\"quest-stats\"><span class=\"quest-xp\">⭐ "+progress.xp+" XP</span><span>🔥 "+progress.streak+" streak</span><span>🏅 "+escapeHTML(rankFor(progress.xp))+"</span></div>"+
       "</div>"+
       "<div class=\"quest-companion\"><span class=\"pet\">"+pet.emoji+"</span><div><strong>"+escapeHTML(pet.name)+" is with you.</strong><div class=\"small muted\">"+escapeHTML(pet.line)+"</div></div></div>";
