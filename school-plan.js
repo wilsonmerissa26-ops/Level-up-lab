@@ -1,5 +1,14 @@
 (() => {
   const GAME_KEY="MLUL_WTMMTM_SCHOOL_QUEST_V1";
+  const QUEST=globalThis.LEVEL_UP_QUEST_ENGINE;
+  const WORLD_ORDER=Object.freeze(["story","grammar","dragon","boss","final"]);
+  const WORLD_META=Object.freeze({
+    story:{emoji:"🦊",title:"Story Safari",subtitle:"Storytelling, fantasy, culture, and animal symbolism",badge:"Story Safari Scout",reward:"Safari Crate"},
+    grammar:{emoji:"🐼",title:"Grammar Zoo",subtitle:"Literary terms, clauses, sentences, and conjunctions",badge:"Grammar Keeper",reward:"Zoo Vault"},
+    dragon:{emoji:"🐉",title:"Dragon Obby",subtitle:"Jump through the five Dragon events in the teacher's order",badge:"Dragon Path Runner",reward:"Dragon Chest"},
+    boss:{emoji:"🐯",title:"Review Boss Arena",subtitle:"Foreshadowing, abundance, generosity, Minli, and storytelling",badge:"Boss Breaker",reward:"Arena Chest"},
+    final:{emoji:"🌙",title:"Final Moon Gate",subtitle:"No-notes readiness check before tomorrow's test",badge:"Moon Gate Master",reward:"Moon Vault"}
+  });
   const COMPANIONS=Object.freeze([
     {id:"fox",emoji:"🦊",name:"Fox",line:"Fast thinker. Look for clues."},
     {id:"panda",emoji:"🐼",name:"Panda",line:"Stay calm. One challenge at a time."},
@@ -10,19 +19,13 @@
   function plan(){ return globalThis.LEVEL_UP_CONTENT?.schoolPlan?.urgent||null; }
 
   function freshProgress(){
-    return {
-      version:1,
-      companion:"fox",
-      xp:0,
-      streak:0,
-      activeWorld:null,
-      index:0,
-      feedback:null,
-      answered:{story:{},grammar:{},dragon:{}},
-      completed:{story:false,grammar:false,dragon:false,boss:false,final:false},
-      bossDone:{},
-      finalDone:{}
+    const base=QUEST?QUEST.freshProgress({worldOrder:WORLD_ORDER,companion:"fox",maxHearts:3}):{
+      version:2,companion:"fox",xp:0,coins:0,gems:0,streak:0,maxHearts:3,hearts:3,respawns:0,
+      activeWorld:null,index:0,feedback:null,completed:{story:false,grammar:false,dragon:false,boss:false,final:false},
+      bossDone:{},finalDone:{},badges:[],openedChests:[],pendingReward:null
     };
+    base.answered={story:{},grammar:{},dragon:{}};
+    return base;
   }
 
   function loadProgress(){
@@ -30,14 +33,13 @@
       const raw=globalThis.localStorage?.getItem(GAME_KEY);
       if(!raw)return freshProgress();
       const saved=JSON.parse(raw);
-      const base=freshProgress();
-      return {
-        ...base,...saved,
-        answered:{...base.answered,...(saved.answered||{})},
-        completed:{...base.completed,...(saved.completed||{})},
-        bossDone:{...(saved.bossDone||{})},
-        finalDone:{...(saved.finalDone||{})}
+      const normalized=QUEST?QUEST.normalizeProgress(saved,{worldOrder:WORLD_ORDER,companion:"fox",maxHearts:3}):{...freshProgress(),...saved};
+      normalized.answered={
+        story:{...(saved?.answered?.story||{})},
+        grammar:{...(saved?.answered?.grammar||{})},
+        dragon:{...(saved?.answered?.dragon||{})}
       };
+      return normalized;
     }catch(_){return freshProgress()}
   }
 
@@ -54,11 +56,14 @@
     return COMPANIONS.find(x=>x.id===progress.companion)||COMPANIONS[0];
   }
 
-  function rankFor(xp){
-    if(xp>=360)return "Mountain Master";
-    if(xp>=240)return "Moon Ranger";
-    if(xp>=120)return "Story Scout";
-    return "Rookie Explorer";
+  function rankFor(xp){ return QUEST?QUEST.rankFor(xp):xp>=360?"Mountain Master":xp>=240?"Moon Ranger":xp>=120?"Story Scout":"Rookie Explorer"; }
+  function heartsText(progress){ return QUEST?QUEST.heartsText(progress):"❤️".repeat(progress.hearts||3); }
+  function levelNumber(progress){ return QUEST?QUEST.levelNumber(progress):1+Math.floor((progress.xp||0)/100); }
+  function worldUnlocked(progress,id){ return QUEST?QUEST.worldUnlocked(progress,id,WORLD_ORDER):id==="story"; }
+  function bossHealth(progress,p){
+    const total=p?.studyBlocks?.[3]?.prompts?.length||0;
+    const done=Object.keys(progress.bossDone||{}).filter(k=>progress.bossDone[k]).length;
+    return QUEST?QUEST.bossHealth(done,total):Math.round(Math.max(0,total-done)/Math.max(1,total)*100);
   }
 
   function flattenTermWorlds(p){
