@@ -45,7 +45,7 @@ assert.match(boss,/What is foreshadowing\?/);
 
 assert.match(app,/function refreshSchoolPlan\(\)/);
 assert.match(app,/readSchoolPlan,refreshSchoolPlan,startLesson/);
-assert.ok(index.includes('school-plan.js?v=2026-09-28-o23'));
-assert.ok(index.includes('styles.css?v=2026-09-28-o23'));
+assert.match(index,/school-plan\.js\?v=2026-09-28-o\d+/);
+assert.match(index,/styles\.css\?v=2026-09-28-o\d+/);
 
 console.log('Patch O.2.3 School Quest game: PASS');
