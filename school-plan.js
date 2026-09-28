@@ -59,7 +59,13 @@
   function rankFor(xp){ return QUEST?QUEST.rankFor(xp):xp>=360?"Mountain Master":xp>=240?"Moon Ranger":xp>=120?"Story Scout":"Rookie Explorer"; }
   function heartsText(progress){ return QUEST?QUEST.heartsText(progress):"❤️".repeat(progress.hearts||3); }
   function levelNumber(progress){ return QUEST?QUEST.levelNumber(progress):1+Math.floor((progress.xp||0)/100); }
-  function worldUnlocked(progress,id){ return QUEST?QUEST.worldUnlocked(progress,id,WORLD_ORDER):id==="story"; }
+  function worldUnlocked(progress,id){
+    if(QUEST)return QUEST.worldUnlocked(progress,id,WORLD_ORDER);
+    const index=WORLD_ORDER.indexOf(id);
+    if(index===0)return true;
+    if(index<0)return false;
+    return progress?.completed?.[WORLD_ORDER[index-1]]===true;
+  }
   function bossHealth(progress,p){
     const total=p?.studyBlocks?.[3]?.prompts?.length||0;
     const done=Object.keys(progress.bossDone||{}).filter(k=>progress.bossDone[k]).length;
