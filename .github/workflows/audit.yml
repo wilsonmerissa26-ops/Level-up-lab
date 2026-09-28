@@ -77,3 +77,5 @@ jobs:
         run: node tests/local-durable-file-o2.test.mjs
       - name: Run Patch O.2 Windows local durability integration
         run: node tests/runtime-gate-o2.test.mjs
+      - name: Run Patch O.2.1 installed app update regression
+        run: node tests/installed-app-update-o21.test.mjs
