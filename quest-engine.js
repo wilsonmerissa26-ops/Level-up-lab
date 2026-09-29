@@ -1,11 +1,11 @@
 (() => {
   const CURRENT_VERSION=3;
   const DEFAULT_RANKS=Object.freeze([
-    {min:0,name:"Rookie Explorer"},
-    {min:120,name:"Story Scout"},
-    {min:240,name:"Moon Ranger"},
-    {min:360,name:"Mountain Master"},
-    {min:520,name:"Legend Builder"}
+    {min:0,name:"Explorer"},
+    {min:120,name:"Pathfinder"},
+    {min:240,name:"Navigator"},
+    {min:360,name:"Trailblazer"},
+    {min:520,name:"Legend"}
   ]);
 
   function clone(value){ return JSON.parse(JSON.stringify(value)); }
@@ -18,7 +18,7 @@
     return Array.isArray(values)?[...new Set(values.filter(x=>typeof x==="string"&&x.length))]:[];
   }
 
-  function freshProgress({worldOrder=[],companion="fox",maxHearts=3}={}){
+  function freshProgress({worldOrder=[],companion=null,maxHearts=3}={}){
     const completed={};
     for(const id of worldOrder)completed[id]=false;
     return {
@@ -45,7 +45,7 @@
     };
   }
 
-  function normalizeProgress(saved,{worldOrder=[],companion="fox",maxHearts=3,lockMode="SEQUENTIAL"}={}){
+  function normalizeProgress(saved,{worldOrder=[],companion=null,maxHearts=3,lockMode="SEQUENTIAL"}={}){
     const base=freshProgress({worldOrder,companion,maxHearts});
     if(!saved || typeof saved!=="object")return base;
     const incomingVersion=Number.isInteger(saved.version)?saved.version:1;
