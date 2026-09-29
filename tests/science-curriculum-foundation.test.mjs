@@ -16,7 +16,7 @@ assert.deepEqual(JSON.parse(JSON.stringify(C.standardsFamily)),['S8P1','S8P2','S
 assert.equal(C.units.length,5);
 
 const coverage=C.standardsCoverage();
-assert.deepEqual(coverage.missing,[],'all 23 Georgia Grade 8 Physical Science elements must have teachable targets');
+assert.equal(coverage.missing.length,0,'all 23 Georgia Grade 8 Physical Science elements must have teachable targets');
 assert.equal(coverage.expected.length,23);
 assert.ok(C.allTargets().length>=60,'full curriculum should decompose standards into teachable targets');
 
@@ -47,6 +47,6 @@ assert.match(C.clarificationBoundaries['S8P4.d'],/Interference and scattering ar
 assert.match(C.clarificationBoundaries['S8P5'],/Circuit voltage\/current\/resistance.*school-specific extension/i);
 
 const duplicateIds=C.allTargets().map(x=>x.id).filter((id,i,a)=>a.indexOf(id)!==i);
-assert.deepEqual(duplicateIds,[],'curriculum target IDs must be unique');
+assert.equal(duplicateIds.length,0,'curriculum target IDs must be unique');
 
 console.log('Full Grade 8 Physical Science curriculum foundation: PASS');
