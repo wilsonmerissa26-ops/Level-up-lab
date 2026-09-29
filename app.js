@@ -472,6 +472,10 @@
   function pushSessionResponseOnce(session,ev){const found=session.responses.find(x=>x.id===ev.id);if(found)return found;session.responses.push(ev);return ev}
   function now(){return new Date().toISOString()}
   function fmt(iso){return new Date(iso).toLocaleString()}
+  function learnerFileToken(){
+    const raw=String(CONTENT?.student?.name||CONTENT?.student?.id||"Learner").trim()||"Learner";
+    return raw.replace(/[^a-z0-9_-]+/gi,"-").replace(/^-+|-+$/g,"")||"Learner";
+  }
   function allLessons(){return [...CONTENT.science,...CONTENT.math]}
   function lessonById(id){return allLessons().find(x=>x.id===id)}
   function lessonStatus(id){return state.lessonState[id]||{status:"NOT_STARTED",score:null,attempts:0}}
@@ -1394,7 +1398,7 @@
     if(!state.backup)state.backup={lastExportAttemptedAt:null,pendingAfterLesson:false};
     state.backup.lastExportAttemptedAt=now();
     const snapshot=JSON.stringify(state,null,2);
-    const blob=new Blob([snapshot],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`Michael-Level-Up-Backup-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+    const blob=new Blob([snapshot],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`${learnerFileToken()}-Level-Up-Backup-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000);
     await save("backup exported");
   }
 
@@ -1462,7 +1466,7 @@
 
     const candidate=prepareLoadedStateSafe(read.snapshot,"MIRROR");
     if(!candidate){
-      localDurableStatus={state:"CONFLICT",configured:true,permission,fileName:localDurableHandle.name||null,fileRevision:null,error:"Local backup is not a valid Michael learner record."};
+      localDurableStatus={state:"CONFLICT",configured:true,permission,fileName:localDurableHandle.name||null,fileRevision:null,error:`Local backup is not a valid ${CONTENT?.student?.name||"learner"} record.`};
       return localDurableStatus;
     }
     const compared=LOCAL_DURABLE_FILE.compareSnapshots(state,candidate);
@@ -1480,7 +1484,7 @@
   async function connectLocalDurableFile(){
     if(!LOCAL_DURABLE_FILE){alert("Local laptop backup is unavailable in this build.");return}
     try{
-      const handle=await LOCAL_DURABLE_FILE.pickFile(window,{suggestedName:"Michael-Level-Up-Live-Backup.json"});
+      const handle=await LOCAL_DURABLE_FILE.pickFile(window,{suggestedName:`${learnerFileToken()}-Level-Up-Live-Backup.json`});
       const permission=await LOCAL_DURABLE_FILE.requestPermission(handle);
       if(permission!=="granted"){localDurableHandle=handle;localDurableStatus={state:"NEEDS_PERMISSION",configured:true,permission,fileName:handle.name||null,fileRevision:null,error:null};render();return}
       localDurableHandle=await storeLocalDurableHandle(handle);
