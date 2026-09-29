@@ -70,11 +70,12 @@
 
   function buildIsolationKeys(learnerId){
     const id = normalizeLearnerId(learnerId);
-    const token = id.toUpperCase().replace(/[^A-Z0-9_]/g,"_");
+    const token = encodeURIComponent(id).toUpperCase();
     return Object.freeze({
       dbName:`LevelUpLab_${id}`,
       stateKey:`learner:${id}`,
-      backupKey:`LEVEL_UP_BACKUP_${token}_V1`
+      backupKey:`LEVEL_UP_BACKUP_${token}_V2`,
+      gamePrefix:`LEVEL_UP_GAME:${id}:`
     });
   }
 
@@ -203,6 +204,9 @@
       evidence:[],
       sessions:[],
       reviewSchedule:[],
+      studyQuests:{},
+      studySessions:[],
+      schoolExposures:[],
       schoolFacts:[],
       settings:{
         readAloud:config.profile.sensory.audioLevel!=="OFF",
@@ -245,7 +249,9 @@
       ["sessions",pkg.starterState.sessions],
       ["schoolFacts",pkg.starterState.schoolFacts],
       ["reviewSchedule",pkg.starterState.reviewSchedule],
-      ["trackAMasterySchedule",pkg.starterState.trackAMasterySchedule]
+      ["trackAMasterySchedule",pkg.starterState.trackAMasterySchedule],
+      ["studySessions",pkg.starterState.studySessions],
+      ["schoolExposures",pkg.starterState.schoolExposures]
     ];
 
     for(const [label,value] of forbiddenHistory){
@@ -255,6 +261,7 @@
     }
 
     if(Object.keys(pkg.starterState.lessonState || {}).length!==0) throw new Error("Starter transfer package must not include lesson history");
+    if(Object.keys(pkg.starterState.studyQuests || {}).length!==0) throw new Error("Starter transfer package must not include study quest history");
     if(Object.keys(pkg.starterState.trackASkillState || {}).length!==0) throw new Error("Starter transfer package must not include mastery history");
 
     return true;

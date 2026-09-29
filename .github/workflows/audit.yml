@@ -33,6 +33,9 @@ jobs:
           node --check shared-persistence.js
           node --check school-plan.js
           node --check quest-engine.js
+          node --check quest-config.js
+          node --check michael-school-quest-config.js
+          node --check study-tracking.js
       - name: Run frozen-vocabulary and persistence regression
         run: node tests/audit-regression.test.mjs
       - name: Run Track B persistence slice D regression
@@ -89,3 +92,9 @@ jobs:
         run: node tests/quest-engine-o24.test.mjs
       - name: Run Patch O.2.4 Michael block-game challenge regression
         run: node tests/school-quest-o24.test.mjs
+      - name: Run Patch O.2.5a game data safety regression
+        run: node tests/game-data-safety-o25a.test.mjs
+      - name: Run Patch O.2.5b study tracking and exposure regression
+        run: node tests/study-tracking-o25b.test.mjs
+      - name: Run Patch O.2.5c reusable quest config and Learner 2 isolation
+        run: node tests/reusable-quest-config-o25c.test.mjs

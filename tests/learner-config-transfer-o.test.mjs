@@ -43,7 +43,7 @@ assert.equal(michaelLike.adaptiveLearning.ethicalBoundary,"ACADEMIC_AND_FUNCTION
 const keys=api.buildIsolationKeys("Pilot Student 01");
 assert.equal(keys.stateKey,"learner:pilot-student-01");
 assert.match(keys.dbName,/pilot-student-01/);
-assert.match(keys.backupKey,/PILOT_STUDENT_01/);
+assert.match(keys.backupKey,/PILOT-STUDENT-01/);
 
 const starter=api.createStarterState(michaelLike,"2026-09-23T21:00:00.000Z");
 assert.equal(starter.learnerId,"pilot-student-01");
@@ -51,6 +51,9 @@ assert.deepEqual(starter.evidence,[]);
 assert.deepEqual(starter.sessions,[]);
 assert.deepEqual(starter.schoolFacts,[]);
 assert.deepEqual(starter.lessonState,{});
+assert.deepEqual(starter.studyQuests,{});
+assert.deepEqual(starter.studySessions,[]);
+assert.deepEqual(starter.schoolExposures,[]);
 assert.deepEqual(starter.trackASkillState,{});
 assert.equal(starter.settings.lowStimulation,true);
 assert.equal(starter.settings.visualSchedule,true);
@@ -80,11 +83,22 @@ const pkgTwo=api.createTransferPackage(studentTwo,"2026-09-23T21:00:00.000Z");
 assert.deepEqual(pkgTwo.starterState.evidence,[]);
 assert.deepEqual(pkgTwo.starterState.sessions,[]);
 assert.deepEqual(pkgTwo.starterState.schoolFacts,[]);
+assert.deepEqual(pkgTwo.starterState.studySessions,[]);
+assert.deepEqual(pkgTwo.starterState.schoolExposures,[]);
+assert.deepEqual(pkgTwo.starterState.studyQuests,{});
 assert.deepEqual(pkgTwo.starterState.trackASkillState,{});
 
 const contaminated=structuredClone(pkgTwo);
 contaminated.starterState.evidence.push({id:"should-not-transfer"});
 assert.throws(()=>api.validateTransferPackage(contaminated),/must not include prior evidence/);
+
+const contaminatedStudy=structuredClone(pkgTwo);
+contaminatedStudy.starterState.studySessions.push({id:"prior-study"});
+assert.throws(()=>api.validateTransferPackage(contaminatedStudy),/must not include prior studySessions/);
+
+const contaminatedQuest=structuredClone(pkgTwo);
+contaminatedQuest.starterState.studyQuests.old={progress:{xp:50}};
+assert.throws(()=>api.validateTransferPackage(contaminatedQuest),/must not include study quest history/);
 
 assert.throws(()=>api.createPilotLearnerConfig({learnerId:"",displayName:"X"}),/learnerId is required/);
 assert.throws(()=>api.createPilotLearnerConfig({learnerId:"x",displayName:"",profile:{}}),/displayName is required/);

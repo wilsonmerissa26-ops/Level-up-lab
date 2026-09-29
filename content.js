@@ -166,7 +166,7 @@ window.LEVEL_UP_CONTENT = {
     urgent:{
       id:"ELA.WTMMTM.TEST.2026-09-29",
       subject:"Language Arts",
-      title:"Where the Mountain Meets the Moon — Test Tomorrow",
+      title:"Where the Mountain Meets the Moon — Sept. 29 Test",
       testDate:"2026-09-29",
       priority:"TEST_TOMORROW",
       supportLane:"SCHOOL_SUCCESS",

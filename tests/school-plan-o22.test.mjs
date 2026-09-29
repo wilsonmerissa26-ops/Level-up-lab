@@ -3,12 +3,16 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 
 const contentSource=fs.readFileSync(new URL('../content.js',import.meta.url),'utf8');
+const configFactorySource=fs.readFileSync(new URL('../quest-config.js',import.meta.url),'utf8');
+const michaelQuestConfigSource=fs.readFileSync(new URL('../michael-school-quest-config.js',import.meta.url),'utf8');
 const planSource=fs.readFileSync(new URL('../school-plan.js',import.meta.url),'utf8');
 const app=fs.readFileSync(new URL('../app.js',import.meta.url),'utf8');
 const index=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
 
 const ctx={};ctx.window=ctx;ctx.globalThis=ctx;vm.createContext(ctx);
 vm.runInContext(contentSource,ctx,{filename:'content.js'});
+vm.runInContext(configFactorySource,ctx,{filename:'quest-config.js'});
+vm.runInContext(michaelQuestConfigSource,ctx,{filename:'michael-school-quest-config.js'});
 vm.runInContext(planSource,ctx,{filename:'school-plan.js'});
 const plan=ctx.LEVEL_UP_CONTENT.schoolPlan.urgent;
 assert.equal(plan.testDate,'2026-09-29');
@@ -27,9 +31,9 @@ assert.equal(JSON.stringify(plan.studyBlocks[2].sequence),JSON.stringify([
 assert.match(plan.studyBlocks[2].quickFacts[0][1],/Borrowed Line/);
 const prompts=plan.studyBlocks[3].prompts.map(p=>p.q);
 for(const q of ['What is foreshadowing?','What is abundance?','How do Minli\'s beliefs about abundance change throughout the story?'])assert.ok(prompts.includes(q),q);
-assert.ok(ctx.LEVEL_UP_SCHOOL_PLAN.render(x=>String(x)).includes('TEST TOMORROW'));
+assert.equal(ctx.LEVEL_UP_SCHOOL_PLAN.urgencyLabel(new Date('2026-09-28T12:00:00')),'TEST TOMORROW · SEP 29');
 assert.match(app,/School Plan/);
 assert.match(app,/school-plan/);
 assert.match(app,/readSchoolPlan/);
-assert.match(index,/school-plan\.js\?v=2026-09-28-o\d+/);
+assert.match(index,/school-plan\.js\?v=2026-09-\d+-o[0-9a-z]+/);
 console.log('Patch O.2.2 LA test school plan: PASS');
