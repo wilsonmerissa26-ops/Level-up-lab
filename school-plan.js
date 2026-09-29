@@ -331,7 +331,7 @@
   }
 
   function renderCompanions(escapeHTML,progress){
-    return "<div class=\"game-panel companion-panel\"><div class=\"row between\"><div><div class=\"game-kicker\">TEAM LOADOUT</div><h3>Pick your animal teammate</h3></div><span class=\"pill purple\">Cosmetic teammate</span></div><div class=\"companion-grid\">"+
+    return "<div class=\"game-panel companion-panel\"><div class=\"row between\"><div><div class=\"game-kicker\">TEAM LOADOUT</div><h3>Pick your teammate</h3></div><span class=\"pill purple\">Cosmetic teammate</span></div><div class=\"companion-grid\">"+
       COMPANIONS.map(c=>"<button class=\"companion-btn "+(progress.companion===c.id?"selected":"")+"\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.chooseCompanion('"+c.id+"')\"><span>"+c.emoji+"</span><strong>"+escapeHTML(c.name)+"</strong><small>"+escapeHTML(c.line)+"</small></button>").join("")+
       "</div></div>";
   }
