@@ -5,6 +5,8 @@ import vm from 'node:vm';
 const trackingSource=fs.readFileSync(new URL('../study-tracking.js',import.meta.url),'utf8');
 const appSource=fs.readFileSync(new URL('../app.js',import.meta.url),'utf8');
 const contentSource=fs.readFileSync(new URL('../content.js',import.meta.url),'utf8');
+const configFactorySource=fs.readFileSync(new URL('../quest-config.js',import.meta.url),'utf8');
+const michaelQuestConfigSource=fs.readFileSync(new URL('../michael-school-quest-config.js',import.meta.url),'utf8');
 const engineSource=fs.readFileSync(new URL('../quest-engine.js',import.meta.url),'utf8');
 const planSource=fs.readFileSync(new URL('../school-plan.js',import.meta.url),'utf8');
 const index=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
@@ -83,6 +85,8 @@ pctx.window=pctx;pctx.globalThis=pctx;pctx.location={reload(){}};pctx.MLUL={scho
 vm.createContext(pctx);
 vm.runInContext(contentSource,pctx,{filename:'content.js'});
 vm.runInContext(engineSource,pctx,{filename:'quest-engine.js'});
+vm.runInContext(configFactorySource,pctx,{filename:'quest-config.js'});
+vm.runInContext(michaelQuestConfigSource,pctx,{filename:'michael-school-quest-config.js'});
 vm.runInContext(planSource,pctx,{filename:'school-plan.js'});
 const P=pctx.LEVEL_UP_SCHOOL_PLAN;
 
