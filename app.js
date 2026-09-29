@@ -833,6 +833,7 @@
     if(getRoute()!=="school-plan")return;
     document.getElementById("app").innerHTML=schoolPlanView();
     renderSaveStatus();
+    SCHOOL_PLAN?.bindLiveTimer?.();
     window.scrollTo({top:0,behavior:"smooth"});
   }
 
@@ -1035,11 +1036,55 @@
     document.getElementById("app").innerHTML=shell(`<div class="card"><span class="pill good">${review.window} retrieval complete</span><h2 style="margin-top:12px">${current.lesson.title}</h2><div class="big">${correct}/${total}</div><p class="muted">${review.outcome} · Memory: ${lessonState.memoryStrength}</p><div class="callout"><strong>Still not a mastery declaration.</strong> Delayed retrieval updates memory evidence only. Track A owns canonical mastery transitions.</div><div class="spacer"></div>${corrections}<div class="row"><button class="btn primary" onclick="location.hash='reviews'">Back to Review Queue</button></div></div>`);renderSaveStatus();current=null;
   }
 
+  function formatStudyMs(ms){
+    if(!Number.isFinite(ms))return "—";
+    const sec=Math.max(0,Math.round(ms/1000));
+    if(sec<60)return sec+" sec";
+    const min=Math.floor(sec/60);const rest=sec%60;
+    return min+"m "+rest+"s";
+  }
+
+  function studyResultsSection(){
+    const questId=SCHOOL_PLAN?.QUEST_ID;
+    if(!questId)return "";
+    const quest=state.studyQuests?.[questId]||null;
+    const progress=quest?.progress||null;
+    const worlds=progress?.completed?Object.values(progress.completed).filter(x=>x===true).length:0;
+    const sessions=(state.studySessions||[]).filter(x=>x.questId===questId);
+    const reconstructed=sessions.some(x=>x.status==="RECONSTRUCTED");
+    const liveSessions=sessions.filter(x=>x.status!=="RECONSTRUCTED");
+    const items=liveSessions.flatMap(x=>(x.items||[]).map(item=>({...item,worldId:x.worldId,sessionId:x.id})));
+    const firstTryKnown=items.filter(x=>typeof x.firstAnswerCorrect==="boolean");
+    const firstTryCorrect=firstTryKnown.filter(x=>x.firstAnswerCorrect===true).length;
+    const retries=items.filter(x=>Number.isInteger(x.attemptCount)&&x.attemptCount>1).length;
+    const firstTimes=items.map(x=>x.firstResponseMs).filter(Number.isFinite);
+    const avgFirst=firstTimes.length?Math.round(firstTimes.reduce((a,b)=>a+b,0)/firstTimes.length):null;
+    const readAloud=items.reduce((n,x)=>n+(Number.isInteger(x.readAloudCount)?x.readAloudCount:0),0);
+    const hints=items.reduce((n,x)=>n+(Number.isInteger(x.hintCount)?x.hintCount:0),0);
+    const rows=items.slice().reverse().slice(0,30).map(x=>{
+      const first=typeof x.firstAnswerCorrect==="boolean"?(x.firstAnswerCorrect?"✓ First try":"Needed retry"):(x.selfReported?"Self-check":"—");
+      const attempts=Number.isInteger(x.attemptCount)?x.attemptCount:"—";
+      return `<tr><td>${escapeHTML(x.worldId||"—")}</td><td>${escapeHTML(x.label||x.itemId)}</td><td>${escapeHTML(first)}</td><td>${attempts}</td><td>${formatStudyMs(x.firstResponseMs)}</td><td>${formatStudyMs(x.totalResponseMs)}</td><td>${x.readAloudCount||0}</td><td>${x.hintCount||0}</td></tr>`;
+    }).join("");
+
+    return `<div class="card c12"><div class="row between"><div><h3>School Quest study results</h3><p class="small muted">Study analytics show how Michael worked through practice. They are not formal diagnostic evidence.</p></div><span class="pill info">${worlds}/5 worlds cleared</span></div>
+      ${reconstructed?`<div class="callout warn small"><strong>Earlier progress preserved.</strong> Michael's pre-tracking completions were carried forward from the original game record. We know what he completed, but the old build did not record first-try accuracy, attempts, or response time, so those values are intentionally left unknown.</div>`:""}
+      <div class="grid">
+        <div class="card c4"><div class="kpi"><div class="t">First-try correct</div><div class="n">${firstTryKnown.length?firstTryCorrect+"/"+firstTryKnown.length:"—"}</div></div></div>
+        <div class="card c4"><div class="kpi"><div class="t">Questions needing retry</div><div class="n">${items.length?retries:"—"}</div></div></div>
+        <div class="card c4"><div class="kpi"><div class="t">Average first response</div><div class="n">${avgFirst==null?"—":formatStudyMs(avgFirst)}</div></div></div>
+      </div>
+      <p class="tiny muted">Read-aloud uses: ${readAloud} · Hint opens: ${hints} · Detailed tracking begins with Patch O.2.5b.</p>
+      ${rows?`<div class="tablewrap"><table><thead><tr><th>World</th><th>Question / target</th><th>First response</th><th>Attempts</th><th>First response time</th><th>Total time</th><th>Read aloud</th><th>Hints</th></tr></thead><tbody>${rows}</tbody></table></div>`:`<p class="muted small">No detailed post-upgrade study attempts yet.</p>`}
+    </div>`;
+  }
+
   function parentView(){
     const science=CONTENT.science.map(l=>skillRow(l)).join("");const math=CONTENT.math.map(l=>skillRow(l)).join("");
     const trackARows=TRACK_A_DIAGNOSTIC?TRACK_A_DIAGNOSTIC.SKILLS.map(s=>{const r=trackASkillRecord(s.id);const last=r.lastMaintenance?.result||r.lastMasteryCheck?.result||r.lastVerification?.result||r.lastRepair?.result||r.lastDiagnostic?.result||"—";return `<tr><td>${escapeHTML(s.title)}<div class="tiny muted">${escapeHTML(s.id)}</div></td><td>${escapeHTML(r.canonicalState||"UNKNOWN")}</td><td>${escapeHTML(r.memoryStrength||"FRAGILE")}</td><td>${escapeHTML(last)}</td><td>${trackAPriorInstruction(s.id)?"PRIOR_INSTRUCTION / not cold":"—"}</td></tr>`}).join(""):"";
     const formalCount=state.evidence.filter(e=>e.evidence_class==="FORMAL_CONTROLLED").length;const informalCount=state.evidence.filter(e=>e.evidence_class==="INFORMAL_TRACK_B").length;
     return shell(`<div class="grid"><div class="card c8"><h2>Parent View</h2><p class="muted">Michael's learning record separates school facts, teaching evidence, controlled evidence, lifecycle state, and memory strength. No one score gets to masquerade as the whole story.</p></div><div class="card c4"><div class="kpi"><div class="t">Track B evidence</div><div class="n">${informalCount}</div></div><div class="spacer"></div><div class="kpi"><div class="t">Track A evidence</div><div class="n">${formalCount}</div></div></div>
+      ${studyResultsSection()}
       <div class="card c12"><h3>Physical Science skill map</h3><div class="tablewrap"><table><thead><tr><th>Skill</th><th>Status</th><th>Immediate score</th><th>Memory</th><th>Baseline note</th></tr></thead><tbody>${science}</tbody></table></div></div>
       <div class="card c12"><h3>Math bridge skill map</h3><div class="tablewrap"><table><thead><tr><th>Skill</th><th>Status</th><th>Immediate score</th><th>Memory</th><th>Baseline note</th></tr></thead><tbody>${math}</tbody></table></div></div>
       <div class="card c12"><h3>Track A controlled math map</h3><div class="tablewrap"><table><thead><tr><th>Skill</th><th>Canonical state</th><th>Memory</th><th>Last diagnostic</th><th>Baseline note</th></tr></thead><tbody>${trackARows}</tbody></table></div></div>
@@ -1720,7 +1765,7 @@
     if(storageRecoveryIssue?.type==="MIRROR_AHEAD"){document.getElementById("app").innerHTML=mirrorAheadView();return}
     if(storageRecoveryIssue?.type==="PRIMARY_MISSING_MIRROR_PRESENT"){document.getElementById("app").innerHTML=primaryMissingView();return}
     const route=getRoute();const view={dashboard,"school-plan":schoolPlanView,"track-b":trackB,parent:parentView,evidence:evidenceView,reviews:reviewsView,"track-a":trackA,backup:backupView}[route]||dashboard;
-    document.getElementById("app").innerHTML=view();renderSaveStatus();if(route==="backup")checkPersistenceUI();
+    document.getElementById("app").innerHTML=view();renderSaveStatus();if(route==="backup")checkPersistenceUI();if(route==="school-plan")SCHOOL_PLAN?.bindLiveTimer?.();
   }
 
   async function init(){
