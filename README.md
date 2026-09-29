@@ -44,6 +44,7 @@ Track B is implemented first so Michael can receive immediate school-recovery in
 - Patch O.2.5a hardens School Quest data safety: audited runtime gating, durable learner-record storage, portable backup inclusion, collision-safe learner keys, game-schema refusal for future versions, reward idempotency, queued chests, and verified legacy migration
 - Patch O.2.5b adds School Quest study analytics and the exposure boundary: per-question stopwatch data, attempts, first-try status, read-aloud and hint use, Parent View study results, PRIOR_INSTRUCTION exposure logging without diagnostic scoring, and honest reconstruction of pre-tracking completions
 - Patch O.2.5c extracts learner/theme/game configuration from the reusable quest engine, makes urgent School Success routes recommended instead of hard-locked, exposes a generic Level-Up app namespace, keeps install-shell metadata learner-neutral, and adds a same-origin synthetic Learner 2 isolation gate
+- Full Grade 8 Physical Science curriculum foundation maps all Georgia S8P1-S8P5 elements into teachable targets across Matter, Energy, Force/Motion, Waves, and Gravity/Electricity/Magnetism, while preserving Michael's existing Energy/Heat work as prior instruction and school-specific extensions
 
 ## Current storage decision
 
