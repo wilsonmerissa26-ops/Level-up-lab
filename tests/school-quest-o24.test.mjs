@@ -26,7 +26,7 @@ const api=ctx.LEVEL_UP_SCHOOL_PLAN;
 const render=()=>api.render(x=>String(x));
 
 let hub=render();
-for(const text of ['Moon Mountain Challenge','Pick your animal teammate','WORLD MAP','Story Safari','Grammar Zoo','Dragon Obby','Review Boss Battle','Final Moon Boss','Practice mode:'])assert.ok(hub.includes(text),text);
+for(const text of ['Moon Mountain Challenge','Pick your teammate','WORLD MAP','Story Safari','Grammar Zoo','Dragon Obby','Review Boss Battle','Final Moon Boss','Practice mode:'])assert.ok(hub.includes(text),text);
 for(const token of ['LVL 1','🪙 0','💎 0','❤️❤️❤️'])assert.ok(hub.includes(token),token);
 assert.match(hub,/RECOMMENDED/,'School Success highlights a recommended route');
 assert.doesNotMatch(hub,/CLEAR PRIOR WORLD/,'urgent School Success worlds are not hard locked');
