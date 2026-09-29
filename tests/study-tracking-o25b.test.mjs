@@ -72,7 +72,7 @@ assert.equal(tracked.readAloudCount,1);
 assert.equal(tracked.hintCount,1);
 assert.deepEqual(
   JSON.parse(JSON.stringify(T.context(studySessions,meta.questId))),
-  {sessionId:session.id,worldId:'story',itemId:item.itemId,startedAt:'2026-09-29T00:00:00.000Z'}
+  {sessionId:session.id,worldId:'story',itemId:item.itemId,startedAt:'2026-09-29T00:00:00.000Z',completedAt:'2026-09-29T00:00:25.000Z',totalResponseMs:25000}
 );
 T.endSession(session,{status:'COMPLETED',completedAt:'2026-09-29T00:00:30.000Z'});
 assert.equal(session.status,'COMPLETED');
