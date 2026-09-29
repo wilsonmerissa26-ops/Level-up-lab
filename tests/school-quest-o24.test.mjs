@@ -38,7 +38,7 @@ assert.ok(story.includes('answer-block-grid'));
 
 const first=ctx.LEVEL_UP_CONTENT.schoolPlan.urgent.studyBlocks[0].terms[0][0];
 await api.chooseTerm('story',0,first);
-story=render();assert.match(story,/CHECKPOINT CLEARED/);assert.match(story,/+10 XP/);
+story=render();assert.match(story,/CHECKPOINT CLEARED/);assert.match(story,/\+10 XP/);
 assert.equal(durableProgress.xp,10);assert.equal(durableProgress.coins,3);
 
 await api.exitWorld();
