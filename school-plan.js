@@ -1,6 +1,10 @@
 (() => {
-  const GAME_KEY="MLUL_WTMMTM_SCHOOL_QUEST_V1";
+  const LEGACY_GAME_KEY="MLUL_WTMMTM_SCHOOL_QUEST_V1";
+  const QUEST_ID="ELA.WTMMTM.TEST.2026-09-29";
+  const CONTENT_VERSION=1;
   const QUEST=globalThis.LEVEL_UP_QUEST_ENGINE;
+  let busy=false;
+  let progressLoadError=null;
   const WORLD_ORDER=Object.freeze(["story","grammar","dragon","boss","final"]);
   const WORLD_META=Object.freeze({
     story:{emoji:"🦊",title:"Story Safari",subtitle:"Storytelling, fantasy, culture, and animal symbolism",badge:"Story Safari Scout",reward:"Safari Crate"},
@@ -18,33 +22,96 @@
 
   function plan(){ return globalThis.LEVEL_UP_CONTENT?.schoolPlan?.urgent||null; }
 
+  function dateOnly(value){
+    const d=new Date(value+"T00:00:00");
+    return Number.isNaN(d.getTime())?null:d;
+  }
+
+  function urgencyLabel(nowDate=new Date()){
+    const p=plan();const target=dateOnly(p?.testDate||"");
+    if(!target)return "SCHOOL QUEST";
+    const today=new Date(nowDate.getFullYear(),nowDate.getMonth(),nowDate.getDate());
+    const diff=Math.round((target-today)/86400000);
+    const dateLabel=target.toLocaleDateString("en-US",{month:"short",day:"numeric"}).toUpperCase();
+    if(diff===0)return "TEST TODAY · "+dateLabel;
+    if(diff===1)return "TEST TOMORROW · "+dateLabel;
+    if(diff>1)return "TEST IN "+diff+" DAYS · "+dateLabel;
+    return "TEST COMPLETED · "+dateLabel;
+  }
+
   function freshProgress(){
     const base=QUEST?QUEST.freshProgress({worldOrder:WORLD_ORDER,companion:"fox",maxHearts:3}):{
-      version:2,companion:"fox",xp:0,coins:0,gems:0,streak:0,maxHearts:3,hearts:3,respawns:0,
+      version:3,companion:"fox",xp:0,coins:0,gems:0,streak:0,maxHearts:3,hearts:3,respawns:0,
       activeWorld:null,index:0,feedback:null,completed:{story:false,grammar:false,dragon:false,boss:false,final:false},
-      bossDone:{},finalDone:{},badges:[],openedChests:[],pendingReward:null
+      bossDone:{},finalDone:{},badges:[],openedChests:[],pendingRewards:[],rewardedItems:{}
     };
     base.answered={story:{},grammar:{},dragon:{}};
     return base;
   }
 
-  function loadProgress(){
-    try{
-      const raw=globalThis.localStorage?.getItem(GAME_KEY);
-      if(!raw)return freshProgress();
-      const saved=JSON.parse(raw);
-      const normalized=QUEST?QUEST.normalizeProgress(saved,{worldOrder:WORLD_ORDER,companion:"fox",maxHearts:3}):{...freshProgress(),...saved};
-      normalized.answered={
-        story:{...(saved?.answered?.story||{})},
-        grammar:{...(saved?.answered?.grammar||{})},
-        dragon:{...(saved?.answered?.dragon||{})}
-      };
-      return normalized;
-    }catch(_){return freshProgress()}
+  function normalizeGameProgress(saved){
+    const normalized=QUEST?QUEST.normalizeProgress(saved,{worldOrder:WORLD_ORDER,companion:"fox",maxHearts:3}):{...freshProgress(),...(saved||{})};
+    normalized.answered={
+      story:{...(saved?.answered?.story||{})},
+      grammar:{...(saved?.answered?.grammar||{})},
+      dragon:{...(saved?.answered?.dragon||{})}
+    };
+    if(QUEST?.reconcileWorldRewards)QUEST.reconcileWorldRewards(normalized,Object.fromEntries(WORLD_ORDER.map(id=>[id,rewardForWorld(id)])));
+    const p=plan();
+    if(normalized.activeWorld){
+      const count=worldCount(normalized,normalized.activeWorld,p);
+      if(!count.total || normalized.index>=count.total){normalized.index=0;normalized.feedback=null}
+    }
+    return normalized;
   }
 
-  function saveProgress(progress){
-    try{globalThis.localStorage?.setItem(GAME_KEY,JSON.stringify(progress))}catch(_){}
+  function readLegacyRaw(){
+    try{
+      const raw=globalThis.localStorage?.getItem(LEGACY_GAME_KEY);
+      return raw?JSON.parse(raw):null;
+    }catch(_){return null}
+  }
+
+  function legacyMigrationCandidate(){
+    const saved=readLegacyRaw();
+    if(!saved)return null;
+    try{
+      progressLoadError=null;
+      return {questId:QUEST_ID,contentVersion:CONTENT_VERSION,legacyKey:LEGACY_GAME_KEY,progress:normalizeGameProgress(saved)};
+    }catch(err){
+      progressLoadError=err;
+      return null;
+    }
+  }
+
+  function loadProgress(){
+    try{
+      const saved=globalThis.MLUL?.getSchoolQuestProgress?.(QUEST_ID) || readLegacyRaw();
+      if(!saved)return freshProgress();
+      progressLoadError=null;
+      return normalizeGameProgress(saved);
+    }catch(err){
+      progressLoadError=err;
+      return freshProgress();
+    }
+  }
+
+  async function saveProgress(progress,reason="School Quest progress"){
+    const access=globalThis.MLUL?.schoolQuestAccess?.();
+    if(access && !access.allowed)return false;
+    if(!globalThis.MLUL?.saveSchoolQuestProgress)return false;
+    return !!(await globalThis.MLUL.saveSchoolQuestProgress({questId:QUEST_ID,contentVersion:CONTENT_VERSION,progress,reason}));
+  }
+
+  function actionAllowed(){
+    const access=globalThis.MLUL?.schoolQuestAccess?.();
+    return !busy && (!access || access.allowed===true);
+  }
+
+  async function runAction(fn){
+    if(!actionAllowed())return false;
+    busy=true;
+    try{return await fn()}finally{busy=false}
   }
 
   function refresh(){
@@ -132,7 +199,7 @@
   function topBar(escapeHTML,progress,{compact=false}={}){
     const pet=companion(progress);
     return "<div class=\"game-hud "+(compact?"compact":"")+"\">"+
-      "<div class=\"hud-brand\"><span class=\"pill warn\">TEST TOMORROW · SEPT. 29</span><div class=\"hud-title\">🏔️ Moon Mountain</div><div class=\"tiny muted\">School Quest · teacher material</div></div>"+
+      "<div class=\"hud-brand\"><span class=\"pill warn\">"+escapeHTML(urgencyLabel())+"</span><div class=\"hud-title\">🏔️ Moon Mountain</div><div class=\"tiny muted\">School Quest · teacher material</div></div>"+
       "<div class=\"hud-center\">"+
         "<span class=\"hud-chip level-chip\">LVL "+levelNumber(progress)+"</span>"+
         "<span class=\"hud-chip\">⭐ "+progress.xp+" XP</span>"+
@@ -152,7 +219,7 @@
   }
 
   function rewardBanner(escapeHTML,progress){
-    const reward=progress.pendingReward;
+    const reward=progress.pendingRewards?.[0]||null;
     if(!reward)return "";
     const meta=WORLD_META[reward.worldId]||{};
     return "<div class=\"reward-drop\"><div class=\"reward-chest\">🎁</div><div class=\"grow\"><div class=\"game-kicker\">WORLD DROP</div><h3>"+escapeHTML(meta.reward||"Treasure Chest")+" unlocked!</h3><p class=\"small muted\">Clear reward: "+(reward.chestCoins||0)+" coins + "+(reward.chestGems||0)+" moon gem"+((reward.chestGems||0)===1?"":"s")+(reward.badge?" + "+escapeHTML(reward.badge)+" badge":"")+".</p></div><button class=\"btn game-cta\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.openChest()\">OPEN CHEST</button></div>";
@@ -178,7 +245,7 @@
     const allDone=WORLD_ORDER.every(id=>progress.completed[id]===true);
     return "<div class=\"game-shell hub-stage\">"+
       topBar(escapeHTML,progress)+
-      "<div class=\"spawn-banner\"><div><div class=\"game-kicker\">SPAWN POINT</div><h1>Moon Mountain Challenge</h1><p>Clear five worlds before tomorrow's test. Every world uses Michael's teacher material.</p></div><div class=\"spawn-avatar\">"+companion(progress).emoji+"</div></div>"+
+      "<div class=\"spawn-banner\"><div><div class=\"game-kicker\">SPAWN POINT</div><h1>Moon Mountain Challenge</h1><p>Clear five worlds for the Sept. 29 test. Every world uses Michael's teacher material.</p></div><div class=\"spawn-avatar\">"+companion(progress).emoji+"</div></div>"+
       rewardBanner(escapeHTML,progress)+
       "<div class=\"game-rule\"><strong>Practice mode:</strong> wrong answers can cost a temporary heart, but never delete progress or points. Hearts respawn automatically. Game XP is practice progress only, not a diagnostic score, and does not become formal diagnostic evidence.</div>"+
       renderCompanions(escapeHTML,progress)+
@@ -285,7 +352,7 @@
         blocks+="<div class=\"card c12\"><span class=\"pill info\">"+block.minutes+" min</span><h3 style=\"margin-top:8px\">"+escapeHTML(block.title)+"</h3>"+prompts+"</div>";
       }
     }
-    return "<div class=\"grid\"><div class=\"card c12\"><div class=\"row between\"><div><span class=\"pill warn\">TEST TOMORROW · SEPT. 29</span><h2 style=\"margin-top:10px\">"+escapeHTML(p.title)+"</h2><p class=\"muted\">Teacher-file study guide · School Success lane</p></div><button class=\"btn primary\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.closeGuide()\">🎮 Back to game</button></div></div>"+blocks+"</div>";
+    return "<div class=\"grid\"><div class=\"card c12\"><div class=\"row between\"><div><span class=\"pill warn\">"+escapeHTML(urgencyLabel())+"</span><h2 style=\"margin-top:10px\">"+escapeHTML(p.title)+"</h2><p class=\"muted\">Teacher-file study guide · School Success lane</p></div><button class=\"btn primary\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.closeGuide()\">🎮 Back to game</button></div></div>"+blocks+"</div>";
   }
 
   let guideOpen=false;
@@ -295,6 +362,9 @@
     if(!p)return "<div class=\"card\"><h2>School Plan</h2><p class=\"muted\">No urgent school items are loaded.</p></div>";
     if(guideOpen)return renderGuide(escapeHTML,p);
     const progress=loadProgress();
+    if(progressLoadError?.code==="FUTURE_GAME_VERSION"){
+      return "<div class=\"card\"><span class=\"pill warn\">UPDATE REQUIRED</span><h2 style=\"margin-top:10px\">School Quest progress is newer than this build</h2><p class=\"muted\">Level-Up refused to downgrade or overwrite the saved game record. Update the app before continuing.</p></div>";
+    }
     if(progress.activeWorld==="story"||progress.activeWorld==="grammar")return renderTermWorld(escapeHTML,progress,p,progress.activeWorld);
     if(progress.activeWorld==="dragon")return renderDragonWorld(escapeHTML,progress,p);
     if(progress.activeWorld==="boss")return renderBoss(escapeHTML,progress,p);
@@ -302,10 +372,14 @@
     return renderHub(escapeHTML,progress,p);
   }
 
-  function chooseCompanion(id){
-    const progress=loadProgress();
-    if(COMPANIONS.some(x=>x.id===id)){progress.companion=id;saveProgress(progress)}
-    refresh();
+  async function chooseCompanion(id){
+    await runAction(async()=>{
+      const progress=loadProgress();
+      if(!COMPANIONS.some(x=>x.id===id))return false;
+      progress.companion=id;
+      if(!await saveProgress(progress,"School Quest companion"))return false;
+      refresh();return true;
+    });
   }
 
   function rewardForWorld(id){
@@ -323,139 +397,165 @@
     if(QUEST)return QUEST.completeWorld(progress,id,rewardForWorld(id));
     const first=progress.completed[id]!==true;
     progress.completed[id]=true;
-    if(first)progress.pendingReward={worldId:id,...rewardForWorld(id)};
+    progress.pendingRewards=progress.pendingRewards||[];
+    if(!progress.openedChests?.includes(id)&&!progress.pendingRewards.some(x=>x.worldId===id)){
+      progress.pendingRewards.push({worldId:id,...rewardForWorld(id)});
+    }
     return {progress,first};
   }
 
-  function openChest(){
-    const progress=loadProgress();
-    if(!progress.pendingReward)return;
-    if(QUEST)QUEST.openPendingReward(progress);
-    else{
-      const reward=progress.pendingReward;
-      progress.coins=(progress.coins||0)+(reward.chestCoins||0);
-      progress.gems=(progress.gems||0)+(reward.chestGems||0);
-      progress.openedChests=[...(progress.openedChests||[]),reward.worldId];
-      progress.pendingReward=null;
-    }
-    saveProgress(progress);refresh();
-  }
-
-  function startWorld(id){
-    const progress=loadProgress();
-    if(!WORLD_ORDER.includes(id))return;
-    if(!worldUnlocked(progress,id))return;
-    progress.activeWorld=id;
-    progress.feedback=null;
-    progress.hearts=progress.maxHearts||3;
-    if(id==="story"||id==="grammar"||id==="dragon"){
-      const map=id==="dragon"?progress.answered.dragon:progress.answered[id];
-      let next=0;
-      while(map?.[next]===true)next++;
-      const total=id==="dragon"?(plan()?.studyBlocks?.[2]?.sequence||[]).length:(flattenTermWorlds(plan())[id]||[]).length;
-      progress.index=next>=total?0:next;
-    }else if(id==="boss"){
-      const total=plan()?.studyBlocks?.[3]?.prompts?.length||0;
-      let next=0;while(progress.bossDone?.[next]&&next<total)next++;
-      progress.index=next>=total?0:next;
-    }else progress.index=0;
-    saveProgress(progress);refresh();
-  }
-
-  function exitWorld(){
-    const progress=loadProgress();
-    progress.activeWorld=null;progress.index=0;progress.feedback=null;progress.hearts=progress.maxHearts||3;
-    saveProgress(progress);refresh();
-  }
-
-  function chooseTerm(id,index,selected){
-    const p=plan();const items=flattenTermWorlds(p)[id]||[];
-    const progress=loadProgress();
-    if(progress.activeWorld!==id||index!==progress.index||!items[index])return;
-    const correct=selected===items[index][0];
-    if(correct){
-      if(progress.answered[id]?.[index]!==true){
-        if(QUEST)QUEST.awardCorrect(progress,{xp:10,coins:3});
-        else{progress.xp+=10;progress.coins=(progress.coins||0)+3;progress.streak+=1}
+  async function openChest(){
+    await runAction(async()=>{
+      const progress=loadProgress();
+      if(!progress.pendingRewards?.length)return false;
+      if(QUEST)QUEST.openPendingReward(progress);
+      else{
+        const reward=progress.pendingRewards.shift();
+        progress.coins=(progress.coins||0)+(reward.chestCoins||0);
+        progress.gems=(progress.gems||0)+(reward.chestGems||0);
+        progress.openedChests=[...(progress.openedChests||[]),reward.worldId];
       }
-      progress.answered[id][index]=true;
-      progress.feedback={correct:true,message:"Platform unlocked! "+items[index][0]+" · +10 XP · +3 coins"};
-    }else{
-      const miss=QUEST?QUEST.registerMiss(progress):{respawned:false};
-      if(!QUEST){progress.streak=0;progress.hearts=Math.max(1,(progress.hearts||3)-1)}
-      progress.feedback={
-        correct:false,
-        message:miss.respawned?"Respawn! Hearts refilled. Read the clue and jump again.":"That block broke. Read the clue again and choose another platform."
-      };
-    }
-    saveProgress(progress);refresh();
+      if(!await saveProgress(progress,"School Quest open chest"))return false;
+      refresh();return true;
+    });
   }
 
-  function chooseDragon(index,selected){
-    const p=plan();const seq=p?.studyBlocks?.[2]?.sequence||[];
-    const progress=loadProgress();
-    if(progress.activeWorld!=="dragon"||index!==progress.index||!seq[index])return;
-    const correct=selected===seq[index];
-    if(correct){
-      if(progress.answered.dragon?.[index]!==true){
-        if(QUEST)QUEST.awardCorrect(progress,{xp:15,coins:5});
-        else{progress.xp+=15;progress.coins=(progress.coins||0)+5;progress.streak+=1}
+  async function startWorld(id){
+    await runAction(async()=>{
+      const progress=loadProgress();
+      if(!WORLD_ORDER.includes(id)||!worldUnlocked(progress,id))return false;
+      progress.activeWorld=id;
+      progress.feedback=null;
+      progress.hearts=progress.maxHearts||3;
+      if(id==="story"||id==="grammar"||id==="dragon"){
+        const map=id==="dragon"?progress.answered.dragon:progress.answered[id];
+        let next=0;
+        while(map?.[next]===true)next++;
+        const total=id==="dragon"?(plan()?.studyBlocks?.[2]?.sequence||[]).length:(flattenTermWorlds(plan())[id]||[]).length;
+        progress.index=next>=total?0:next;
+      }else if(id==="boss"){
+        const total=plan()?.studyBlocks?.[3]?.prompts?.length||0;
+        let next=0;while(progress.bossDone?.[next]&&next<total)next++;
+        progress.index=next>=total?0:next;
+      }else progress.index=0;
+      if(!await saveProgress(progress,"School Quest start world"))return false;
+      refresh();return true;
+    });
+  }
+
+  async function exitWorld(){
+    await runAction(async()=>{
+      const progress=loadProgress();
+      progress.activeWorld=null;progress.index=0;progress.feedback=null;progress.hearts=progress.maxHearts||3;
+      if(!await saveProgress(progress,"School Quest exit world"))return false;
+      refresh();return true;
+    });
+  }
+
+  async function chooseTerm(id,index,selected){
+    await runAction(async()=>{
+      const p=plan();const items=flattenTermWorlds(p)[id]||[];
+      const progress=loadProgress();
+      if(progress.activeWorld!==id||index!==progress.index||!items[index])return false;
+      const correct=selected===items[index][0];
+      if(correct){
+        const itemId=QUEST_ID+":"+id+":"+index;
+        const result=QUEST?QUEST.awardCorrect(progress,{itemId,xp:10,coins:3}):{awarded:progress.answered[id]?.[index]!==true};
+        if(!QUEST&&result.awarded){progress.xp+=10;progress.coins=(progress.coins||0)+3;progress.streak+=1}
+        progress.answered[id][index]=true;
+        progress.feedback={correct:true,message:"Platform unlocked! "+items[index][0]+" · "+(result.awarded?"+10 XP · +3 coins":"already cleared")};
+      }else{
+        const miss=QUEST?QUEST.registerMiss(progress):{respawned:false};
+        if(!QUEST){progress.streak=0;progress.hearts=Math.max(1,(progress.hearts||3)-1)}
+        progress.feedback={
+          correct:false,
+          message:miss.respawned?"Respawn! Hearts refilled. Read the clue and jump again.":"That block broke. Read the clue again and choose another platform."
+        };
       }
-      progress.answered.dragon[index]=true;
-      progress.feedback={correct:true,message:"Checkpoint "+(index+1)+" landed! +15 XP · +5 coins"};
-    }else{
-      const miss=QUEST?QUEST.registerMiss(progress):{respawned:false};
-      if(!QUEST){progress.streak=0;progress.hearts=Math.max(1,(progress.hearts||3)-1)}
-      progress.feedback={correct:false,message:miss.respawned?"You fell, respawned, and your hearts refilled. Try the path again.":"Wrong platform. That event belongs somewhere else in the obby."};
-    }
-    saveProgress(progress);refresh();
+      if(!await saveProgress(progress,"School Quest term answer"))return false;
+      refresh();return true;
+    });
   }
 
-  function next(){
-    const p=plan();const progress=loadProgress();const id=progress.activeWorld;
-    progress.feedback=null;
-    let total=0;
-    if(id==="story"||id==="grammar")total=(flattenTermWorlds(p)[id]||[]).length;
-    else if(id==="dragon")total=p?.studyBlocks?.[2]?.sequence?.length||0;
-    else if(id==="boss")total=p?.studyBlocks?.[3]?.prompts?.length||0;
-    if(id==="boss"&&!progress.bossDone?.[progress.index])return;
-    if(progress.index+1>=total){
-      completeWorld(progress,id);
-      progress.activeWorld=null;progress.index=0;progress.hearts=progress.maxHearts||3;
-    }else progress.index+=1;
-    saveProgress(progress);refresh();
+  async function chooseDragon(index,selected){
+    await runAction(async()=>{
+      const p=plan();const seq=p?.studyBlocks?.[2]?.sequence||[];
+      const progress=loadProgress();
+      if(progress.activeWorld!=="dragon"||index!==progress.index||!seq[index])return false;
+      const correct=selected===seq[index];
+      if(correct){
+        const itemId=QUEST_ID+":dragon:"+index;
+        const result=QUEST?QUEST.awardCorrect(progress,{itemId,xp:15,coins:5}):{awarded:progress.answered.dragon?.[index]!==true};
+        if(!QUEST&&result.awarded){progress.xp+=15;progress.coins=(progress.coins||0)+5;progress.streak+=1}
+        progress.answered.dragon[index]=true;
+        progress.feedback={correct:true,message:"Checkpoint "+(index+1)+" landed! "+(result.awarded?"+15 XP · +5 coins":"already cleared")};
+      }else{
+        const miss=QUEST?QUEST.registerMiss(progress):{respawned:false};
+        if(!QUEST){progress.streak=0;progress.hearts=Math.max(1,(progress.hearts||3)-1)}
+        progress.feedback={correct:false,message:miss.respawned?"You fell, respawned, and your hearts refilled. Try the path again.":"Wrong platform. That event belongs somewhere else in the obby."};
+      }
+      if(!await saveProgress(progress,"School Quest Dragon answer"))return false;
+      refresh();return true;
+    });
   }
 
-  function markBossDone(index){
-    const p=plan();const prompts=p?.studyBlocks?.[3]?.prompts||[];
-    const progress=loadProgress();
-    if(progress.activeWorld!=="boss"||index!==progress.index||!prompts[index])return;
-    if(!progress.bossDone[index]){
-      progress.bossDone[index]=true;
-      if(QUEST)QUEST.awardCorrect(progress,{xp:8,coins:4});
-      else{progress.xp+=8;progress.coins=(progress.coins||0)+4;progress.streak+=1}
-    }
-    saveProgress(progress);refresh();
+  async function next(){
+    await runAction(async()=>{
+      const p=plan();const progress=loadProgress();const id=progress.activeWorld;
+      progress.feedback=null;
+      let total=0;
+      if(id==="story"||id==="grammar")total=(flattenTermWorlds(p)[id]||[]).length;
+      else if(id==="dragon")total=p?.studyBlocks?.[2]?.sequence?.length||0;
+      else if(id==="boss")total=p?.studyBlocks?.[3]?.prompts?.length||0;
+      if(id==="boss"&&!progress.bossDone?.[progress.index])return false;
+      if(progress.index+1>=total){
+        completeWorld(progress,id);
+        progress.activeWorld=null;progress.index=0;progress.hearts=progress.maxHearts||3;
+      }else progress.index+=1;
+      if(!await saveProgress(progress,"School Quest next checkpoint"))return false;
+      refresh();return true;
+    });
   }
 
-  function toggleFinal(index){
-    const p=plan();const finals=p?.finalCheck||[];const progress=loadProgress();
-    if(progress.activeWorld!=="final"||!finals[index]||progress.finalDone[index])return;
-    progress.finalDone[index]=true;
-    if(QUEST)QUEST.awardCorrect(progress,{xp:5,coins:2});
-    else{progress.xp+=5;progress.coins=(progress.coins||0)+2;progress.streak+=1}
-    const done=Object.keys(progress.finalDone).filter(k=>progress.finalDone[k]).length;
-    if(done>=finals.length)completeWorld(progress,"final");
-    saveProgress(progress);refresh();
+  async function markBossDone(index){
+    await runAction(async()=>{
+      const p=plan();const prompts=p?.studyBlocks?.[3]?.prompts||[];
+      const progress=loadProgress();
+      if(progress.activeWorld!=="boss"||index!==progress.index||!prompts[index])return false;
+      if(!progress.bossDone[index]){
+        progress.bossDone[index]=true;
+        if(QUEST)QUEST.awardCorrect(progress,{itemId:QUEST_ID+":boss:"+index,xp:8,coins:4});
+        else{progress.xp+=8;progress.coins=(progress.coins||0)+4;progress.streak+=1}
+      }
+      if(!await saveProgress(progress,"School Quest boss response"))return false;
+      refresh();return true;
+    });
+  }
+
+  async function toggleFinal(index){
+    await runAction(async()=>{
+      const p=plan();const finals=p.finalCheck||[];const progress=loadProgress();
+      if(progress.activeWorld!=="final"||!finals[index]||progress.finalDone[index])return false;
+      progress.finalDone[index]=true;
+      if(QUEST)QUEST.awardCorrect(progress,{itemId:QUEST_ID+":final:"+index,xp:5,coins:2});
+      else{progress.xp+=5;progress.coins=(progress.coins||0)+2;progress.streak+=1}
+      const done=Object.keys(progress.finalDone).filter(k=>progress.finalDone[k]).length;
+      if(done>=finals.length)completeWorld(progress,"final");
+      if(!await saveProgress(progress,"School Quest final check"))return false;
+      refresh();return true;
+    });
   }
 
   function openGuide(){guideOpen=true;refresh()}
   function closeGuide(){guideOpen=false;refresh()}
 
-  function resetGame(){
+  async function resetGame(){
     if(globalThis.confirm && !globalThis.confirm("Reset Moon Mountain game progress? The study content will stay."))return;
-    try{globalThis.localStorage?.removeItem(GAME_KEY)}catch(_){}
-    refresh();
+    await runAction(async()=>{
+      const progress=freshProgress();
+      if(!await saveProgress(progress,"School Quest reset"))return false;
+      refresh();return true;
+    });
   }
 
   function challengeText(){
@@ -495,9 +595,10 @@
   }
 
   const api={
-    render,readText,readChallenge,chooseCompanion,startWorld,exitWorld,chooseTerm,chooseDragon,next,
+    QUEST_ID,CONTENT_VERSION,LEGACY_GAME_KEY,render,readText,readChallenge,urgencyLabel,legacyMigrationCandidate,
+    chooseCompanion,startWorld,exitWorld,chooseTerm,chooseDragon,next,
     markBossDone,toggleFinal,openChest,openGuide,closeGuide,resetGame,
-    __test:{freshProgress,flattenTermWorlds,choicesFor,dragonChoices,rankFor,worldCount,worldUnlocked,rewardForWorld,bossHealth}
+    __test:{freshProgress,normalizeGameProgress,flattenTermWorlds,choicesFor,dragonChoices,rankFor,worldCount,worldUnlocked,rewardForWorld,bossHealth}
   };
   if(typeof window!=="undefined")window.LEVEL_UP_SCHOOL_PLAN=api;
   if(typeof globalThis!=="undefined")globalThis.LEVEL_UP_SCHOOL_PLAN=api;
