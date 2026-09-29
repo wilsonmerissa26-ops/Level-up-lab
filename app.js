@@ -59,6 +59,8 @@
     sessions:[],
     reviewSchedule:[],
     studyQuests:{},
+    studySessions:[],
+    schoolExposures:[],
     schoolFacts:[
       {id:"grade.science",subject:"Physical Science",value:"47",status:"CONFIRMED",source:"parent gradebook report"},
       {id:"grade.math",subject:"Math",value:"80",status:"CONFIRMED",source:"parent gradebook report"}
@@ -271,6 +273,8 @@
     if(!Array.isArray(value.sessions)) value.sessions=[];
     if(!Array.isArray(value.reviewSchedule)) value.reviewSchedule=[];
     if(!value.studyQuests || typeof value.studyQuests!=="object" || Array.isArray(value.studyQuests)) value.studyQuests={};
+    if(!Array.isArray(value.studySessions)) value.studySessions=[];
+    if(!Array.isArray(value.schoolExposures)) value.schoolExposures=[];
     if(!value.trackASkillState || typeof value.trackASkillState!=="object") value.trackASkillState={};
     if(!Object.prototype.hasOwnProperty.call(value,"trackAActiveSession")) value.trackAActiveSession=null;
     if(!Array.isArray(value.trackAMasterySchedule)) value.trackAMasterySchedule=[];
@@ -524,21 +528,253 @@
     return record?.progress?JSON.parse(JSON.stringify(record.progress)):null;
   }
 
-  async function saveSchoolQuestProgress({questId,contentVersion,progress,reason="School Quest progress"}={}){
-    const access=schoolQuestAccess();
-    if(!access.allowed){alert(access.message);return false}
-    if(!questId || !progress || typeof progress!=="object")return false;
+  function ensureSchoolQuestRecord(questId,contentVersion,progress){
     const current=state.studyQuests?.[questId]||{};
     state.studyQuests=state.studyQuests||{};
     state.studyQuests[questId]={
       ...current,
       questId,
       contentVersion:contentVersion??current.contentVersion??1,
-      gameSchemaVersion:Number(progress.version)||current.gameSchemaVersion||null,
-      progress:JSON.parse(JSON.stringify(progress)),
+      gameSchemaVersion:Number(progress?.version)||current.gameSchemaVersion||null,
+      progress:progress?JSON.parse(JSON.stringify(progress)):(current.progress||null),
       updatedAt:now()
     };
+    return state.studyQuests[questId];
+  }
+
+  function activeSchoolQuestSession(questId,worldId=null){
+    return (state.studySessions||[]).slice().reverse().find(x=>x?.questId===questId&&x.status==="ACTIVE"&&(worldId==null||x.worldId===worldId))||null;
+  }
+
+  function schoolQuestStudyContext(questId){
+    const session=activeSchoolQuestSession(questId);
+    if(!session)return null;
+    const activeItemId=session.activeItemId;
+    const item=(session.items||[]).find(x=>x.itemId===activeItemId)||null;
+    return item?{sessionId:session.id,worldId:session.worldId,itemId:item.itemId,startedAt:item.startedAt}:null;
+  }
+
+  function upsertSchoolExposure(meta,createdAt){
+    state.schoolExposures=state.schoolExposures||[];
+    const id=`sq_exp:${meta.questId}:${meta.itemId}`;
+    const existing=state.schoolExposures.find(x=>x.id===id);
+    if(existing)return existing;
+    const record={
+      id,
+      learnerId:CONTENT.student.id,
+      questId:meta.questId,
+      contentVersion:meta.contentVersion??1,
+      subject:meta.subject||"Language Arts",
+      supportLane:"SCHOOL_SUCCESS",
+      worldId:meta.worldId||null,
+      itemId:meta.itemId,
+      targetId:meta.targetId||meta.itemId,
+      label:meta.label||null,
+      exposureType:meta.exposureType||"INSTRUCTION_PRESENTED",
+      instruction_exposure_status:"PRIOR_INSTRUCTION",
+      evidenceClass:null,
+      diagnosticEvidence:false,
+      firstExposedAt:createdAt,
+      timestampPrecision:"EXACT",
+      provenance:"LIVE_GAME"
+    };
+    state.schoolExposures.push(record);
+    return record;
+  }
+
+  function ensureSchoolQuestStudySession(meta,createdAt){
+    state.studySessions=state.studySessions||[];
+    let session=activeSchoolQuestSession(meta.questId,meta.worldId);
+    if(session)return session;
+    session={
+      id:`sq_study_${Date.now()}_${String(meta.worldId||"world").replace(/[^A-Z0-9_-]/gi,"_")}`,
+      learnerId:CONTENT.student.id,
+      questId:meta.questId,
+      contentVersion:meta.contentVersion??1,
+      subject:meta.subject||"Language Arts",
+      supportLane:"SCHOOL_SUCCESS",
+      worldId:meta.worldId||null,
+      startedAt:createdAt,
+      completedAt:null,
+      status:"ACTIVE",
+      items:[],
+      activeItemId:null,
+      source:"SCHOOL_QUEST",
+      diagnosticEvidence:false
+    };
+    state.studySessions.push(session);
+    return session;
+  }
+
+  function ensureSchoolQuestStudyItem(session,meta,createdAt){
+    session.items=session.items||[];
+    let item=session.items.find(x=>x.itemId===meta.itemId);
+    if(!item){
+      item={
+        itemId:meta.itemId,
+        targetId:meta.targetId||meta.itemId,
+        label:meta.label||null,
+        promptType:meta.promptType||null,
+        startedAt:createdAt,
+        firstResponseAt:null,
+        firstResponseMs:null,
+        completedAt:null,
+        totalResponseMs:null,
+        attemptCount:0,
+        firstAnswerCorrect:null,
+        answersTried:[],
+        readAloudCount:0,
+        hintCount:0,
+        selfReported:false,
+        completed:false,
+        legacyReconstructed:false
+      };
+      session.items.push(item);
+    }
+    session.activeItemId=meta.itemId;
+    return item;
+  }
+
+  async function saveSchoolQuestProgress({questId,contentVersion,progress,reason="School Quest progress"}={}){
+    const access=schoolQuestAccess();
+    if(!access.allowed){alert(access.message);return false}
+    if(!questId || !progress || typeof progress!=="object")return false;
+    ensureSchoolQuestRecord(questId,contentVersion,progress);
     return await save(reason);
+  }
+
+  async function beginSchoolQuestItems({questId,contentVersion,subject="Language Arts",worldId,items=[],progress,reason="School Quest present item"}={}){
+    const access=schoolQuestAccess();
+    if(!access.allowed){alert(access.message);return false}
+    if(!evidenceSessionAllowed())return false;
+    if(!questId||!worldId||!Array.isArray(items)||!items.length||!progress)return false;
+    const createdAt=now();
+    ensureSchoolQuestRecord(questId,contentVersion,progress);
+    const session=ensureSchoolQuestStudySession({questId,contentVersion,subject,worldId},createdAt);
+    for(const meta of items){
+      if(!meta?.itemId)continue;
+      const full={...meta,questId,contentVersion,subject,worldId};
+      upsertSchoolExposure(full,createdAt);
+      ensureSchoolQuestStudyItem(session,full,createdAt);
+    }
+    session.activeItemId=items[0]?.itemId||session.activeItemId;
+    return await save(reason);
+  }
+
+  async function recordSchoolQuestAttempt({questId,contentVersion,worldId,itemId,response=null,isCorrect=null,selfReported=false,progress,reason="School Quest response"}={}){
+    const access=schoolQuestAccess();
+    if(!access.allowed){alert(access.message);return false}
+    if(!evidenceSessionAllowed())return false;
+    const session=activeSchoolQuestSession(questId,worldId);
+    const item=session?.items?.find(x=>x.itemId===itemId);
+    if(!session||!item||!progress)return false;
+    const respondedAt=now();
+    const elapsed=Math.max(0,new Date(respondedAt)-new Date(item.startedAt));
+    item.attemptCount=(Number.isInteger(item.attemptCount)?item.attemptCount:0)+1;
+    if(item.firstResponseAt==null){
+      item.firstResponseAt=respondedAt;
+      item.firstResponseMs=elapsed;
+      item.firstAnswerCorrect=typeof isCorrect==="boolean"?isCorrect:null;
+    }
+    item.answersTried=item.answersTried||[];
+    item.answersTried.push({at:respondedAt,response:response==null?null:String(response),isCorrect:typeof isCorrect==="boolean"?isCorrect:null,selfReported:!!selfReported});
+    if(isCorrect===true||selfReported===true){
+      item.completed=true;
+      item.selfReported=!!selfReported;
+      item.completedAt=respondedAt;
+      item.totalResponseMs=elapsed;
+    }
+    session.activeItemId=itemId;
+    ensureSchoolQuestRecord(questId,contentVersion,progress);
+    return await save(reason);
+  }
+
+  async function recordSchoolQuestAccess({questId,contentVersion,worldId,itemId,kind,progress,reason="School Quest access"}={}){
+    const access=schoolQuestAccess();
+    if(!access.allowed){alert(access.message);return false}
+    if(!evidenceSessionAllowed())return false;
+    const session=activeSchoolQuestSession(questId,worldId);
+    const item=session?.items?.find(x=>x.itemId===itemId);
+    if(!session||!item||!progress)return false;
+    if(kind==="READ_ALOUD")item.readAloudCount=(item.readAloudCount||0)+1;
+    if(kind==="HINT")item.hintCount=(item.hintCount||0)+1;
+    ensureSchoolQuestRecord(questId,contentVersion,progress);
+    return await save(reason);
+  }
+
+  async function endSchoolQuestStudySession({questId,contentVersion,worldId,progress,status="COMPLETED",reason="School Quest end study session"}={}){
+    const access=schoolQuestAccess();
+    if(!access.allowed){alert(access.message);return false}
+    const session=activeSchoolQuestSession(questId,worldId);
+    if(session){
+      session.status=status;
+      session.completedAt=now();
+      session.activeItemId=null;
+    }
+    if(progress)ensureSchoolQuestRecord(questId,contentVersion,progress);
+    return await save(reason);
+  }
+
+  async function backfillLegacySchoolQuestHistory(){
+    if(!SCHOOL_PLAN?.reconstructLegacyHistory || !state || firstRunDecisionRequired || storageRecoveryIssue)return true;
+    state.studySessions=state.studySessions||[];
+    state.schoolExposures=state.schoolExposures||[];
+    const quests=state.studyQuests||{};
+    for(const record of Object.values(quests)){
+      if(!record?.questId || !record?.progress || record.historyBackfillVersion>=1)continue;
+      if(!record.migratedFromLegacyKey)continue;
+      const reconstructed=SCHOOL_PLAN.reconstructLegacyHistory(record.progress,now());
+      if(!reconstructed)continue;
+      for(const exp of reconstructed.exposures||[]){
+        const id=`sq_exp:${record.questId}:${exp.itemId}`;
+        if(state.schoolExposures.some(x=>x.id===id))continue;
+        state.schoolExposures.push({
+          id,
+          learnerId:CONTENT.student.id,
+          questId:record.questId,
+          contentVersion:record.contentVersion??1,
+          subject:reconstructed.subject||"Language Arts",
+          supportLane:"SCHOOL_SUCCESS",
+          worldId:exp.worldId||null,
+          itemId:exp.itemId,
+          targetId:exp.targetId||exp.itemId,
+          label:exp.label||null,
+          exposureType:"INSTRUCTION_PRESENTED",
+          instruction_exposure_status:"PRIOR_INSTRUCTION",
+          evidenceClass:null,
+          diagnosticEvidence:false,
+          firstExposedAt:reconstructed.reconstructedAt,
+          timestampPrecision:"APPROXIMATE_MIGRATION_TIME",
+          provenance:"RECONSTRUCTED_FROM_GAME_STATE",
+          note:"Exposure reconstructed from preserved School Quest completion state; original exposure time and first-attempt performance were not recorded."
+        });
+      }
+      if(reconstructed.items?.length){
+        const sid=`sq_reconstructed:${record.questId}`;
+        if(!state.studySessions.some(x=>x.id===sid)){
+          state.studySessions.push({
+            id:sid,
+            learnerId:CONTENT.student.id,
+            questId:record.questId,
+            contentVersion:record.contentVersion??1,
+            subject:reconstructed.subject||"Language Arts",
+            supportLane:"SCHOOL_SUCCESS",
+            worldId:null,
+            startedAt:null,
+            completedAt:null,
+            status:"RECONSTRUCTED",
+            source:"SCHOOL_QUEST",
+            diagnosticEvidence:false,
+            timingAvailable:false,
+            note:"Completion history preserved from the pre-analytics game record. First-try accuracy, attempts, and response times are unavailable.",
+            items:reconstructed.items
+          });
+        }
+      }
+      record.historyBackfillVersion=1;
+      record.historyBackfilledAt=now();
+    }
+    return await save("backfill legacy School Quest exposure and study history");
   }
 
   async function migrateLegacySchoolQuest(){
@@ -1531,6 +1767,12 @@
       if(!migrated){
         saveHealthy=false;
         console.error("Legacy School Quest migration could not be verified.");
+      }else{
+        const backfilled=await backfillLegacySchoolQuestHistory();
+        if(!backfilled){
+          saveHealthy=false;
+          console.error("Legacy School Quest history backfill could not be saved.");
+        }
       }
     }
     window.addEventListener("hashchange",async()=>{speechSynthesis?.cancel?.();if(current){clearTimeout(draftSaveTimer);captureDraftFromUI();if(!await save("navigation draft"))return}if(currentTrackA){currentTrackA.session.status="PAUSED";currentTrackA.session.pausedAt=now();state.trackAActiveSession=currentTrackA.session;if(!await save("Track A navigation pause"))return}current=null;currentTrackA=null;render()});
@@ -1543,6 +1785,6 @@
     render();
   }
 
-  window.MLUL={readSchoolPlan,refreshSchoolPlan,schoolQuestAccess,getSchoolQuestProgress,saveSchoolQuestProgress,startLesson,readTeach,beginChecks,readQuestion,submitAnswer,nextQuestion,startReview,readReviewQuestion,submitReviewAnswer,startTrackADiagnostic,readTrackAQuestion,submitTrackAAnswer,startTrackARepair,readTrackARepairTeach,beginTrackARepairChecks,readTrackARepairQuestion,submitTrackARepairAnswer,nextTrackARepairCheck,startTrackAVerification,readTrackAVerificationQuestion,submitTrackAVerificationAnswer,initializeTrackAMastery,startTrackAMasteryTask,readTrackAMasteryQuestion,submitTrackAMasteryAnswer,replaceTrackAMasteryTask,finalizeTrackAMastery,resumeTrackAPath,resumeTrackADiagnostic,saveAndExitTrackA,endTrackAPath,endTrackADiagnostic,manualSave,saveAndExit,resumeInterruptedSession,endPreservedSession,exportBackup,importBackup,checkPersistenceUI,requestPersistentStorage,connectLocalDurableFile,reconnectLocalDurableFile,syncLocalDurableFile,checkLocalDurableFileUI,checkSharedPersistenceUI,acknowledgeRedundancyOverride,createNewLearnerRecord,resolveMirrorAhead,restoreMirrorAsAuthoritative,markAccessObserved,__audit:{RUNTIME_ENABLED,STATE_KEY,PROBE_KEY,ASSISTANCE_LEVELS,ACCESS_CONDITIONS,isValidLearnerState,assistanceLevelForSession,validAccessCondition,accessSourceFor,recoverableSession,captureDraftFromUI,upsertSessionRecord,answersMatch,memoryStrengthForReview,reviewOutcomeFromScore,trackAPriorInstruction,trackAPromptIsFresh,trackAActiveRecoverable,trackARouteForSkill,ensureTrackAMasterySchedule,masteryRouteInfo,maybeFinalizeTrackAMastery,sameOriginRedundancyDegraded,runtimeGateStatus,studentRuntimeAllowed,runtimeBlockMessage,sharedPersistenceStatus:()=>sharedPersistenceStatus,localDurableStatus:()=>localDurableStatus}};
+  window.MLUL={readSchoolPlan,refreshSchoolPlan,schoolQuestAccess,getSchoolQuestProgress,schoolQuestStudyContext,saveSchoolQuestProgress,beginSchoolQuestItems,recordSchoolQuestAttempt,recordSchoolQuestAccess,endSchoolQuestStudySession,startLesson,readTeach,beginChecks,readQuestion,submitAnswer,nextQuestion,startReview,readReviewQuestion,submitReviewAnswer,startTrackADiagnostic,readTrackAQuestion,submitTrackAAnswer,startTrackARepair,readTrackARepairTeach,beginTrackARepairChecks,readTrackARepairQuestion,submitTrackARepairAnswer,nextTrackARepairCheck,startTrackAVerification,readTrackAVerificationQuestion,submitTrackAVerificationAnswer,initializeTrackAMastery,startTrackAMasteryTask,readTrackAMasteryQuestion,submitTrackAMasteryAnswer,replaceTrackAMasteryTask,finalizeTrackAMastery,resumeTrackAPath,resumeTrackADiagnostic,saveAndExitTrackA,endTrackAPath,endTrackADiagnostic,manualSave,saveAndExit,resumeInterruptedSession,endPreservedSession,exportBackup,importBackup,checkPersistenceUI,requestPersistentStorage,connectLocalDurableFile,reconnectLocalDurableFile,syncLocalDurableFile,checkLocalDurableFileUI,checkSharedPersistenceUI,acknowledgeRedundancyOverride,createNewLearnerRecord,resolveMirrorAhead,restoreMirrorAsAuthoritative,markAccessObserved,__audit:{RUNTIME_ENABLED,STATE_KEY,PROBE_KEY,ASSISTANCE_LEVELS,ACCESS_CONDITIONS,isValidLearnerState,assistanceLevelForSession,validAccessCondition,accessSourceFor,recoverableSession,captureDraftFromUI,upsertSessionRecord,answersMatch,memoryStrengthForReview,reviewOutcomeFromScore,trackAPriorInstruction,trackAPromptIsFresh,trackAActiveRecoverable,trackARouteForSkill,ensureTrackAMasterySchedule,masteryRouteInfo,maybeFinalizeTrackAMastery,sameOriginRedundancyDegraded,runtimeGateStatus,studentRuntimeAllowed,runtimeBlockMessage,sharedPersistenceStatus:()=>sharedPersistenceStatus,localDurableStatus:()=>localDurableStatus}};
   init();
 })();
