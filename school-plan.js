@@ -5,6 +5,7 @@
   const QUEST=globalThis.LEVEL_UP_QUEST_ENGINE;
   let busy=false;
   let progressLoadError=null;
+  let transientFeedback=null;
   const WORLD_ORDER=Object.freeze(["story","grammar","dragon","boss","final"]);
   const WORLD_META=Object.freeze({
     story:{emoji:"🦊",title:"Story Safari",subtitle:"Storytelling, fantasy, culture, and animal symbolism",badge:"Story Safari Scout",reward:"Safari Crate"},
@@ -362,6 +363,7 @@
     if(!p)return "<div class=\"card\"><h2>School Plan</h2><p class=\"muted\">No urgent school items are loaded.</p></div>";
     if(guideOpen)return renderGuide(escapeHTML,p);
     const progress=loadProgress();
+    progress.feedback=transientFeedback;
     if(progressLoadError?.code==="FUTURE_GAME_VERSION"){
       return "<div class=\"card\"><span class=\"pill warn\">UPDATE REQUIRED</span><h2 style=\"margin-top:10px\">School Quest progress is newer than this build</h2><p class=\"muted\">Level-Up refused to downgrade or overwrite the saved game record. Update the app before continuing.</p></div>";
     }
@@ -425,7 +427,7 @@
       const progress=loadProgress();
       if(!WORLD_ORDER.includes(id)||!worldUnlocked(progress,id))return false;
       progress.activeWorld=id;
-      progress.feedback=null;
+      transientFeedback=null;
       progress.hearts=progress.maxHearts||3;
       if(id==="story"||id==="grammar"||id==="dragon"){
         const map=id==="dragon"?progress.answered.dragon:progress.answered[id];
@@ -446,7 +448,7 @@
   async function exitWorld(){
     await runAction(async()=>{
       const progress=loadProgress();
-      progress.activeWorld=null;progress.index=0;progress.feedback=null;progress.hearts=progress.maxHearts||3;
+      progress.activeWorld=null;progress.index=0;transientFeedback=null;progress.hearts=progress.maxHearts||3;
       if(!await saveProgress(progress,"School Quest exit world"))return false;
       refresh();return true;
     });
@@ -463,11 +465,11 @@
         const result=QUEST?QUEST.awardCorrect(progress,{itemId,xp:10,coins:3}):{awarded:progress.answered[id]?.[index]!==true};
         if(!QUEST&&result.awarded){progress.xp+=10;progress.coins=(progress.coins||0)+3;progress.streak+=1}
         progress.answered[id][index]=true;
-        progress.feedback={correct:true,message:"Platform unlocked! "+items[index][0]+" · "+(result.awarded?"+10 XP · +3 coins":"already cleared")};
+        transientFeedback={correct:true,message:"Platform unlocked! "+items[index][0]+" · "+(result.awarded?"+10 XP · +3 coins":"already cleared")};
       }else{
         const miss=QUEST?QUEST.registerMiss(progress):{respawned:false};
         if(!QUEST){progress.streak=0;progress.hearts=Math.max(1,(progress.hearts||3)-1)}
-        progress.feedback={
+        transientFeedback={
           correct:false,
           message:miss.respawned?"Respawn! Hearts refilled. Read the clue and jump again.":"That block broke. Read the clue again and choose another platform."
         };
@@ -488,11 +490,11 @@
         const result=QUEST?QUEST.awardCorrect(progress,{itemId,xp:15,coins:5}):{awarded:progress.answered.dragon?.[index]!==true};
         if(!QUEST&&result.awarded){progress.xp+=15;progress.coins=(progress.coins||0)+5;progress.streak+=1}
         progress.answered.dragon[index]=true;
-        progress.feedback={correct:true,message:"Checkpoint "+(index+1)+" landed! "+(result.awarded?"+15 XP · +5 coins":"already cleared")};
+        transientFeedback={correct:true,message:"Checkpoint "+(index+1)+" landed! "+(result.awarded?"+15 XP · +5 coins":"already cleared")};
       }else{
         const miss=QUEST?QUEST.registerMiss(progress):{respawned:false};
         if(!QUEST){progress.streak=0;progress.hearts=Math.max(1,(progress.hearts||3)-1)}
-        progress.feedback={correct:false,message:miss.respawned?"You fell, respawned, and your hearts refilled. Try the path again.":"Wrong platform. That event belongs somewhere else in the obby."};
+        transientFeedback={correct:false,message:miss.respawned?"You fell, respawned, and your hearts refilled. Try the path again.":"Wrong platform. That event belongs somewhere else in the obby."};
       }
       if(!await saveProgress(progress,"School Quest Dragon answer"))return false;
       refresh();return true;
@@ -502,7 +504,7 @@
   async function next(){
     await runAction(async()=>{
       const p=plan();const progress=loadProgress();const id=progress.activeWorld;
-      progress.feedback=null;
+      transientFeedback=null;
       let total=0;
       if(id==="story"||id==="grammar")total=(flattenTermWorlds(p)[id]||[]).length;
       else if(id==="dragon")total=p?.studyBlocks?.[2]?.sequence?.length||0;
