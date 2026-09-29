@@ -48,7 +48,7 @@ assert.equal(seq[3],'Dragon uses the borrowed line and finally learns to fly.');
 assert.equal(seq[4],'Dragon flies Minli back home to Fruitless Mountain.');
 
 const rendered=api.render(x=>String(x));
-for(const label of ['Moon Mountain Challenge','Story Safari','Grammar Zoo','Dragon Obby','Review Boss Battle','Final Moon Boss','Pick your animal teammate']) assert.ok(rendered.includes(label),label);
+for(const label of ['Moon Mountain Challenge','Story Safari','Grammar Zoo','Dragon Obby','Review Boss Battle','Final Moon Boss','Pick your teammate']) assert.ok(rendered.includes(label),label);
 assert.match(rendered,/practice progress only, not a diagnostic score/i);
 
 durableProgress=api.__test.freshProgress();
