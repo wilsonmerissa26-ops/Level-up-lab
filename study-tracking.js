@@ -153,7 +153,7 @@
     const session=activeSession(studySessions,questId);
     if(!session)return null;
     const item=(session.items||[]).find(x=>x.itemId===session.activeItemId)||null;
-    return item?{sessionId:session.id,worldId:session.worldId,itemId:item.itemId,startedAt:item.startedAt}:null;
+    return item?{sessionId:session.id,worldId:session.worldId,itemId:item.itemId,startedAt:item.startedAt,completedAt:item.completedAt,totalResponseMs:item.totalResponseMs}:null;
   }
 
   const api={clone,activeSession,ensureSession,ensureExposure,ensureItem,presentItems,recordAttempt,recordAccess,endSession,context};
