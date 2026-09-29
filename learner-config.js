@@ -205,6 +205,8 @@
       sessions:[],
       reviewSchedule:[],
       studyQuests:{},
+      studySessions:[],
+      schoolExposures:[],
       schoolFacts:[],
       settings:{
         readAloud:config.profile.sensory.audioLevel!=="OFF",
