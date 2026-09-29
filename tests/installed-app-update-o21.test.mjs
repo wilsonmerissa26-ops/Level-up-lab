@@ -11,7 +11,7 @@ assert.ok(build);
 assert.ok(index.includes(`href="styles.css?v=${build}"`));
 assert.ok(index.includes(`href="manifest.json?v=${build}"`));
 for(const asset of [
-  'content.js','school-plan.js','review-engine.js','track-a-engine.js','track-a-diagnostic.js',
+  'content.js','study-tracking.js','school-plan.js','review-engine.js','track-a-engine.js','track-a-diagnostic.js',
   'track-a-remediation.js','track-a-verification.js','track-a-mastery-state.js',
   'track-a-mastery.js','storage-durability.js','local-durable-file.js',
   'shared-backend-config.js','shared-persistence.js','runtime-gate.js',
