@@ -205,6 +205,8 @@
       sessions:[],
       reviewSchedule:[],
       studyQuests:{},
+      studySessions:[],
+      schoolExposures:[],
       schoolFacts:[],
       settings:{
         readAloud:config.profile.sensory.audioLevel!=="OFF",
@@ -247,7 +249,9 @@
       ["sessions",pkg.starterState.sessions],
       ["schoolFacts",pkg.starterState.schoolFacts],
       ["reviewSchedule",pkg.starterState.reviewSchedule],
-      ["trackAMasterySchedule",pkg.starterState.trackAMasterySchedule]
+      ["trackAMasterySchedule",pkg.starterState.trackAMasterySchedule],
+      ["studySessions",pkg.starterState.studySessions],
+      ["schoolExposures",pkg.starterState.schoolExposures]
     ];
 
     for(const [label,value] of forbiddenHistory){
@@ -257,6 +261,7 @@
     }
 
     if(Object.keys(pkg.starterState.lessonState || {}).length!==0) throw new Error("Starter transfer package must not include lesson history");
+    if(Object.keys(pkg.starterState.studyQuests || {}).length!==0) throw new Error("Starter transfer package must not include study quest history");
     if(Object.keys(pkg.starterState.trackASkillState || {}).length!==0) throw new Error("Starter transfer package must not include mastery history");
 
     return true;

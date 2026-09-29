@@ -42,6 +42,7 @@ Track B is implemented first so Michael can receive immediate school-recovery in
 - Patch O.2.3 Michael School Quest game wrapper for that urgent plan
 - Patch O.2.4 reusable challenge-game engine with levels, world locks, hearts/respawn, coins, gems, badges, treasure chests, boss health, and backward-compatible game-progress migration
 - Patch O.2.5a hardens School Quest data safety: audited runtime gating, durable learner-record storage, portable backup inclusion, collision-safe learner keys, game-schema refusal for future versions, reward idempotency, queued chests, and verified legacy migration
+- Patch O.2.5b adds School Quest study analytics and the exposure boundary: per-question stopwatch data, attempts, first-try status, read-aloud and hint use, Parent View study results, PRIOR_INSTRUCTION exposure logging without diagnostic scoring, and honest reconstruction of pre-tracking completions
 
 ## Current storage decision
 

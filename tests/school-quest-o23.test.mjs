@@ -55,7 +55,7 @@ assert.match(boss,/will not pretend to auto-grade/i);
 assert.match(boss,/What is foreshadowing\?/);
 
 assert.match(app,/function refreshSchoolPlan\(\)/);
-assert.match(app,/schoolQuestAccess,getSchoolQuestProgress,saveSchoolQuestProgress/);
-assert.match(index,/school-plan\.js\?v=2026-09-\d+-o\d+/);
+assert.match(app,/schoolQuestAccess/);assert.match(app,/getSchoolQuestProgress/);assert.match(app,/saveSchoolQuestProgress/);
+assert.match(index,/school-plan\.js\?v=2026-09-\d+-o[0-9a-z]+/);
 
 console.log('Patch O.2.3 School Quest game: PASS');

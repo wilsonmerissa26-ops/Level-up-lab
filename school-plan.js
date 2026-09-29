@@ -6,6 +6,7 @@
   let busy=false;
   let progressLoadError=null;
   let transientFeedback=null;
+  let timerHandle=null;
   const WORLD_ORDER=Object.freeze(["story","grammar","dragon","boss","final"]);
   const WORLD_META=Object.freeze({
     story:{emoji:"🦊",title:"Story Safari",subtitle:"Storytelling, fantasy, culture, and animal symbolism",badge:"Story Safari Scout",reward:"Safari Crate"},
@@ -193,6 +194,120 @@
 
   function progressPct(c){ return c.total?Math.round(c.done/c.total*100):0; }
 
+  function idToken(value){
+    return String(value??"").trim().toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+  }
+
+  function itemMeta(worldId,index,p=plan()){
+    if(worldId==="story"||worldId==="grammar"){
+      const pair=flattenTermWorlds(p)[worldId]?.[index];
+      if(!pair)return null;
+      return {
+        itemId:QUEST_ID+":"+worldId+":"+index,
+        targetId:"ELA.WTMMTM."+worldId.toUpperCase()+"."+idToken(pair[0]),
+        label:pair[0],
+        promptType:"TERM_RECOGNITION"
+      };
+    }
+    if(worldId==="dragon"){
+      const event=p?.studyBlocks?.[2]?.sequence?.[index];
+      if(!event)return null;
+      return {
+        itemId:QUEST_ID+":dragon:"+index,
+        targetId:"ELA.WTMMTM.DRAGON_SEQUENCE."+index,
+        label:event,
+        promptType:"SEQUENCE_RECALL"
+      };
+    }
+    if(worldId==="boss"){
+      const q=p?.studyBlocks?.[3]?.prompts?.[index]?.q;
+      if(!q)return null;
+      return {
+        itemId:QUEST_ID+":boss:"+index,
+        targetId:"ELA.WTMMTM.REVIEW."+idToken(q),
+        label:q,
+        promptType:"OPEN_RESPONSE_SELF_CHECK"
+      };
+    }
+    if(worldId==="final"){
+      const q=p?.finalCheck?.[index];
+      if(!q)return null;
+      return {
+        itemId:QUEST_ID+":final:"+index,
+        targetId:"ELA.WTMMTM.FINAL."+index,
+        label:q,
+        promptType:"NO_NOTES_SELF_CHECK"
+      };
+    }
+    return null;
+  }
+
+  function presentedItems(progress,worldId){
+    const p=plan();
+    if(worldId==="final")return (p?.finalCheck||[]).map((_,i)=>itemMeta("final",i,p)).filter(Boolean);
+    const one=itemMeta(worldId,progress.index,p);
+    return one?[one]:[];
+  }
+
+  async function beginPresentedItems(progress,worldId,reason){
+    const items=presentedItems(progress,worldId);
+    if(!items.length)return saveProgress(progress,reason);
+    if(!globalThis.MLUL?.beginSchoolQuestItems)return saveProgress(progress,reason);
+    return !!(await globalThis.MLUL.beginSchoolQuestItems({
+      questId:QUEST_ID,contentVersion:CONTENT_VERSION,subject:"Language Arts",worldId,items,progress,reason
+    }));
+  }
+
+  async function recordAttempt(progress,worldId,index,response,isCorrect,{selfReported=false,reason="School Quest response"}={}){
+    const meta=itemMeta(worldId,index);
+    if(!meta)return false;
+    if(!globalThis.MLUL?.recordSchoolQuestAttempt)return saveProgress(progress,reason);
+    return !!(await globalThis.MLUL.recordSchoolQuestAttempt({
+      questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId,itemId:meta.itemId,response,isCorrect,selfReported,progress,reason
+    }));
+  }
+
+  async function recordAccess(progress,worldId,index,kind,reason){
+    const meta=itemMeta(worldId,index);
+    if(!meta)return false;
+    if(!globalThis.MLUL?.recordSchoolQuestAccess)return saveProgress(progress,reason);
+    return !!(await globalThis.MLUL.recordSchoolQuestAccess({
+      questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId,itemId:meta.itemId,kind,progress,reason
+    }));
+  }
+
+  function reconstructedItem(meta){
+    return {
+      itemId:meta.itemId,targetId:meta.targetId,label:meta.label,promptType:meta.promptType,
+      startedAt:null,firstResponseAt:null,firstResponseMs:null,completedAt:null,totalResponseMs:null,
+      attemptCount:null,firstAnswerCorrect:null,answersTried:[],readAloudCount:null,hintCount:null,
+      selfReported:null,completed:true,legacyReconstructed:true
+    };
+  }
+
+  function reconstructLegacyHistory(progress,reconstructedAt=new Date().toISOString()){
+    const p=plan();const exposures=[];const items=[];const seen=new Set();
+    const add=(worldId,index)=>{
+      const meta=itemMeta(worldId,index,p);if(!meta||seen.has(meta.itemId))return;
+      seen.add(meta.itemId);exposures.push({...meta,worldId});items.push(reconstructedItem(meta));
+    };
+    for(const worldId of ["story","grammar"]){
+      for(const [key,value] of Object.entries(progress?.answered?.[worldId]||{}))if(value===true)add(worldId,Number(key));
+    }
+    for(const [key,value] of Object.entries(progress?.answered?.dragon||{}))if(value===true)add("dragon",Number(key));
+    for(const [key,value] of Object.entries(progress?.bossDone||{}))if(value)add("boss",Number(key));
+    for(const [key,value] of Object.entries(progress?.finalDone||{}))if(value)add("final",Number(key));
+    for(const worldId of WORLD_ORDER){
+      if(progress?.completed?.[worldId]!==true)continue;
+      const hasWorldExposure=exposures.some(x=>x.worldId===worldId);
+      if(!hasWorldExposure){
+        const meta={itemId:QUEST_ID+":"+worldId+":completed-world",targetId:"ELA.WTMMTM."+worldId.toUpperCase(),label:WORLD_META[worldId]?.title||worldId,promptType:"RECONSTRUCTED_WORLD_COMPLETION",worldId};
+        exposures.push(meta);items.push(reconstructedItem(meta));
+      }
+    }
+    return {subject:"Language Arts",reconstructedAt,exposures,items};
+  }
+
   function escapeAttr(s){
     return String(s??"").replaceAll("&","&amp;").replaceAll('"',"&quot;").replaceAll("<","&lt;").replaceAll(">","&gt;");
   }
@@ -260,7 +375,7 @@
 
   function missionHeader(escapeHTML,progress,id,label,step,total){
     const meta=WORLD_META[id];
-    return "<div class=\"mission-bar\"><button class=\"game-back\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.exitWorld()\">← MAP</button><div class=\"mission-name\"><span>"+meta.emoji+"</span><div><div class=\"game-kicker\">"+escapeHTML(label)+"</div><strong>"+escapeHTML(meta.title)+"</strong></div></div><div class=\"checkpoint-counter\">CHECKPOINT "+step+" / "+total+"</div></div>";
+    return "<div class=\"mission-bar\"><button class=\"game-back\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.exitWorld()\">← MAP</button><div class=\"mission-name\"><span>"+meta.emoji+"</span><div><div class=\"game-kicker\">"+escapeHTML(label)+"</div><strong>"+escapeHTML(meta.title)+"</strong></div></div><div class=\"checkpoint-counter\">CHECKPOINT "+step+" / "+total+" <span id=\"schoolQuestTimer\" class=\"question-timer\" aria-label=\"Time on this question\">⏱ 0:00</span></div></div>";
   }
 
   function feedbackBox(escapeHTML,progress){
@@ -321,7 +436,7 @@
       "<div class=\"boss-arena\"><div class=\"boss-name\">🌑 REVIEW BEAST</div><div class=\"boss-health\"><div style=\"width:"+health+"%\"></div></div><div class=\"boss-health-label\">"+health+"% BOSS HEALTH</div><div class=\"boss-character\">👾</div><div class=\"player-character\">"+companion(progress).emoji+"</div></div>"+
       "<div class=\"mission-panel boss-question-panel\"><div class=\"objective-tag\">⚔️ DEAL DAMAGE WITH A COMPLETE ANSWER</div><div class=\"challenge-question\">"+escapeHTML(item.q||"")+"</div>"+
       "<div class=\"boss-rule\"><strong>No fake grading:</strong> say the answer out loud in complete sentences. The teacher slide asks this question but does not provide an official model answer, so Level-Up will not pretend to auto-grade it.</div>"+
-      "<details class=\"hint-crate\"><summary>🧰 OPEN HINT CRATE</summary><p>"+escapeHTML(item.studyHelp||"")+"</p><p class=\"tiny muted\">"+escapeHTML(item.sourceNote||"")+"</p></details>"+
+      "<details class=\"hint-crate\" ontoggle=\"window.LEVEL_UP_SCHOOL_PLAN.hintToggled("+idx+",this.open)\"><summary>🧰 OPEN HINT CRATE</summary><p>"+escapeHTML(item.studyHelp||"")+"</p><p class=\"tiny muted\">"+escapeHTML(item.sourceNote||"")+"</p></details>"+
       "<div class=\"mission-tools\"><button class=\"btn\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.readChallenge()\">🔊 READ BOSS QUESTION</button><button class=\"btn game-cta\" "+(done?"disabled":"")+" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.markBossDone("+idx+")\">"+(done?"DAMAGE DEALT ✓":"I EXPLAINED IT ⚔️")+"</button>"+(done?"<button class=\"btn good\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.next()\">NEXT ATTACK ▶</button>":"")+"</div></div></div>";
   }
 
@@ -440,7 +555,7 @@
         let next=0;while(progress.bossDone?.[next]&&next<total)next++;
         progress.index=next>=total?0:next;
       }else progress.index=0;
-      if(!await saveProgress(progress,"School Quest start world"))return false;
+      if(!await beginPresentedItems(progress,id,"School Quest start world"))return false;
       refresh();return true;
     });
   }
@@ -449,7 +564,9 @@
     await runAction(async()=>{
       const progress=loadProgress();
       progress.activeWorld=null;progress.index=0;transientFeedback=null;progress.hearts=progress.maxHearts||3;
-      if(!await saveProgress(progress,"School Quest exit world"))return false;
+      if(globalThis.MLUL?.endSchoolQuestStudySession){
+        if(!await globalThis.MLUL.endSchoolQuestStudySession({questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId:progress.activeWorld||null,progress,status:"ENDED_EARLY",reason:"School Quest exit world"}))return false;
+      }else if(!await saveProgress(progress,"School Quest exit world"))return false;
       refresh();return true;
     });
   }
@@ -474,7 +591,7 @@
           message:miss.respawned?"Respawn! Hearts refilled. Read the clue and jump again.":"That block broke. Read the clue again and choose another platform."
         };
       }
-      if(!await saveProgress(progress,"School Quest term answer"))return false;
+      if(!await recordAttempt(progress,id,index,selected,correct,{reason:"School Quest term answer"}))return false;
       refresh();return true;
     });
   }
@@ -496,7 +613,7 @@
         if(!QUEST){progress.streak=0;progress.hearts=Math.max(1,(progress.hearts||3)-1)}
         transientFeedback={correct:false,message:miss.respawned?"You fell, respawned, and your hearts refilled. Try the path again.":"Wrong platform. That event belongs somewhere else in the obby."};
       }
-      if(!await saveProgress(progress,"School Quest Dragon answer"))return false;
+      if(!await recordAttempt(progress,"dragon",index,selected,correct,{reason:"School Quest Dragon answer"}))return false;
       refresh();return true;
     });
   }
@@ -513,8 +630,13 @@
       if(progress.index+1>=total){
         completeWorld(progress,id);
         progress.activeWorld=null;progress.index=0;progress.hearts=progress.maxHearts||3;
-      }else progress.index+=1;
-      if(!await saveProgress(progress,"School Quest next checkpoint"))return false;
+        if(globalThis.MLUL?.endSchoolQuestStudySession){
+          if(!await globalThis.MLUL.endSchoolQuestStudySession({questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId:id,progress,status:"COMPLETED",reason:"School Quest complete world"}))return false;
+        }else if(!await saveProgress(progress,"School Quest complete world"))return false;
+      }else{
+        progress.index+=1;
+        if(!await beginPresentedItems(progress,id,"School Quest next checkpoint"))return false;
+      }
       refresh();return true;
     });
   }
@@ -529,7 +651,7 @@
         if(QUEST)QUEST.awardCorrect(progress,{itemId:QUEST_ID+":boss:"+index,xp:8,coins:4});
         else{progress.xp+=8;progress.coins=(progress.coins||0)+4;progress.streak+=1}
       }
-      if(!await saveProgress(progress,"School Quest boss response"))return false;
+      if(!await recordAttempt(progress,"boss",index,"EXPLAINED_OUT_LOUD",null,{selfReported:true,reason:"School Quest boss response"}))return false;
       refresh();return true;
     });
   }
@@ -543,7 +665,10 @@
       else{progress.xp+=5;progress.coins=(progress.coins||0)+2;progress.streak+=1}
       const done=Object.keys(progress.finalDone).filter(k=>progress.finalDone[k]).length;
       if(done>=finals.length)completeWorld(progress,"final");
-      if(!await saveProgress(progress,"School Quest final check"))return false;
+      if(!await recordAttempt(progress,"final",index,"SELF_CHECKED_NO_NOTES",null,{selfReported:true,reason:"School Quest final check"}))return false;
+      if(done>=finals.length && globalThis.MLUL?.endSchoolQuestStudySession){
+        await globalThis.MLUL.endSchoolQuestStudySession({questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId:"final",progress,status:"COMPLETED",reason:"School Quest complete final world"});
+      }
       refresh();return true;
     });
   }
@@ -574,11 +699,43 @@
     return "";
   }
 
-  function readChallenge(){
+  async function readChallenge(){
     const text=challengeText();if(!text||!globalThis.speechSynthesis)return;
+    const progress=loadProgress();const id=progress.activeWorld;const idx=progress.index;
+    if(id && !await recordAccess(progress,id,idx,"READ_ALOUD","School Quest read aloud"))return;
     globalThis.speechSynthesis.cancel();
     const utterance=new SpeechSynthesisUtterance(text);
     utterance.rate=.95;globalThis.speechSynthesis.speak(utterance);
+  }
+
+  async function hintToggled(index,isOpen){
+    if(!isOpen)return;
+    await runAction(async()=>{
+      const progress=loadProgress();
+      if(progress.activeWorld!=="boss"||progress.index!==index)return false;
+      return await recordAccess(progress,"boss",index,"HINT","School Quest hint opened");
+    });
+  }
+
+  function formatElapsed(ms){
+    const total=Math.max(0,Math.floor(ms/1000));
+    const m=Math.floor(total/60);const sec=String(total%60).padStart(2,"0");
+    return m+":"+sec;
+  }
+
+  function bindLiveTimer(){
+    if(timerHandle){clearInterval(timerHandle);timerHandle=null}
+    const el=globalThis.document?.getElementById?.("schoolQuestTimer");
+    if(!el)return;
+    const context=globalThis.MLUL?.schoolQuestStudyContext?.(QUEST_ID);
+    if(!context?.startedAt){el.textContent="⏱ --:--";return}
+    if(context.completedAt && Number.isFinite(context.totalResponseMs)){
+      el.textContent="⏱ "+formatElapsed(context.totalResponseMs);
+      return;
+    }
+    const start=new Date(context.startedAt).getTime();
+    const tick=()=>{el.textContent="⏱ "+formatElapsed(Date.now()-start)};
+    tick();timerHandle=setInterval(tick,1000);
   }
 
   function readText(){
@@ -597,10 +754,10 @@
   }
 
   const api={
-    QUEST_ID,CONTENT_VERSION,LEGACY_GAME_KEY,render,readText,readChallenge,urgencyLabel,legacyMigrationCandidate,
+    QUEST_ID,CONTENT_VERSION,LEGACY_GAME_KEY,render,readText,readChallenge,bindLiveTimer,hintToggled,urgencyLabel,legacyMigrationCandidate,reconstructLegacyHistory,
     chooseCompanion,startWorld,exitWorld,chooseTerm,chooseDragon,next,
     markBossDone,toggleFinal,openChest,openGuide,closeGuide,resetGame,
-    __test:{freshProgress,normalizeGameProgress,flattenTermWorlds,choicesFor,dragonChoices,rankFor,worldCount,worldUnlocked,rewardForWorld,bossHealth}
+    __test:{freshProgress,normalizeGameProgress,flattenTermWorlds,choicesFor,dragonChoices,rankFor,worldCount,worldUnlocked,rewardForWorld,bossHealth,itemMeta,presentedItems}
   };
   if(typeof window!=="undefined")window.LEVEL_UP_SCHOOL_PLAN=api;
   if(typeof globalThis!=="undefined")globalThis.LEVEL_UP_SCHOOL_PLAN=api;

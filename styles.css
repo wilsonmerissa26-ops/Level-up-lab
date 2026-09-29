@@ -337,6 +337,18 @@ footer{margin:22px 0;color:#8496ad;font-size:12px;text-align:center}
   font-size:11px;
   font-weight:950;
 }
+.question-timer{
+  display:inline-flex;
+  align-items:center;
+  margin-left:7px;
+  padding:3px 6px;
+  border:1px solid rgba(255,230,139,.45);
+  border-radius:7px;
+  background:rgba(7,17,29,.45);
+  color:#fff4b5;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
 .challenge-stage{
   border-radius:20px;
   padding:0;
@@ -629,4 +641,9 @@ footer{margin:22px 0;color:#8496ad;font-size:12px;text-align:center}
   .hud-chip{font-size:11px}
   .mission-panel{width:100%}
   .answer-block{min-height:70px}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .reward-chest,.gate-ring.open,.checkpoint-popup{animation:none!important}
+  .answer-block,.companion-btn,.boss-health>div,.progress>div{transition:none!important}
 }
