@@ -317,7 +317,7 @@
   function topBar(escapeHTML,progress,{compact=false}={}){
     const pet=companion(progress);
     return "<div class=\"game-hud "+(compact?"compact":"")+"\">"+
-      "<div class=\"hud-brand\"><span class=\"pill warn\">"+escapeHTML(urgencyLabel())+"</span><div class=\"hud-title\">🏔️ Moon Mountain</div><div class=\"tiny muted\">School Quest · teacher material</div></div>"+
+      "<div class=\"hud-brand\"><span class=\"pill warn\">"+escapeHTML(urgencyLabel())+"</span><div class=\"hud-title\">🎮 "+escapeHTML(CONFIG.copy.shortName)+"</div><div class=\"tiny muted\">School Quest · teacher material</div></div>"+
       "<div class=\"hud-center\">"+
         "<span class=\"hud-chip level-chip\">LVL "+levelNumber(progress)+"</span>"+
         "<span class=\"hud-chip\">⭐ "+progress.xp+" XP</span>"+
@@ -340,7 +340,9 @@
     const reward=progress.pendingRewards?.[0]||null;
     if(!reward)return "";
     const meta=WORLD_META[reward.worldId]||{};
-    return "<div class=\"reward-drop\"><div class=\"reward-chest\">🎁</div><div class=\"grow\"><div class=\"game-kicker\">WORLD DROP</div><h3>"+escapeHTML(meta.reward||"Treasure Chest")+" unlocked!</h3><p class=\"small muted\">Clear reward: "+(reward.chestCoins||0)+" coins + "+(reward.chestGems||0)+" moon gem"+((reward.chestGems||0)===1?"":"s")+(reward.badge?" + "+escapeHTML(reward.badge)+" badge":"")+".</p></div><button class=\"btn game-cta\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.openChest()\">OPEN CHEST</button></div>";
+    const coinWord=CONFIG.currency.coinName+((reward.chestCoins||0)===1?"":"s");
+    const gemWord=CONFIG.currency.gemName+((reward.chestGems||0)===1?"":"s");
+    return "<div class=\"reward-drop\"><div class=\"reward-chest\">🎁</div><div class=\"grow\"><div class=\"game-kicker\">WORLD DROP</div><h3>"+escapeHTML(meta.reward||"Treasure Chest")+" unlocked!</h3><p class=\"small muted\">Clear reward: "+(reward.chestCoins||0)+" "+escapeHTML(coinWord)+" + "+(reward.chestGems||0)+" "+escapeHTML(gemWord)+(reward.badge?" + "+escapeHTML(reward.badge)+" badge":"")+".</p></div><button class=\"btn game-cta\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.openChest()\">OPEN CHEST</button></div>";
   }
 
   function worldCard(escapeHTML,id,progress,p,index){
@@ -348,29 +350,32 @@
     const count=worldCount(progress,id,p);
     const complete=progress.completed[id]===true;
     const unlocked=worldUnlocked(progress,id);
+    const recommended=CONFIG.lockMode==="RECOMMENDED" && !complete && recommendedWorld(progress)===id;
     const chestOpened=(progress.openedChests||[]).includes(id);
+    const status=complete?"CLEARED":recommended?"RECOMMENDED":unlocked?"OPEN":"LOCKED";
     return "<div class=\"map-stop "+(complete?"complete ":"")+(unlocked?"":"locked ")+"node-"+index+"\">"+
       "<div class=\"map-connector\"></div>"+
       "<div class=\"world-orb\"><span>"+(unlocked?meta.emoji:"🔒")+"</span></div>"+
-      "<div class=\"world-panel\"><div class=\"row between\"><div><div class=\"game-kicker\">WORLD "+(index+1)+"</div><h3>"+escapeHTML(meta.title)+"</h3></div><span class=\"pill "+(complete?"good":unlocked?"info":"")+"\">"+(complete?"CLEARED":unlocked?count.done+"/"+count.total:"LOCKED")+"</span></div>"+
+      "<div class=\"world-panel\"><div class=\"row between\"><div><div class=\"game-kicker\">WORLD "+(index+1)+"</div><h3>"+escapeHTML(meta.title)+"</h3></div><span class=\"pill "+(complete?"good":recommended?"warn":unlocked?"info":"")+"\">"+status+"</span></div>"+
       "<p class=\"small muted\">"+escapeHTML(meta.subtitle)+"</p>"+
       "<div class=\"world-meter\"><div style=\"width:"+progressPct(count)+"%\"></div></div>"+
-      "<div class=\"world-rewards\"><span>🏅 "+escapeHTML(meta.badge)+"</span><span>"+(complete?(chestOpened?"✅ Chest opened":"🎁 Chest waiting"):"🎁 Clear reward")+"</span></div>"+
-      "<button class=\"btn "+(complete?"good":unlocked?"game-cta":"")+"\" "+(unlocked?"":"disabled")+" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.startWorld('"+id+"')\">"+(complete?"REPLAY WORLD":unlocked?"ENTER WORLD":"CLEAR PRIOR WORLD")+"</button></div></div>";
+      "<div class=\"world-rewards\"><span>🏅 "+escapeHTML(meta.badge||"World badge")+"</span><span>"+(complete?(chestOpened?"✅ Chest opened":"🎁 Chest waiting"):"🎁 Clear reward")+"</span></div>"+
+      "<button class=\"btn "+(complete?"good":unlocked?"game-cta":"")+"\" "+(unlocked?"":"disabled")+" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.startWorld('"+id+"')\">"+(complete?"REPLAY WORLD":unlocked?"ENTER WORLD":"LOCKED")+"</button></div></div>";
   }
 
   function renderHub(escapeHTML,progress,p){
     const allDone=WORLD_ORDER.every(id=>progress.completed[id]===true);
+    const routeNote=CONFIG.lockMode==="RECOMMENDED"?"Recommended path is highlighted, but every world is open for targeted review.":"Follow the available path through the worlds.";
     return "<div class=\"game-shell hub-stage\">"+
       topBar(escapeHTML,progress)+
-      "<div class=\"spawn-banner\"><div><div class=\"game-kicker\">SPAWN POINT</div><h1>Moon Mountain Challenge</h1><p>Clear five worlds for the Sept. 29 test. Every world uses Michael's teacher material.</p></div><div class=\"spawn-avatar\">"+companion(progress).emoji+"</div></div>"+
+      "<div class=\"spawn-banner\"><div><div class=\"game-kicker\">"+escapeHTML(CONFIG.copy.spawnLabel)+"</div><h1>"+escapeHTML(CONFIG.copy.title)+"</h1><p>"+escapeHTML(CONFIG.copy.spawnBlurb)+"</p><p class=\"tiny muted\">"+escapeHTML(routeNote)+"</p></div><div class=\"spawn-avatar\">"+companion(progress).emoji+"</div></div>"+
       rewardBanner(escapeHTML,progress)+
       "<div class=\"game-rule\"><strong>Practice mode:</strong> wrong answers can cost a temporary heart, but never delete progress or points. Hearts respawn automatically. Game XP is practice progress only, not a diagnostic score, and does not become formal diagnostic evidence.</div>"+
       renderCompanions(escapeHTML,progress)+
-      "<div class=\"game-panel world-map-panel\"><div class=\"row between\"><div><div class=\"game-kicker\">WORLD MAP</div><h2>Climb to the Moon Gate</h2></div><div class=\"badge-stack\">"+(progress.badges||[]).slice(-3).map(b=>"<span class=\"pill good\">🏅 "+escapeHTML(b)+"</span>").join("")+"</div></div><div class=\"game-world-map\">"+
+      "<div class=\"game-panel world-map-panel\"><div class=\"row between\"><div><div class=\"game-kicker\">WORLD MAP</div><h2>"+escapeHTML(CONFIG.copy.mapTitle)+"</h2></div><div class=\"badge-stack\">"+(progress.badges||[]).slice(-3).map(b=>"<span class=\"pill good\">🏅 "+escapeHTML(b)+"</span>").join("")+"</div></div><div class=\"game-world-map\">"+
       WORLD_ORDER.map((id,i)=>worldCard(escapeHTML,id,progress,p,i)).join("")+
       "</div></div>"+
-      (allDone?"<div class=\"victory-screen\"><div class=\"victory-stars\">✨ 🏆 ✨</div><h2>QUEST CLEARED</h2><p>Michael cleared every world. Tomorrow morning, replay the Final Moon Gate for a fast refresh.</p></div>":"")+
+      (allDone?"<div class=\"victory-screen\"><div class=\"victory-stars\">✨ 🏆 ✨</div><h2>"+escapeHTML(CONFIG.copy.clearedTitle)+"</h2><p>"+escapeHTML(CONFIG.copy.clearedMessage)+"</p></div>":"")+
       "<div class=\"game-panel teacher-switch\"><div><div class=\"game-kicker\">STUDY MODE</div><strong>Need the regular teacher guide?</strong><div class=\"small muted\">Same content, no game layer.</div></div><button class=\"btn\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.openGuide()\">Open study guide</button></div>"+
       "</div>";
   }
@@ -416,11 +421,11 @@
     const idx=Math.min(progress.index,Math.max(seq.length-1,0));
     const opts=dragonChoices(seq,idx);
     const prompt=idx===0?"Which event happens FIRST?":"What happens next?";
-    const context=idx===0?"Start the Dragon path.":"Previous checkpoint: "+seq[idx-1];
+    const context=idx===0?"Start the sequence path.":"Previous checkpoint: "+seq[idx-1];
     return "<div class=\"game-shell challenge-stage dragon-scene\">"+
       topBar(escapeHTML,progress,{compact:true})+
       missionHeader(escapeHTML,progress,"dragon","OBBY RUN",idx+1,seq.length)+
-      "<div class=\"dragon-obby\"><div class=\"dragon-sky\">☁️ <span>🐉</span> ☁️</div><div class=\"obby-track\">"+seq.map((_,i)=>"<div class=\"obby-platform "+(i<idx?"done":i===idx?"current":"locked-step")+"\"><span>"+(i<idx?"✓":i+1)+"</span></div>").join("<div class=\"obby-gap\">◆</div>")+"</div></div>"+
+      "<div class=\"dragon-obby\"><div class=\"dragon-sky\">☁️ <span>"+escapeHTML(WORLD_META.dragon.emoji)+"</span> ☁️</div><div class=\"obby-track\">"+seq.map((_,i)=>"<div class=\"obby-platform "+(i<idx?"done":i===idx?"current":"locked-step")+"\"><span>"+(i<idx?"✓":i+1)+"</span></div>").join("<div class=\"obby-gap\">◆</div>")+"</div></div>"+
       "<div class=\"mission-panel\"><div class=\"objective-tag\">🏃 OBBY CHECKPOINT</div><p class=\"small muted\">"+escapeHTML(context)+"</p><div class=\"challenge-question\">"+escapeHTML(prompt)+"</div>"+
       answerBlocks(escapeHTML,opts,o=>"window.LEVEL_UP_SCHOOL_PLAN.chooseDragon("+idx+",'"+escapeAttr(o).replaceAll("'","&#39;")+"')")+
       "<div class=\"mission-tools\"><button class=\"btn\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.readChallenge()\">🔊 READ CHALLENGE</button></div>"+feedbackBox(escapeHTML,progress)+"</div></div>";
@@ -448,11 +453,11 @@
     const gatePct=items.length?Math.round(doneCount/items.length*100):0;
     return "<div class=\"game-shell challenge-stage moon-scene\">"+
       topBar(escapeHTML,progress,{compact:true})+
-      missionHeader(escapeHTML,progress,"final","FINAL GATE",doneCount,items.length)+
-      "<div class=\"moon-gate-scene\"><div class=\"moon-orb\">🌕</div><div class=\"gate-ring "+(doneCount===items.length?"open":"")+"\">"+gatePct+"%</div><div class=\"gate-caption\">CLEAR EVERY LOCK TO OPEN THE MOON GATE</div></div>"+
+      missionHeader(escapeHTML,progress,"final",CONFIG.copy.finalGateLabel,doneCount,items.length)+
+      "<div class=\"moon-gate-scene\"><div class=\"moon-orb\">"+escapeHTML(WORLD_META.final.emoji)+"</div><div class=\"gate-ring "+(doneCount===items.length?"open":"")+"\">"+gatePct+"%</div><div class=\"gate-caption\">"+escapeHTML(CONFIG.copy.finalGateCaption)+"</div></div>"+
       "<div class=\"mission-panel\"><div class=\"objective-tag\">🔐 NO-NOTES CHECK</div><div class=\"challenge-question\">Say it first. Then unlock it.</div><div class=\"moon-lock-grid\">"+
       items.map((x,i)=>"<button class=\"moon-lock "+(progress.finalDone[i]?"open":"")+"\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.toggleFinal("+i+")\"><span class=\"lock-icon\">"+(progress.finalDone[i]?"🔓":"🔒")+"</span><span>"+escapeHTML(x)+"</span></button>").join("")+
-      "</div>"+(doneCount===items.length?"<div class=\"checkpoint-popup cleared\"><div class=\"popup-icon\">🏆</div><div><div class=\"game-kicker\">MOON GATE OPEN</div><strong>Final Boss cleared. Revisit only anything Michael still hesitates on.</strong></div></div>":"")+"</div></div>";
+      "</div>"+(doneCount===items.length?"<div class=\"checkpoint-popup cleared\"><div class=\"popup-icon\">🏆</div><div><div class=\"game-kicker\">"+escapeHTML(CONFIG.copy.finalGateLabel)+" OPEN</div><strong>Final self-check cleared. Revisit only anything that still feels uncertain.</strong></div></div>":"")+"</div></div>";
   }
 
   function renderGuide(escapeHTML,p){
@@ -502,14 +507,8 @@
   }
 
   function rewardForWorld(id){
-    const rewards={
-      story:{badge:WORLD_META.story.badge,chestCoins:20,chestGems:1},
-      grammar:{badge:WORLD_META.grammar.badge,chestCoins:25,chestGems:1},
-      dragon:{badge:WORLD_META.dragon.badge,chestCoins:35,chestGems:1},
-      boss:{badge:WORLD_META.boss.badge,chestCoins:40,chestGems:2},
-      final:{badge:WORLD_META.final.badge,chestCoins:50,chestGems:3}
-    };
-    return rewards[id]||{badge:null,chestCoins:20,chestGems:1};
+    const meta=WORLD_META[id];
+    return meta?{badge:meta.badge||null,chestCoins:meta.chestCoins||0,chestGems:meta.chestGems||0}:{badge:null,chestCoins:0,chestGems:0};
   }
 
   function completeWorld(progress,id){
@@ -565,9 +564,11 @@
   async function exitWorld(){
     await runAction(async()=>{
       const progress=loadProgress();
-      progress.activeWorld=null;progress.index=0;transientFeedback=null;progress.hearts=progress.maxHearts||3;
-      if(globalThis.MLUL?.endSchoolQuestStudySession){
-        if(!await globalThis.MLUL.endSchoolQuestStudySession({questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId:progress.activeWorld||null,progress,status:"ENDED_EARLY",reason:"School Quest exit world"}))return false;
+      const exitingWorld=progress.activeWorld;
+      progress.activeWorld=null;progress.index=0;transientFeedback=null;progress.hearts=progress.maxHearts||CONFIG.maxHearts;
+      const bridge=appBridge();
+      if(bridge?.endSchoolQuestStudySession){
+        if(!await bridge.endSchoolQuestStudySession({questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId:exitingWorld,progress,status:"ENDED_EARLY",reason:"School Quest exit world"}))return false;
       }else if(!await saveProgress(progress,"School Quest exit world"))return false;
       refresh();return true;
     });
@@ -679,7 +680,7 @@
   function closeGuide(){guideOpen=false;refresh()}
 
   async function resetGame(){
-    if(globalThis.confirm && !globalThis.confirm("Reset Moon Mountain game progress? The study content will stay."))return;
+    if(globalThis.confirm && !globalThis.confirm(CONFIG.copy.resetPrompt))return;
     await runAction(async()=>{
       const progress=freshProgress();
       if(!await saveProgress(progress,"School Quest reset"))return false;
@@ -729,7 +730,7 @@
     if(timerHandle){clearInterval(timerHandle);timerHandle=null}
     const el=globalThis.document?.getElementById?.("schoolQuestTimer");
     if(!el)return;
-    const context=globalThis.MLUL?.schoolQuestStudyContext?.(QUEST_ID);
+    const context=appBridge()?.schoolQuestStudyContext?.(QUEST_ID);
     if(!context?.startedAt){el.textContent="⏱ --:--";return}
     if(context.completedAt && Number.isFinite(context.totalResponseMs)){
       el.textContent="⏱ "+formatElapsed(context.totalResponseMs);
@@ -756,7 +757,7 @@
   }
 
   const api={
-    QUEST_ID,CONTENT_VERSION,LEGACY_GAME_KEY,render,readText,readChallenge,bindLiveTimer,hintToggled,urgencyLabel,legacyMigrationCandidate,reconstructLegacyHistory,
+    CONFIG,QUEST_ID,CONTENT_VERSION,LEGACY_GAME_KEY,render,readText,readChallenge,bindLiveTimer,hintToggled,urgencyLabel,legacyMigrationCandidate,reconstructLegacyHistory,
     chooseCompanion,startWorld,exitWorld,chooseTerm,chooseDragon,next,
     markBossDone,toggleFinal,openChest,openGuide,closeGuide,resetGame,
     __test:{freshProgress,normalizeGameProgress,flattenTermWorlds,choicesFor,dragonChoices,rankFor,worldCount,worldUnlocked,rewardForWorld,bossHealth,itemMeta,presentedItems}
