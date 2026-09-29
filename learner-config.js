@@ -70,11 +70,12 @@
 
   function buildIsolationKeys(learnerId){
     const id = normalizeLearnerId(learnerId);
-    const token = id.toUpperCase().replace(/[^A-Z0-9_]/g,"_");
+    const token = encodeURIComponent(id).toUpperCase();
     return Object.freeze({
       dbName:`LevelUpLab_${id}`,
       stateKey:`learner:${id}`,
-      backupKey:`LEVEL_UP_BACKUP_${token}_V1`
+      backupKey:`LEVEL_UP_BACKUP_${token}_V2`,
+      gamePrefix:`LEVEL_UP_GAME:${id}:`
     });
   }
 
@@ -203,6 +204,7 @@
       evidence:[],
       sessions:[],
       reviewSchedule:[],
+      studyQuests:{},
       schoolFacts:[],
       settings:{
         readAloud:config.profile.sensory.audioLevel!=="OFF",

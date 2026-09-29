@@ -41,6 +41,7 @@ Track B is implemented first so Michael can receive immediate school-recovery in
 - Patch O.2.2 urgent teacher-file School Plan for Michael's Sept. 29 Language Arts test
 - Patch O.2.3 Michael School Quest game wrapper for that urgent plan
 - Patch O.2.4 reusable challenge-game engine with levels, world locks, hearts/respawn, coins, gems, badges, treasure chests, boss health, and backward-compatible game-progress migration
+- Patch O.2.5a hardens School Quest data safety: audited runtime gating, durable learner-record storage, portable backup inclusion, collision-safe learner keys, game-schema refusal for future versions, reward idempotency, queued chests, and verified legacy migration
 
 ## Current storage decision
 
@@ -62,7 +63,7 @@ python3 -m http.server 8080
 
 Then open `http://localhost:8080`.
 
-Student lessons remain disabled in code until the final local-persistence audit passes.
+Student lessons and School Quest are enabled only when the audited runtime gate verifies an approved durable-storage path.
 
 ## Commercial direction
 

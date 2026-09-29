@@ -27,9 +27,9 @@ assert.equal(JSON.stringify(plan.studyBlocks[2].sequence),JSON.stringify([
 assert.match(plan.studyBlocks[2].quickFacts[0][1],/Borrowed Line/);
 const prompts=plan.studyBlocks[3].prompts.map(p=>p.q);
 for(const q of ['What is foreshadowing?','What is abundance?','How do Minli\'s beliefs about abundance change throughout the story?'])assert.ok(prompts.includes(q),q);
-assert.ok(ctx.LEVEL_UP_SCHOOL_PLAN.render(x=>String(x)).includes('TEST TOMORROW'));
+assert.equal(ctx.LEVEL_UP_SCHOOL_PLAN.urgencyLabel(new Date('2026-09-28T12:00:00')),'TEST TOMORROW · SEP 29');
 assert.match(app,/School Plan/);
 assert.match(app,/school-plan/);
 assert.match(app,/readSchoolPlan/);
-assert.match(index,/school-plan\.js\?v=2026-09-28-o\d+/);
+assert.match(index,/school-plan\.js\?v=2026-09-\d+-o[0-9a-z]+/);
 console.log('Patch O.2.2 LA test school plan: PASS');

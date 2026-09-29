@@ -43,7 +43,7 @@ assert.equal(michaelLike.adaptiveLearning.ethicalBoundary,"ACADEMIC_AND_FUNCTION
 const keys=api.buildIsolationKeys("Pilot Student 01");
 assert.equal(keys.stateKey,"learner:pilot-student-01");
 assert.match(keys.dbName,/pilot-student-01/);
-assert.match(keys.backupKey,/PILOT_STUDENT_01/);
+assert.match(keys.backupKey,/PILOT-STUDENT-01/);
 
 const starter=api.createStarterState(michaelLike,"2026-09-23T21:00:00.000Z");
 assert.equal(starter.learnerId,"pilot-student-01");
@@ -51,6 +51,7 @@ assert.deepEqual(starter.evidence,[]);
 assert.deepEqual(starter.sessions,[]);
 assert.deepEqual(starter.schoolFacts,[]);
 assert.deepEqual(starter.lessonState,{});
+assert.deepEqual(starter.studyQuests,{});
 assert.deepEqual(starter.trackASkillState,{});
 assert.equal(starter.settings.lowStimulation,true);
 assert.equal(starter.settings.visualSchedule,true);
