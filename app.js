@@ -13,6 +13,7 @@
   const SHARED_PERSISTENCE = window.LEVEL_UP_SHARED_PERSISTENCE;
   const SCHOOL_PLAN = window.LEVEL_UP_SCHOOL_PLAN;
   const STUDY_TRACKING = window.LEVEL_UP_STUDY_TRACKING;
+  const SCIENCE_CURRICULUM = window.LEVEL_UP_SCIENCE_CURRICULUM;
   const RUNTIME_GATE = window.LEVEL_UP_RUNTIME_GATE;
   const DB_NAME = "MichaelLevelUpLab";
   const DB_VERSION = 1;
@@ -1037,13 +1038,34 @@
     </div>`;
   }
 
+  function scienceCurriculumSection(){
+    if(!SCIENCE_CURRICULUM)return "";
+    const coverage=SCIENCE_CURRICULUM.standardsCoverage();
+    const totalTargets=SCIENCE_CURRICULUM.allTargets().length;
+    const existingIds=new Set(CONTENT.science.map(x=>x.id));
+    const mappedExisting=Object.keys(SCIENCE_CURRICULUM.legacyAlignment||{}).filter(id=>existingIds.has(id)).length;
+    const units=SCIENCE_CURRICULUM.units.map(unit=>{
+      const modes=[...new Set(unit.targets.flatMap(t=>t.modes||[]))];
+      return `<div class="card c6"><div class="row between"><div><span class="pill info">${escapeHTML(unit.standard)}</span><h3 style="margin-top:8px">${escapeHTML(unit.title)}</h3></div><span class="badge">${unit.targets.length} targets</span></div><p class="small muted">${escapeHTML(unit.coreElements.join(" · "))}</p><p class="tiny muted">Performance: ${escapeHTML(modes.join(" · "))}</p></div>`;
+    }).join("");
+    return `<div class="card c12"><div class="row between"><div><h3>Full Physical Science curriculum</h3><p class="small muted">Georgia Grade 8 S8P1-S8P5 is now the permanent curriculum spine. Michael's existing Energy/Heat lessons are preserved and mapped into it rather than replaced.</p></div><span class="pill good">${coverage.missing.length===0?"23/23 standards elements mapped":"Coverage needs review"}</span></div>
+      <div class="grid">
+        <div class="card c4"><div class="kpi"><div class="t">Core teachable targets</div><div class="n">${totalTargets}</div></div></div>
+        <div class="card c4"><div class="kpi"><div class="t">Curriculum units</div><div class="n">${SCIENCE_CURRICULUM.units.length}</div></div></div>
+        <div class="card c4"><div class="kpi"><div class="t">Existing science lessons preserved</div><div class="n">${mappedExisting}/${CONTENT.science.length}</div></div></div>
+      </div>
+      <div class="grid">${units}</div>
+      <div class="callout small"><strong>Teaching rule:</strong> every curriculum target will use ${escapeHTML(SCIENCE_CURRICULUM.teachingCycle.join(" → "))}. Performance is tracked separately across vocabulary, concepts, models, data/graphs, investigations, explanations, evidence-based arguments, and calculation/application where appropriate.</div>
+    </div>`;
+  }
   function parentView(){
     const science=CONTENT.science.map(l=>skillRow(l)).join("");const math=CONTENT.math.map(l=>skillRow(l)).join("");
     const trackARows=TRACK_A_DIAGNOSTIC?TRACK_A_DIAGNOSTIC.SKILLS.map(s=>{const r=trackASkillRecord(s.id);const last=r.lastMaintenance?.result||r.lastMasteryCheck?.result||r.lastVerification?.result||r.lastRepair?.result||r.lastDiagnostic?.result||"—";return `<tr><td>${escapeHTML(s.title)}<div class="tiny muted">${escapeHTML(s.id)}</div></td><td>${escapeHTML(r.canonicalState||"UNKNOWN")}</td><td>${escapeHTML(r.memoryStrength||"FRAGILE")}</td><td>${escapeHTML(last)}</td><td>${trackAPriorInstruction(s.id)?"PRIOR_INSTRUCTION / not cold":"—"}</td></tr>`}).join(""):"";
     const formalCount=state.evidence.filter(e=>e.evidence_class==="FORMAL_CONTROLLED").length;const informalCount=state.evidence.filter(e=>e.evidence_class==="INFORMAL_TRACK_B").length;
     return shell(`<div class="grid"><div class="card c8"><h2>Parent View</h2><p class="muted">Michael's learning record separates school facts, teaching evidence, controlled evidence, lifecycle state, and memory strength. No one score gets to masquerade as the whole story.</p></div><div class="card c4"><div class="kpi"><div class="t">Track B evidence</div><div class="n">${informalCount}</div></div><div class="spacer"></div><div class="kpi"><div class="t">Track A evidence</div><div class="n">${formalCount}</div></div></div>
       ${studyResultsSection()}
-      <div class="card c12"><h3>Physical Science skill map</h3><div class="tablewrap"><table><thead><tr><th>Skill</th><th>Status</th><th>Immediate score</th><th>Memory</th><th>Baseline note</th></tr></thead><tbody>${science}</tbody></table></div></div>
+      ${scienceCurriculumSection()}
+      <div class="card c12"><h3>Current Physical Science teaching history</h3><p class="small muted">These are Michael's existing Track B lessons and evidence. They remain preserved inside the larger curriculum.</p><div class="tablewrap"><table><thead><tr><th>Skill</th><th>Status</th><th>Immediate score</th><th>Memory</th><th>Baseline note</th></tr></thead><tbody>${science}</tbody></table></div></div>
       <div class="card c12"><h3>Math bridge skill map</h3><div class="tablewrap"><table><thead><tr><th>Skill</th><th>Status</th><th>Immediate score</th><th>Memory</th><th>Baseline note</th></tr></thead><tbody>${math}</tbody></table></div></div>
       <div class="card c12"><h3>Track A controlled math map</h3><div class="tablewrap"><table><thead><tr><th>Skill</th><th>Canonical state</th><th>Memory</th><th>Last diagnostic</th><th>Baseline note</th></tr></thead><tbody>${trackARows}</tbody></table></div></div>
     </div>`)
