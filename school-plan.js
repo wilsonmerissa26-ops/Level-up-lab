@@ -1,26 +1,19 @@
 (() => {
-  const LEGACY_GAME_KEY="MLUL_WTMMTM_SCHOOL_QUEST_V1";
-  const QUEST_ID="ELA.WTMMTM.TEST.2026-09-29";
-  const CONTENT_VERSION=1;
+  const CONFIG=globalThis.LEVEL_UP_SCHOOL_QUEST_CONFIG;
+  if(!CONFIG)throw new Error("School Quest config must load before school-plan.js.");
+  const LEGACY_GAME_KEY=CONFIG.legacyGameKey;
+  const QUEST_ID=CONFIG.questId;
+  const CONTENT_VERSION=CONFIG.contentVersion;
   const QUEST=globalThis.LEVEL_UP_QUEST_ENGINE;
   let busy=false;
   let progressLoadError=null;
   let transientFeedback=null;
   let timerHandle=null;
-  const WORLD_ORDER=Object.freeze(["story","grammar","dragon","boss","final"]);
-  const WORLD_META=Object.freeze({
-    story:{emoji:"🦊",title:"Story Safari",subtitle:"Storytelling, fantasy, culture, and animal symbolism",badge:"Story Safari Scout",reward:"Safari Crate"},
-    grammar:{emoji:"🐼",title:"Grammar Zoo",subtitle:"Literary terms, clauses, sentences, and conjunctions",badge:"Grammar Keeper",reward:"Zoo Vault"},
-    dragon:{emoji:"🐉",title:"Dragon Obby",subtitle:"Jump through the five Dragon events in the teacher's order",badge:"Dragon Path Runner",reward:"Dragon Chest"},
-    boss:{emoji:"🐯",title:"Review Boss Battle",subtitle:"Foreshadowing, abundance, generosity, Minli, and storytelling",badge:"Boss Breaker",reward:"Arena Chest"},
-    final:{emoji:"🌙",title:"Final Moon Boss",subtitle:"No-notes readiness check before tomorrow's test",badge:"Moon Gate Master",reward:"Moon Vault"}
-  });
-  const COMPANIONS=Object.freeze([
-    {id:"fox",emoji:"🦊",name:"Fox",line:"Fast thinker. Look for clues."},
-    {id:"panda",emoji:"🐼",name:"Panda",line:"Stay calm. One challenge at a time."},
-    {id:"tiger",emoji:"🐯",name:"Tiger",line:"Be bold. Lock in your answer."},
-    {id:"owl",emoji:"🦉",name:"Owl",line:"Read carefully. Details matter."}
-  ]);
+  const WORLD_ORDER=CONFIG.worldOrder;
+  const WORLD_META=CONFIG.worlds;
+  const COMPANIONS=CONFIG.companions;
+
+  function appBridge(){ return globalThis.LEVEL_UP_APP||globalThis.MLUL||null; }
 
   function plan(){ return globalThis.LEVEL_UP_CONTENT?.schoolPlan?.urgent||null; }
 
@@ -42,9 +35,10 @@
   }
 
   function freshProgress(){
-    const base=QUEST?QUEST.freshProgress({worldOrder:WORLD_ORDER,companion:"fox",maxHearts:3}):{
-      version:3,companion:"fox",xp:0,coins:0,gems:0,streak:0,maxHearts:3,hearts:3,respawns:0,
-      activeWorld:null,index:0,feedback:null,completed:{story:false,grammar:false,dragon:false,boss:false,final:false},
+    const completed=Object.fromEntries(WORLD_ORDER.map(id=>[id,false]));
+    const base=QUEST?QUEST.freshProgress({worldOrder:WORLD_ORDER,companion:CONFIG.defaultCompanion,maxHearts:CONFIG.maxHearts}):{
+      version:3,companion:CONFIG.defaultCompanion,xp:0,coins:0,gems:0,streak:0,maxHearts:CONFIG.maxHearts,hearts:CONFIG.maxHearts,respawns:0,
+      activeWorld:null,index:0,feedback:null,completed,
       bossDone:{},finalDone:{},badges:[],openedChests:[],pendingRewards:[],rewardedItems:{}
     };
     base.answered={story:{},grammar:{},dragon:{}};
@@ -52,7 +46,7 @@
   }
 
   function normalizeGameProgress(saved){
-    const normalized=QUEST?QUEST.normalizeProgress(saved,{worldOrder:WORLD_ORDER,companion:"fox",maxHearts:3}):{...freshProgress(),...(saved||{})};
+    const normalized=QUEST?QUEST.normalizeProgress(saved,{worldOrder:WORLD_ORDER,companion:CONFIG.defaultCompanion,maxHearts:CONFIG.maxHearts,lockMode:CONFIG.lockMode}):{...freshProgress(),...(saved||{})};
     normalized.answered={
       story:{...(saved?.answered?.story||{})},
       grammar:{...(saved?.answered?.grammar||{})},
@@ -69,6 +63,7 @@
 
   function readLegacyRaw(){
     try{
+      if(!LEGACY_GAME_KEY)return null;
       const raw=globalThis.localStorage?.getItem(LEGACY_GAME_KEY);
       return raw?JSON.parse(raw):null;
     }catch(_){return null}
@@ -88,7 +83,7 @@
 
   function loadProgress(){
     try{
-      const saved=globalThis.MLUL?.getSchoolQuestProgress?.(QUEST_ID) || readLegacyRaw();
+      const saved=appBridge()?.getSchoolQuestProgress?.(QUEST_ID) || readLegacyRaw();
       if(!saved)return freshProgress();
       progressLoadError=null;
       return normalizeGameProgress(saved);
@@ -99,14 +94,15 @@
   }
 
   async function saveProgress(progress,reason="School Quest progress"){
-    const access=globalThis.MLUL?.schoolQuestAccess?.();
+    const bridge=appBridge();
+    const access=bridge?.schoolQuestAccess?.();
     if(access && !access.allowed)return false;
-    if(!globalThis.MLUL?.saveSchoolQuestProgress)return false;
-    return !!(await globalThis.MLUL.saveSchoolQuestProgress({questId:QUEST_ID,contentVersion:CONTENT_VERSION,progress,reason}));
+    if(!bridge?.saveSchoolQuestProgress)return false;
+    return !!(await bridge.saveSchoolQuestProgress({questId:QUEST_ID,contentVersion:CONTENT_VERSION,progress,reason}));
   }
 
   function actionAllowed(){
-    const access=globalThis.MLUL?.schoolQuestAccess?.();
+    const access=appBridge()?.schoolQuestAccess?.();
     return !busy && (!access || access.allowed===true);
   }
 
@@ -117,7 +113,8 @@
   }
 
   function refresh(){
-    if(globalThis.MLUL?.refreshSchoolPlan)globalThis.MLUL.refreshSchoolPlan();
+    const bridge=appBridge();
+    if(bridge?.refreshSchoolPlan)bridge.refreshSchoolPlan();
     else if(globalThis.location)globalThis.location.reload();
   }
 
@@ -125,16 +122,18 @@
     return COMPANIONS.find(x=>x.id===progress.companion)||COMPANIONS[0];
   }
 
-  function rankFor(xp){ return QUEST?QUEST.rankFor(xp):xp>=360?"Mountain Master":xp>=240?"Moon Ranger":xp>=120?"Story Scout":"Rookie Explorer"; }
-  function heartsText(progress){ return QUEST?QUEST.heartsText(progress):"❤️".repeat(progress.hearts||3); }
-  function levelNumber(progress){ return QUEST?QUEST.levelNumber(progress):1+Math.floor((progress.xp||0)/100); }
+  function rankFor(xp){ return QUEST?QUEST.rankFor(xp,CONFIG.ranks):(CONFIG.ranks.findLast?.(r=>Number(xp)>=r.min)?.name||CONFIG.ranks[0]?.name||"Explorer"); }
+  function heartsText(progress){ return QUEST?QUEST.heartsText(progress):"❤️".repeat(progress.hearts||CONFIG.maxHearts); }
+  function levelNumber(progress){ return QUEST?QUEST.levelNumber(progress,{xpPerLevel:CONFIG.xpPerLevel}):1+Math.floor((progress.xp||0)/CONFIG.xpPerLevel); }
   function worldUnlocked(progress,id){
-    if(QUEST)return QUEST.worldUnlocked(progress,id,WORLD_ORDER);
+    if(QUEST)return QUEST.worldUnlocked(progress,id,WORLD_ORDER,{lockMode:CONFIG.lockMode});
     const index=WORLD_ORDER.indexOf(id);
-    if(index===0)return true;
     if(index<0)return false;
+    if(CONFIG.lockMode==="OPEN"||CONFIG.lockMode==="RECOMMENDED")return true;
+    if(index===0)return true;
     return progress?.completed?.[WORLD_ORDER[index-1]]===true;
   }
+  function recommendedWorld(progress){ return WORLD_ORDER.find(id=>progress?.completed?.[id]!==true)||WORLD_ORDER[WORLD_ORDER.length-1]; }
   function bossHealth(progress,p){
     const total=p?.studyBlocks?.[3]?.prompts?.length||0;
     const done=Object.keys(progress.bossDone||{}).filter(k=>progress.bossDone[k]).length;
@@ -204,7 +203,7 @@
       if(!pair)return null;
       return {
         itemId:QUEST_ID+":"+worldId+":"+index,
-        targetId:"ELA.WTMMTM."+worldId.toUpperCase()+"."+idToken(pair[0]),
+        targetId:CONFIG.targetPrefix+"."+worldId.toUpperCase()+"."+idToken(pair[0]),
         label:pair[0],
         promptType:"TERM_RECOGNITION"
       };
@@ -214,7 +213,7 @@
       if(!event)return null;
       return {
         itemId:QUEST_ID+":dragon:"+index,
-        targetId:"ELA.WTMMTM.DRAGON_SEQUENCE."+index,
+        targetId:CONFIG.targetPrefix+".SEQUENCE."+index,
         label:event,
         promptType:"SEQUENCE_RECALL"
       };
@@ -224,7 +223,7 @@
       if(!q)return null;
       return {
         itemId:QUEST_ID+":boss:"+index,
-        targetId:"ELA.WTMMTM.REVIEW."+idToken(q),
+        targetId:CONFIG.targetPrefix+".REVIEW."+idToken(q),
         label:q,
         promptType:"OPEN_RESPONSE_SELF_CHECK"
       };
@@ -234,7 +233,7 @@
       if(!q)return null;
       return {
         itemId:QUEST_ID+":final:"+index,
-        targetId:"ELA.WTMMTM.FINAL."+index,
+        targetId:CONFIG.targetPrefix+".FINAL."+index,
         label:q,
         promptType:"NO_NOTES_SELF_CHECK"
       };
@@ -252,17 +251,19 @@
   async function beginPresentedItems(progress,worldId,reason){
     const items=presentedItems(progress,worldId);
     if(!items.length)return saveProgress(progress,reason);
-    if(!globalThis.MLUL?.beginSchoolQuestItems)return saveProgress(progress,reason);
-    return !!(await globalThis.MLUL.beginSchoolQuestItems({
-      questId:QUEST_ID,contentVersion:CONTENT_VERSION,subject:"Language Arts",worldId,items,progress,reason
+    const bridge=appBridge();
+    if(!bridge?.beginSchoolQuestItems)return saveProgress(progress,reason);
+    return !!(await bridge.beginSchoolQuestItems({
+      questId:QUEST_ID,contentVersion:CONTENT_VERSION,subject:CONFIG.subject||plan()?.subject||null,worldId,items,progress,reason
     }));
   }
 
   async function recordAttempt(progress,worldId,index,response,isCorrect,{selfReported=false,reason="School Quest response"}={}){
     const meta=itemMeta(worldId,index);
     if(!meta)return false;
-    if(!globalThis.MLUL?.recordSchoolQuestAttempt)return saveProgress(progress,reason);
-    return !!(await globalThis.MLUL.recordSchoolQuestAttempt({
+    const bridge=appBridge();
+    if(!bridge?.recordSchoolQuestAttempt)return saveProgress(progress,reason);
+    return !!(await bridge.recordSchoolQuestAttempt({
       questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId,itemId:meta.itemId,response,isCorrect,selfReported,progress,reason
     }));
   }
@@ -270,8 +271,9 @@
   async function recordAccess(progress,worldId,index,kind,reason){
     const meta=itemMeta(worldId,index);
     if(!meta)return false;
-    if(!globalThis.MLUL?.recordSchoolQuestAccess)return saveProgress(progress,reason);
-    return !!(await globalThis.MLUL.recordSchoolQuestAccess({
+    const bridge=appBridge();
+    if(!bridge?.recordSchoolQuestAccess)return saveProgress(progress,reason);
+    return !!(await bridge.recordSchoolQuestAccess({
       questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId,itemId:meta.itemId,kind,progress,reason
     }));
   }
@@ -305,7 +307,7 @@
         exposures.push(meta);items.push(reconstructedItem(meta));
       }
     }
-    return {subject:"Language Arts",reconstructedAt,exposures,items};
+    return {subject:CONFIG.subject||p?.subject||null,reconstructedAt,exposures,items};
   }
 
   function escapeAttr(s){
