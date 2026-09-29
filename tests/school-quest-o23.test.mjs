@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 
 const contentSource=fs.readFileSync(new URL('../content.js',import.meta.url),'utf8');
+const configFactorySource=fs.readFileSync(new URL('../quest-config.js',import.meta.url),'utf8');
+const michaelQuestConfigSource=fs.readFileSync(new URL('../michael-school-quest-config.js',import.meta.url),'utf8');
 const engineSource=fs.readFileSync(new URL('../quest-engine.js',import.meta.url),'utf8');
 const planSource=fs.readFileSync(new URL('../school-plan.js',import.meta.url),'utf8');
 const app=fs.readFileSync(new URL('../app.js',import.meta.url),'utf8');
@@ -21,6 +23,8 @@ ctx.MLUL={
 vm.createContext(ctx);
 vm.runInContext(contentSource,ctx,{filename:'content.js'});
 vm.runInContext(engineSource,ctx,{filename:'quest-engine.js'});
+vm.runInContext(configFactorySource,ctx,{filename:'quest-config.js'});
+vm.runInContext(michaelQuestConfigSource,ctx,{filename:'michael-school-quest-config.js'});
 vm.runInContext(planSource,ctx,{filename:'school-plan.js'});
 
 const api=ctx.LEVEL_UP_SCHOOL_PLAN;
