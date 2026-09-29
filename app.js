@@ -12,6 +12,7 @@
   const LOCAL_DURABLE_FILE = window.LEVEL_UP_LOCAL_DURABLE_FILE;
   const SHARED_PERSISTENCE = window.LEVEL_UP_SHARED_PERSISTENCE;
   const SCHOOL_PLAN = window.LEVEL_UP_SCHOOL_PLAN;
+  const STUDY_TRACKING = window.LEVEL_UP_STUDY_TRACKING;
   const RUNTIME_GATE = window.LEVEL_UP_RUNTIME_GATE;
   const DB_NAME = "MichaelLevelUpLab";
   const DB_VERSION = 1;
@@ -543,96 +544,48 @@
   }
 
   function activeSchoolQuestSession(questId,worldId=null){
+    if(STUDY_TRACKING)return STUDY_TRACKING.activeSession(state.studySessions||[],questId,worldId);
     return (state.studySessions||[]).slice().reverse().find(x=>x?.questId===questId&&x.status==="ACTIVE"&&(worldId==null||x.worldId===worldId))||null;
   }
 
   function schoolQuestStudyContext(questId){
+    if(STUDY_TRACKING)return STUDY_TRACKING.context(state.studySessions||[],questId);
     const session=activeSchoolQuestSession(questId);
     if(!session)return null;
-    const activeItemId=session.activeItemId;
-    const item=(session.items||[]).find(x=>x.itemId===activeItemId)||null;
+    const item=(session.items||[]).find(x=>x.itemId===session.activeItemId)||null;
     return item?{sessionId:session.id,worldId:session.worldId,itemId:item.itemId,startedAt:item.startedAt}:null;
   }
 
   function upsertSchoolExposure(meta,createdAt){
     state.schoolExposures=state.schoolExposures||[];
+    const full={...meta,learnerId:CONTENT.student.id,supportLane:"SCHOOL_SUCCESS"};
+    if(STUDY_TRACKING)return STUDY_TRACKING.ensureExposure(state.schoolExposures,full,createdAt);
     const id=`sq_exp:${meta.questId}:${meta.itemId}`;
     const existing=state.schoolExposures.find(x=>x.id===id);
     if(existing)return existing;
-    const record={
-      id,
-      learnerId:CONTENT.student.id,
-      questId:meta.questId,
-      contentVersion:meta.contentVersion??1,
-      subject:meta.subject||"Language Arts",
-      supportLane:"SCHOOL_SUCCESS",
-      worldId:meta.worldId||null,
-      itemId:meta.itemId,
-      targetId:meta.targetId||meta.itemId,
-      label:meta.label||null,
-      exposureType:meta.exposureType||"INSTRUCTION_PRESENTED",
-      instruction_exposure_status:"PRIOR_INSTRUCTION",
-      evidenceClass:null,
-      diagnosticEvidence:false,
-      firstExposedAt:createdAt,
-      timestampPrecision:"EXACT",
-      provenance:"LIVE_GAME"
-    };
-    state.schoolExposures.push(record);
-    return record;
+    const record={id,...full,instruction_exposure_status:"PRIOR_INSTRUCTION",evidenceClass:null,diagnosticEvidence:false,firstExposedAt:createdAt,timestampPrecision:"EXACT",provenance:"LIVE_GAME"};
+    state.schoolExposures.push(record);return record;
   }
 
   function ensureSchoolQuestStudySession(meta,createdAt){
     state.studySessions=state.studySessions||[];
+    const full={...meta,learnerId:CONTENT.student.id,supportLane:"SCHOOL_SUCCESS"};
+    if(STUDY_TRACKING)return STUDY_TRACKING.ensureSession(state.studySessions,full,createdAt);
     let session=activeSchoolQuestSession(meta.questId,meta.worldId);
     if(session)return session;
-    session={
-      id:`sq_study_${Date.now()}_${String(meta.worldId||"world").replace(/[^A-Z0-9_-]/gi,"_")}`,
-      learnerId:CONTENT.student.id,
-      questId:meta.questId,
-      contentVersion:meta.contentVersion??1,
-      subject:meta.subject||"Language Arts",
-      supportLane:"SCHOOL_SUCCESS",
-      worldId:meta.worldId||null,
-      startedAt:createdAt,
-      completedAt:null,
-      status:"ACTIVE",
-      items:[],
-      activeItemId:null,
-      source:"SCHOOL_QUEST",
-      diagnosticEvidence:false
-    };
-    state.studySessions.push(session);
-    return session;
+    session={id:`sq_study_${Date.now()}_${String(meta.worldId||"world").replace(/[^A-Z0-9_-]/gi,"_")}`,learnerId:CONTENT.student.id,questId:meta.questId,contentVersion:meta.contentVersion??1,subject:meta.subject||"Language Arts",supportLane:"SCHOOL_SUCCESS",worldId:meta.worldId||null,startedAt:createdAt,completedAt:null,status:"ACTIVE",items:[],activeItemId:null,source:"SCHOOL_QUEST",diagnosticEvidence:false};
+    state.studySessions.push(session);return session;
   }
 
   function ensureSchoolQuestStudyItem(session,meta,createdAt){
+    if(STUDY_TRACKING)return STUDY_TRACKING.ensureItem(session,meta,createdAt);
     session.items=session.items||[];
     let item=session.items.find(x=>x.itemId===meta.itemId);
     if(!item){
-      item={
-        itemId:meta.itemId,
-        targetId:meta.targetId||meta.itemId,
-        label:meta.label||null,
-        promptType:meta.promptType||null,
-        startedAt:createdAt,
-        firstResponseAt:null,
-        firstResponseMs:null,
-        completedAt:null,
-        totalResponseMs:null,
-        attemptCount:0,
-        firstAnswerCorrect:null,
-        answersTried:[],
-        readAloudCount:0,
-        hintCount:0,
-        selfReported:false,
-        completed:false,
-        legacyReconstructed:false
-      };
+      item={itemId:meta.itemId,targetId:meta.targetId||meta.itemId,label:meta.label||null,promptType:meta.promptType||null,startedAt:createdAt,firstResponseAt:null,firstResponseMs:null,completedAt:null,totalResponseMs:null,attemptCount:0,firstAnswerCorrect:null,answersTried:[],readAloudCount:0,hintCount:0,selfReported:false,completed:false,legacyReconstructed:false};
       session.items.push(item);
     }
-    session.activeItemId=meta.itemId;
-    return item;
+    session.activeItemId=meta.itemId;return item;
   }
 
   async function saveSchoolQuestProgress({questId,contentVersion,progress,reason="School Quest progress"}={}){
@@ -650,14 +603,19 @@
     if(!questId||!worldId||!Array.isArray(items)||!items.length||!progress)return false;
     const createdAt=now();
     ensureSchoolQuestRecord(questId,contentVersion,progress);
-    const session=ensureSchoolQuestStudySession({questId,contentVersion,subject,worldId},createdAt);
-    for(const meta of items){
-      if(!meta?.itemId)continue;
-      const full={...meta,questId,contentVersion,subject,worldId};
-      upsertSchoolExposure(full,createdAt);
-      ensureSchoolQuestStudyItem(session,full,createdAt);
+    const baseMeta={questId,contentVersion,subject,worldId,learnerId:CONTENT.student.id,supportLane:"SCHOOL_SUCCESS"};
+    if(STUDY_TRACKING){
+      STUDY_TRACKING.presentItems({studySessions:state.studySessions,schoolExposures:state.schoolExposures},baseMeta,items,createdAt);
+    }else{
+      const session=ensureSchoolQuestStudySession(baseMeta,createdAt);
+      for(const meta of items){
+        if(!meta?.itemId)continue;
+        const full={...baseMeta,...meta};
+        upsertSchoolExposure(full,createdAt);
+        ensureSchoolQuestStudyItem(session,full,createdAt);
+      }
+      session.activeItemId=items[0]?.itemId||session.activeItemId;
     }
-    session.activeItemId=items[0]?.itemId||session.activeItemId;
     return await save(reason);
   }
 
@@ -669,22 +627,16 @@
     const item=session?.items?.find(x=>x.itemId===itemId);
     if(!session||!item||!progress)return false;
     const respondedAt=now();
-    const elapsed=Math.max(0,new Date(respondedAt)-new Date(item.startedAt));
-    item.attemptCount=(Number.isInteger(item.attemptCount)?item.attemptCount:0)+1;
-    if(item.firstResponseAt==null){
-      item.firstResponseAt=respondedAt;
-      item.firstResponseMs=elapsed;
-      item.firstAnswerCorrect=typeof isCorrect==="boolean"?isCorrect:null;
+    if(STUDY_TRACKING){
+      STUDY_TRACKING.recordAttempt(session,itemId,{response,isCorrect,selfReported,respondedAt});
+    }else{
+      const elapsed=Math.max(0,new Date(respondedAt)-new Date(item.startedAt));
+      item.attemptCount=(Number.isInteger(item.attemptCount)?item.attemptCount:0)+1;
+      if(item.firstResponseAt==null){item.firstResponseAt=respondedAt;item.firstResponseMs=elapsed;item.firstAnswerCorrect=typeof isCorrect==="boolean"?isCorrect:null}
+      item.answersTried=item.answersTried||[];item.answersTried.push({at:respondedAt,response:response==null?null:String(response),isCorrect:typeof isCorrect==="boolean"?isCorrect:null,selfReported:!!selfReported});
+      if(isCorrect===true||selfReported===true){item.completed=true;item.selfReported=!!selfReported;item.completedAt=respondedAt;item.totalResponseMs=elapsed}
+      session.activeItemId=itemId;
     }
-    item.answersTried=item.answersTried||[];
-    item.answersTried.push({at:respondedAt,response:response==null?null:String(response),isCorrect:typeof isCorrect==="boolean"?isCorrect:null,selfReported:!!selfReported});
-    if(isCorrect===true||selfReported===true){
-      item.completed=true;
-      item.selfReported=!!selfReported;
-      item.completedAt=respondedAt;
-      item.totalResponseMs=elapsed;
-    }
-    session.activeItemId=itemId;
     ensureSchoolQuestRecord(questId,contentVersion,progress);
     return await save(reason);
   }
@@ -696,8 +648,11 @@
     const session=activeSchoolQuestSession(questId,worldId);
     const item=session?.items?.find(x=>x.itemId===itemId);
     if(!session||!item||!progress)return false;
-    if(kind==="READ_ALOUD")item.readAloudCount=(item.readAloudCount||0)+1;
-    if(kind==="HINT")item.hintCount=(item.hintCount||0)+1;
+    if(STUDY_TRACKING)STUDY_TRACKING.recordAccess(session,itemId,kind);
+    else{
+      if(kind==="READ_ALOUD")item.readAloudCount=(item.readAloudCount||0)+1;
+      if(kind==="HINT")item.hintCount=(item.hintCount||0)+1;
+    }
     ensureSchoolQuestRecord(questId,contentVersion,progress);
     return await save(reason);
   }
@@ -707,9 +662,8 @@
     if(!access.allowed){alert(access.message);return false}
     const session=activeSchoolQuestSession(questId,worldId);
     if(session){
-      session.status=status;
-      session.completedAt=now();
-      session.activeItemId=null;
+      if(STUDY_TRACKING)STUDY_TRACKING.endSession(session,{status,completedAt:now()});
+      else{session.status=status;session.completedAt=now();session.activeItemId=null}
     }
     if(progress)ensureSchoolQuestRecord(questId,contentVersion,progress);
     return await save(reason);
