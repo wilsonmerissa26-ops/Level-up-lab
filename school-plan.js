@@ -729,6 +729,10 @@
     if(!el)return;
     const context=globalThis.MLUL?.schoolQuestStudyContext?.(QUEST_ID);
     if(!context?.startedAt){el.textContent="⏱ --:--";return}
+    if(context.completedAt && Number.isFinite(context.totalResponseMs)){
+      el.textContent="⏱ "+formatElapsed(context.totalResponseMs);
+      return;
+    }
     const start=new Date(context.startedAt).getTime();
     const tick=()=>{el.textContent="⏱ "+formatElapsed(Date.now()-start)};
     tick();timerHandle=setInterval(tick,1000);
