@@ -1,26 +1,19 @@
 (() => {
-  const LEGACY_GAME_KEY="MLUL_WTMMTM_SCHOOL_QUEST_V1";
-  const QUEST_ID="ELA.WTMMTM.TEST.2026-09-29";
-  const CONTENT_VERSION=1;
+  const CONFIG=globalThis.LEVEL_UP_SCHOOL_QUEST_CONFIG;
+  if(!CONFIG)throw new Error("School Quest config must load before school-plan.js.");
+  const LEGACY_GAME_KEY=CONFIG.legacyGameKey;
+  const QUEST_ID=CONFIG.questId;
+  const CONTENT_VERSION=CONFIG.contentVersion;
   const QUEST=globalThis.LEVEL_UP_QUEST_ENGINE;
   let busy=false;
   let progressLoadError=null;
   let transientFeedback=null;
   let timerHandle=null;
-  const WORLD_ORDER=Object.freeze(["story","grammar","dragon","boss","final"]);
-  const WORLD_META=Object.freeze({
-    story:{emoji:"🦊",title:"Story Safari",subtitle:"Storytelling, fantasy, culture, and animal symbolism",badge:"Story Safari Scout",reward:"Safari Crate"},
-    grammar:{emoji:"🐼",title:"Grammar Zoo",subtitle:"Literary terms, clauses, sentences, and conjunctions",badge:"Grammar Keeper",reward:"Zoo Vault"},
-    dragon:{emoji:"🐉",title:"Dragon Obby",subtitle:"Jump through the five Dragon events in the teacher's order",badge:"Dragon Path Runner",reward:"Dragon Chest"},
-    boss:{emoji:"🐯",title:"Review Boss Battle",subtitle:"Foreshadowing, abundance, generosity, Minli, and storytelling",badge:"Boss Breaker",reward:"Arena Chest"},
-    final:{emoji:"🌙",title:"Final Moon Boss",subtitle:"No-notes readiness check before tomorrow's test",badge:"Moon Gate Master",reward:"Moon Vault"}
-  });
-  const COMPANIONS=Object.freeze([
-    {id:"fox",emoji:"🦊",name:"Fox",line:"Fast thinker. Look for clues."},
-    {id:"panda",emoji:"🐼",name:"Panda",line:"Stay calm. One challenge at a time."},
-    {id:"tiger",emoji:"🐯",name:"Tiger",line:"Be bold. Lock in your answer."},
-    {id:"owl",emoji:"🦉",name:"Owl",line:"Read carefully. Details matter."}
-  ]);
+  const WORLD_ORDER=CONFIG.worldOrder;
+  const WORLD_META=CONFIG.worlds;
+  const COMPANIONS=CONFIG.companions;
+
+  function appBridge(){ return globalThis.LEVEL_UP_APP||globalThis.MLUL||null; }
 
   function plan(){ return globalThis.LEVEL_UP_CONTENT?.schoolPlan?.urgent||null; }
 
@@ -42,9 +35,10 @@
   }
 
   function freshProgress(){
-    const base=QUEST?QUEST.freshProgress({worldOrder:WORLD_ORDER,companion:"fox",maxHearts:3}):{
-      version:3,companion:"fox",xp:0,coins:0,gems:0,streak:0,maxHearts:3,hearts:3,respawns:0,
-      activeWorld:null,index:0,feedback:null,completed:{story:false,grammar:false,dragon:false,boss:false,final:false},
+    const completed=Object.fromEntries(WORLD_ORDER.map(id=>[id,false]));
+    const base=QUEST?QUEST.freshProgress({worldOrder:WORLD_ORDER,companion:CONFIG.defaultCompanion,maxHearts:CONFIG.maxHearts}):{
+      version:3,companion:CONFIG.defaultCompanion,xp:0,coins:0,gems:0,streak:0,maxHearts:CONFIG.maxHearts,hearts:CONFIG.maxHearts,respawns:0,
+      activeWorld:null,index:0,feedback:null,completed,
       bossDone:{},finalDone:{},badges:[],openedChests:[],pendingRewards:[],rewardedItems:{}
     };
     base.answered={story:{},grammar:{},dragon:{}};
@@ -52,7 +46,7 @@
   }
 
   function normalizeGameProgress(saved){
-    const normalized=QUEST?QUEST.normalizeProgress(saved,{worldOrder:WORLD_ORDER,companion:"fox",maxHearts:3}):{...freshProgress(),...(saved||{})};
+    const normalized=QUEST?QUEST.normalizeProgress(saved,{worldOrder:WORLD_ORDER,companion:CONFIG.defaultCompanion,maxHearts:CONFIG.maxHearts,lockMode:CONFIG.lockMode}):{...freshProgress(),...(saved||{})};
     normalized.answered={
       story:{...(saved?.answered?.story||{})},
       grammar:{...(saved?.answered?.grammar||{})},
@@ -69,6 +63,7 @@
 
   function readLegacyRaw(){
     try{
+      if(!LEGACY_GAME_KEY)return null;
       const raw=globalThis.localStorage?.getItem(LEGACY_GAME_KEY);
       return raw?JSON.parse(raw):null;
     }catch(_){return null}
@@ -88,7 +83,7 @@
 
   function loadProgress(){
     try{
-      const saved=globalThis.MLUL?.getSchoolQuestProgress?.(QUEST_ID) || readLegacyRaw();
+      const saved=appBridge()?.getSchoolQuestProgress?.(QUEST_ID) || readLegacyRaw();
       if(!saved)return freshProgress();
       progressLoadError=null;
       return normalizeGameProgress(saved);
@@ -99,14 +94,15 @@
   }
 
   async function saveProgress(progress,reason="School Quest progress"){
-    const access=globalThis.MLUL?.schoolQuestAccess?.();
+    const bridge=appBridge();
+    const access=bridge?.schoolQuestAccess?.();
     if(access && !access.allowed)return false;
-    if(!globalThis.MLUL?.saveSchoolQuestProgress)return false;
-    return !!(await globalThis.MLUL.saveSchoolQuestProgress({questId:QUEST_ID,contentVersion:CONTENT_VERSION,progress,reason}));
+    if(!bridge?.saveSchoolQuestProgress)return false;
+    return !!(await bridge.saveSchoolQuestProgress({questId:QUEST_ID,contentVersion:CONTENT_VERSION,progress,reason}));
   }
 
   function actionAllowed(){
-    const access=globalThis.MLUL?.schoolQuestAccess?.();
+    const access=appBridge()?.schoolQuestAccess?.();
     return !busy && (!access || access.allowed===true);
   }
 
@@ -117,7 +113,8 @@
   }
 
   function refresh(){
-    if(globalThis.MLUL?.refreshSchoolPlan)globalThis.MLUL.refreshSchoolPlan();
+    const bridge=appBridge();
+    if(bridge?.refreshSchoolPlan)bridge.refreshSchoolPlan();
     else if(globalThis.location)globalThis.location.reload();
   }
 
@@ -125,16 +122,18 @@
     return COMPANIONS.find(x=>x.id===progress.companion)||COMPANIONS[0];
   }
 
-  function rankFor(xp){ return QUEST?QUEST.rankFor(xp):xp>=360?"Mountain Master":xp>=240?"Moon Ranger":xp>=120?"Story Scout":"Rookie Explorer"; }
-  function heartsText(progress){ return QUEST?QUEST.heartsText(progress):"❤️".repeat(progress.hearts||3); }
-  function levelNumber(progress){ return QUEST?QUEST.levelNumber(progress):1+Math.floor((progress.xp||0)/100); }
+  function rankFor(xp){ return QUEST?QUEST.rankFor(xp,CONFIG.ranks):(CONFIG.ranks.findLast?.(r=>Number(xp)>=r.min)?.name||CONFIG.ranks[0]?.name||"Explorer"); }
+  function heartsText(progress){ return QUEST?QUEST.heartsText(progress):"❤️".repeat(progress.hearts||CONFIG.maxHearts); }
+  function levelNumber(progress){ return QUEST?QUEST.levelNumber(progress,{xpPerLevel:CONFIG.xpPerLevel}):1+Math.floor((progress.xp||0)/CONFIG.xpPerLevel); }
   function worldUnlocked(progress,id){
-    if(QUEST)return QUEST.worldUnlocked(progress,id,WORLD_ORDER);
+    if(QUEST)return QUEST.worldUnlocked(progress,id,WORLD_ORDER,{lockMode:CONFIG.lockMode});
     const index=WORLD_ORDER.indexOf(id);
-    if(index===0)return true;
     if(index<0)return false;
+    if(CONFIG.lockMode==="OPEN"||CONFIG.lockMode==="RECOMMENDED")return true;
+    if(index===0)return true;
     return progress?.completed?.[WORLD_ORDER[index-1]]===true;
   }
+  function recommendedWorld(progress){ return WORLD_ORDER.find(id=>progress?.completed?.[id]!==true)||WORLD_ORDER[WORLD_ORDER.length-1]; }
   function bossHealth(progress,p){
     const total=p?.studyBlocks?.[3]?.prompts?.length||0;
     const done=Object.keys(progress.bossDone||{}).filter(k=>progress.bossDone[k]).length;
@@ -204,7 +203,7 @@
       if(!pair)return null;
       return {
         itemId:QUEST_ID+":"+worldId+":"+index,
-        targetId:"ELA.WTMMTM."+worldId.toUpperCase()+"."+idToken(pair[0]),
+        targetId:CONFIG.targetPrefix+"."+worldId.toUpperCase()+"."+idToken(pair[0]),
         label:pair[0],
         promptType:"TERM_RECOGNITION"
       };
@@ -214,7 +213,7 @@
       if(!event)return null;
       return {
         itemId:QUEST_ID+":dragon:"+index,
-        targetId:"ELA.WTMMTM.DRAGON_SEQUENCE."+index,
+        targetId:CONFIG.targetPrefix+".SEQUENCE."+index,
         label:event,
         promptType:"SEQUENCE_RECALL"
       };
@@ -224,7 +223,7 @@
       if(!q)return null;
       return {
         itemId:QUEST_ID+":boss:"+index,
-        targetId:"ELA.WTMMTM.REVIEW."+idToken(q),
+        targetId:CONFIG.targetPrefix+".REVIEW."+idToken(q),
         label:q,
         promptType:"OPEN_RESPONSE_SELF_CHECK"
       };
@@ -234,7 +233,7 @@
       if(!q)return null;
       return {
         itemId:QUEST_ID+":final:"+index,
-        targetId:"ELA.WTMMTM.FINAL."+index,
+        targetId:CONFIG.targetPrefix+".FINAL."+index,
         label:q,
         promptType:"NO_NOTES_SELF_CHECK"
       };
@@ -252,17 +251,19 @@
   async function beginPresentedItems(progress,worldId,reason){
     const items=presentedItems(progress,worldId);
     if(!items.length)return saveProgress(progress,reason);
-    if(!globalThis.MLUL?.beginSchoolQuestItems)return saveProgress(progress,reason);
-    return !!(await globalThis.MLUL.beginSchoolQuestItems({
-      questId:QUEST_ID,contentVersion:CONTENT_VERSION,subject:"Language Arts",worldId,items,progress,reason
+    const bridge=appBridge();
+    if(!bridge?.beginSchoolQuestItems)return saveProgress(progress,reason);
+    return !!(await bridge.beginSchoolQuestItems({
+      questId:QUEST_ID,contentVersion:CONTENT_VERSION,subject:CONFIG.subject||plan()?.subject||null,worldId,items,progress,reason
     }));
   }
 
   async function recordAttempt(progress,worldId,index,response,isCorrect,{selfReported=false,reason="School Quest response"}={}){
     const meta=itemMeta(worldId,index);
     if(!meta)return false;
-    if(!globalThis.MLUL?.recordSchoolQuestAttempt)return saveProgress(progress,reason);
-    return !!(await globalThis.MLUL.recordSchoolQuestAttempt({
+    const bridge=appBridge();
+    if(!bridge?.recordSchoolQuestAttempt)return saveProgress(progress,reason);
+    return !!(await bridge.recordSchoolQuestAttempt({
       questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId,itemId:meta.itemId,response,isCorrect,selfReported,progress,reason
     }));
   }
@@ -270,8 +271,9 @@
   async function recordAccess(progress,worldId,index,kind,reason){
     const meta=itemMeta(worldId,index);
     if(!meta)return false;
-    if(!globalThis.MLUL?.recordSchoolQuestAccess)return saveProgress(progress,reason);
-    return !!(await globalThis.MLUL.recordSchoolQuestAccess({
+    const bridge=appBridge();
+    if(!bridge?.recordSchoolQuestAccess)return saveProgress(progress,reason);
+    return !!(await bridge.recordSchoolQuestAccess({
       questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId,itemId:meta.itemId,kind,progress,reason
     }));
   }
@@ -305,7 +307,7 @@
         exposures.push(meta);items.push(reconstructedItem(meta));
       }
     }
-    return {subject:"Language Arts",reconstructedAt,exposures,items};
+    return {subject:CONFIG.subject||p?.subject||null,reconstructedAt,exposures,items};
   }
 
   function escapeAttr(s){
@@ -315,7 +317,7 @@
   function topBar(escapeHTML,progress,{compact=false}={}){
     const pet=companion(progress);
     return "<div class=\"game-hud "+(compact?"compact":"")+"\">"+
-      "<div class=\"hud-brand\"><span class=\"pill warn\">"+escapeHTML(urgencyLabel())+"</span><div class=\"hud-title\">🏔️ Moon Mountain</div><div class=\"tiny muted\">School Quest · teacher material</div></div>"+
+      "<div class=\"hud-brand\"><span class=\"pill warn\">"+escapeHTML(urgencyLabel())+"</span><div class=\"hud-title\">🎮 "+escapeHTML(CONFIG.copy.shortName)+"</div><div class=\"tiny muted\">School Quest · teacher material</div></div>"+
       "<div class=\"hud-center\">"+
         "<span class=\"hud-chip level-chip\">LVL "+levelNumber(progress)+"</span>"+
         "<span class=\"hud-chip\">⭐ "+progress.xp+" XP</span>"+
@@ -329,7 +331,7 @@
   }
 
   function renderCompanions(escapeHTML,progress){
-    return "<div class=\"game-panel companion-panel\"><div class=\"row between\"><div><div class=\"game-kicker\">TEAM LOADOUT</div><h3>Pick your animal teammate</h3></div><span class=\"pill purple\">Cosmetic teammate</span></div><div class=\"companion-grid\">"+
+    return "<div class=\"game-panel companion-panel\"><div class=\"row between\"><div><div class=\"game-kicker\">TEAM LOADOUT</div><h3>Pick your teammate</h3></div><span class=\"pill purple\">Cosmetic teammate</span></div><div class=\"companion-grid\">"+
       COMPANIONS.map(c=>"<button class=\"companion-btn "+(progress.companion===c.id?"selected":"")+"\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.chooseCompanion('"+c.id+"')\"><span>"+c.emoji+"</span><strong>"+escapeHTML(c.name)+"</strong><small>"+escapeHTML(c.line)+"</small></button>").join("")+
       "</div></div>";
   }
@@ -338,7 +340,9 @@
     const reward=progress.pendingRewards?.[0]||null;
     if(!reward)return "";
     const meta=WORLD_META[reward.worldId]||{};
-    return "<div class=\"reward-drop\"><div class=\"reward-chest\">🎁</div><div class=\"grow\"><div class=\"game-kicker\">WORLD DROP</div><h3>"+escapeHTML(meta.reward||"Treasure Chest")+" unlocked!</h3><p class=\"small muted\">Clear reward: "+(reward.chestCoins||0)+" coins + "+(reward.chestGems||0)+" moon gem"+((reward.chestGems||0)===1?"":"s")+(reward.badge?" + "+escapeHTML(reward.badge)+" badge":"")+".</p></div><button class=\"btn game-cta\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.openChest()\">OPEN CHEST</button></div>";
+    const coinWord=CONFIG.currency.coinName+((reward.chestCoins||0)===1?"":"s");
+    const gemWord=CONFIG.currency.gemName+((reward.chestGems||0)===1?"":"s");
+    return "<div class=\"reward-drop\"><div class=\"reward-chest\">🎁</div><div class=\"grow\"><div class=\"game-kicker\">WORLD DROP</div><h3>"+escapeHTML(meta.reward||"Treasure Chest")+" unlocked!</h3><p class=\"small muted\">Clear reward: "+(reward.chestCoins||0)+" "+escapeHTML(coinWord)+" + "+(reward.chestGems||0)+" "+escapeHTML(gemWord)+(reward.badge?" + "+escapeHTML(reward.badge)+" badge":"")+".</p></div><button class=\"btn game-cta\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.openChest()\">OPEN CHEST</button></div>";
   }
 
   function worldCard(escapeHTML,id,progress,p,index){
@@ -346,29 +350,32 @@
     const count=worldCount(progress,id,p);
     const complete=progress.completed[id]===true;
     const unlocked=worldUnlocked(progress,id);
+    const recommended=CONFIG.lockMode==="RECOMMENDED" && !complete && recommendedWorld(progress)===id;
     const chestOpened=(progress.openedChests||[]).includes(id);
+    const status=complete?"CLEARED":recommended?"RECOMMENDED":unlocked?"OPEN":"LOCKED";
     return "<div class=\"map-stop "+(complete?"complete ":"")+(unlocked?"":"locked ")+"node-"+index+"\">"+
       "<div class=\"map-connector\"></div>"+
       "<div class=\"world-orb\"><span>"+(unlocked?meta.emoji:"🔒")+"</span></div>"+
-      "<div class=\"world-panel\"><div class=\"row between\"><div><div class=\"game-kicker\">WORLD "+(index+1)+"</div><h3>"+escapeHTML(meta.title)+"</h3></div><span class=\"pill "+(complete?"good":unlocked?"info":"")+"\">"+(complete?"CLEARED":unlocked?count.done+"/"+count.total:"LOCKED")+"</span></div>"+
+      "<div class=\"world-panel\"><div class=\"row between\"><div><div class=\"game-kicker\">WORLD "+(index+1)+"</div><h3>"+escapeHTML(meta.title)+"</h3></div><span class=\"pill "+(complete?"good":recommended?"warn":unlocked?"info":"")+"\">"+status+"</span></div>"+
       "<p class=\"small muted\">"+escapeHTML(meta.subtitle)+"</p>"+
       "<div class=\"world-meter\"><div style=\"width:"+progressPct(count)+"%\"></div></div>"+
-      "<div class=\"world-rewards\"><span>🏅 "+escapeHTML(meta.badge)+"</span><span>"+(complete?(chestOpened?"✅ Chest opened":"🎁 Chest waiting"):"🎁 Clear reward")+"</span></div>"+
-      "<button class=\"btn "+(complete?"good":unlocked?"game-cta":"")+"\" "+(unlocked?"":"disabled")+" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.startWorld('"+id+"')\">"+(complete?"REPLAY WORLD":unlocked?"ENTER WORLD":"CLEAR PRIOR WORLD")+"</button></div></div>";
+      "<div class=\"world-rewards\"><span>🏅 "+escapeHTML(meta.badge||"World badge")+"</span><span>"+(complete?(chestOpened?"✅ Chest opened":"🎁 Chest waiting"):"🎁 Clear reward")+"</span></div>"+
+      "<button class=\"btn "+(complete?"good":unlocked?"game-cta":"")+"\" "+(unlocked?"":"disabled")+" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.startWorld('"+id+"')\">"+(complete?"REPLAY WORLD":unlocked?"ENTER WORLD":"LOCKED")+"</button></div></div>";
   }
 
   function renderHub(escapeHTML,progress,p){
     const allDone=WORLD_ORDER.every(id=>progress.completed[id]===true);
+    const routeNote=CONFIG.lockMode==="RECOMMENDED"?"Recommended path is highlighted, but every world is open for targeted review.":"Follow the available path through the worlds.";
     return "<div class=\"game-shell hub-stage\">"+
       topBar(escapeHTML,progress)+
-      "<div class=\"spawn-banner\"><div><div class=\"game-kicker\">SPAWN POINT</div><h1>Moon Mountain Challenge</h1><p>Clear five worlds for the Sept. 29 test. Every world uses Michael's teacher material.</p></div><div class=\"spawn-avatar\">"+companion(progress).emoji+"</div></div>"+
+      "<div class=\"spawn-banner\"><div><div class=\"game-kicker\">"+escapeHTML(CONFIG.copy.spawnLabel)+"</div><h1>"+escapeHTML(CONFIG.copy.title)+"</h1><p>"+escapeHTML(CONFIG.copy.spawnBlurb)+"</p><p class=\"tiny muted\">"+escapeHTML(routeNote)+"</p></div><div class=\"spawn-avatar\">"+companion(progress).emoji+"</div></div>"+
       rewardBanner(escapeHTML,progress)+
       "<div class=\"game-rule\"><strong>Practice mode:</strong> wrong answers can cost a temporary heart, but never delete progress or points. Hearts respawn automatically. Game XP is practice progress only, not a diagnostic score, and does not become formal diagnostic evidence.</div>"+
       renderCompanions(escapeHTML,progress)+
-      "<div class=\"game-panel world-map-panel\"><div class=\"row between\"><div><div class=\"game-kicker\">WORLD MAP</div><h2>Climb to the Moon Gate</h2></div><div class=\"badge-stack\">"+(progress.badges||[]).slice(-3).map(b=>"<span class=\"pill good\">🏅 "+escapeHTML(b)+"</span>").join("")+"</div></div><div class=\"game-world-map\">"+
+      "<div class=\"game-panel world-map-panel\"><div class=\"row between\"><div><div class=\"game-kicker\">WORLD MAP</div><h2>"+escapeHTML(CONFIG.copy.mapTitle)+"</h2></div><div class=\"badge-stack\">"+(progress.badges||[]).slice(-3).map(b=>"<span class=\"pill good\">🏅 "+escapeHTML(b)+"</span>").join("")+"</div></div><div class=\"game-world-map\">"+
       WORLD_ORDER.map((id,i)=>worldCard(escapeHTML,id,progress,p,i)).join("")+
       "</div></div>"+
-      (allDone?"<div class=\"victory-screen\"><div class=\"victory-stars\">✨ 🏆 ✨</div><h2>QUEST CLEARED</h2><p>Michael cleared every world. Tomorrow morning, replay the Final Moon Gate for a fast refresh.</p></div>":"")+
+      (allDone?"<div class=\"victory-screen\"><div class=\"victory-stars\">✨ 🏆 ✨</div><h2>"+escapeHTML(CONFIG.copy.clearedTitle)+"</h2><p>"+escapeHTML(CONFIG.copy.clearedMessage)+"</p></div>":"")+
       "<div class=\"game-panel teacher-switch\"><div><div class=\"game-kicker\">STUDY MODE</div><strong>Need the regular teacher guide?</strong><div class=\"small muted\">Same content, no game layer.</div></div><button class=\"btn\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.openGuide()\">Open study guide</button></div>"+
       "</div>";
   }
@@ -414,11 +421,11 @@
     const idx=Math.min(progress.index,Math.max(seq.length-1,0));
     const opts=dragonChoices(seq,idx);
     const prompt=idx===0?"Which event happens FIRST?":"What happens next?";
-    const context=idx===0?"Start the Dragon path.":"Previous checkpoint: "+seq[idx-1];
+    const context=idx===0?"Start the sequence path.":"Previous checkpoint: "+seq[idx-1];
     return "<div class=\"game-shell challenge-stage dragon-scene\">"+
       topBar(escapeHTML,progress,{compact:true})+
       missionHeader(escapeHTML,progress,"dragon","OBBY RUN",idx+1,seq.length)+
-      "<div class=\"dragon-obby\"><div class=\"dragon-sky\">☁️ <span>🐉</span> ☁️</div><div class=\"obby-track\">"+seq.map((_,i)=>"<div class=\"obby-platform "+(i<idx?"done":i===idx?"current":"locked-step")+"\"><span>"+(i<idx?"✓":i+1)+"</span></div>").join("<div class=\"obby-gap\">◆</div>")+"</div></div>"+
+      "<div class=\"dragon-obby\"><div class=\"dragon-sky\">☁️ <span>"+escapeHTML(WORLD_META.dragon.emoji)+"</span> ☁️</div><div class=\"obby-track\">"+seq.map((_,i)=>"<div class=\"obby-platform "+(i<idx?"done":i===idx?"current":"locked-step")+"\"><span>"+(i<idx?"✓":i+1)+"</span></div>").join("<div class=\"obby-gap\">◆</div>")+"</div></div>"+
       "<div class=\"mission-panel\"><div class=\"objective-tag\">🏃 OBBY CHECKPOINT</div><p class=\"small muted\">"+escapeHTML(context)+"</p><div class=\"challenge-question\">"+escapeHTML(prompt)+"</div>"+
       answerBlocks(escapeHTML,opts,o=>"window.LEVEL_UP_SCHOOL_PLAN.chooseDragon("+idx+",'"+escapeAttr(o).replaceAll("'","&#39;")+"')")+
       "<div class=\"mission-tools\"><button class=\"btn\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.readChallenge()\">🔊 READ CHALLENGE</button></div>"+feedbackBox(escapeHTML,progress)+"</div></div>";
@@ -446,11 +453,11 @@
     const gatePct=items.length?Math.round(doneCount/items.length*100):0;
     return "<div class=\"game-shell challenge-stage moon-scene\">"+
       topBar(escapeHTML,progress,{compact:true})+
-      missionHeader(escapeHTML,progress,"final","FINAL GATE",doneCount,items.length)+
-      "<div class=\"moon-gate-scene\"><div class=\"moon-orb\">🌕</div><div class=\"gate-ring "+(doneCount===items.length?"open":"")+"\">"+gatePct+"%</div><div class=\"gate-caption\">CLEAR EVERY LOCK TO OPEN THE MOON GATE</div></div>"+
+      missionHeader(escapeHTML,progress,"final",CONFIG.copy.finalGateLabel,doneCount,items.length)+
+      "<div class=\"moon-gate-scene\"><div class=\"moon-orb\">"+escapeHTML(WORLD_META.final.emoji)+"</div><div class=\"gate-ring "+(doneCount===items.length?"open":"")+"\">"+gatePct+"%</div><div class=\"gate-caption\">"+escapeHTML(CONFIG.copy.finalGateCaption)+"</div></div>"+
       "<div class=\"mission-panel\"><div class=\"objective-tag\">🔐 NO-NOTES CHECK</div><div class=\"challenge-question\">Say it first. Then unlock it.</div><div class=\"moon-lock-grid\">"+
       items.map((x,i)=>"<button class=\"moon-lock "+(progress.finalDone[i]?"open":"")+"\" onclick=\"window.LEVEL_UP_SCHOOL_PLAN.toggleFinal("+i+")\"><span class=\"lock-icon\">"+(progress.finalDone[i]?"🔓":"🔒")+"</span><span>"+escapeHTML(x)+"</span></button>").join("")+
-      "</div>"+(doneCount===items.length?"<div class=\"checkpoint-popup cleared\"><div class=\"popup-icon\">🏆</div><div><div class=\"game-kicker\">MOON GATE OPEN</div><strong>Final Boss cleared. Revisit only anything Michael still hesitates on.</strong></div></div>":"")+"</div></div>";
+      "</div>"+(doneCount===items.length?"<div class=\"checkpoint-popup cleared\"><div class=\"popup-icon\">🏆</div><div><div class=\"game-kicker\">"+escapeHTML(CONFIG.copy.finalGateLabel)+" OPEN</div><strong>Final self-check cleared. Revisit only anything that still feels uncertain.</strong></div></div>":"")+"</div></div>";
   }
 
   function renderGuide(escapeHTML,p){
@@ -500,14 +507,8 @@
   }
 
   function rewardForWorld(id){
-    const rewards={
-      story:{badge:WORLD_META.story.badge,chestCoins:20,chestGems:1},
-      grammar:{badge:WORLD_META.grammar.badge,chestCoins:25,chestGems:1},
-      dragon:{badge:WORLD_META.dragon.badge,chestCoins:35,chestGems:1},
-      boss:{badge:WORLD_META.boss.badge,chestCoins:40,chestGems:2},
-      final:{badge:WORLD_META.final.badge,chestCoins:50,chestGems:3}
-    };
-    return rewards[id]||{badge:null,chestCoins:20,chestGems:1};
+    const meta=WORLD_META[id];
+    return meta?{badge:meta.badge||null,chestCoins:meta.chestCoins||0,chestGems:meta.chestGems||0}:{badge:null,chestCoins:0,chestGems:0};
   }
 
   function completeWorld(progress,id){
@@ -543,7 +544,7 @@
       if(!WORLD_ORDER.includes(id)||!worldUnlocked(progress,id))return false;
       progress.activeWorld=id;
       transientFeedback=null;
-      progress.hearts=progress.maxHearts||3;
+      progress.hearts=progress.maxHearts||CONFIG.maxHearts;
       if(id==="story"||id==="grammar"||id==="dragon"){
         const map=id==="dragon"?progress.answered.dragon:progress.answered[id];
         let next=0;
@@ -563,9 +564,11 @@
   async function exitWorld(){
     await runAction(async()=>{
       const progress=loadProgress();
-      progress.activeWorld=null;progress.index=0;transientFeedback=null;progress.hearts=progress.maxHearts||3;
-      if(globalThis.MLUL?.endSchoolQuestStudySession){
-        if(!await globalThis.MLUL.endSchoolQuestStudySession({questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId:progress.activeWorld||null,progress,status:"ENDED_EARLY",reason:"School Quest exit world"}))return false;
+      const exitingWorld=progress.activeWorld;
+      progress.activeWorld=null;progress.index=0;transientFeedback=null;progress.hearts=progress.maxHearts||CONFIG.maxHearts;
+      const bridge=appBridge();
+      if(bridge?.endSchoolQuestStudySession){
+        if(!await bridge.endSchoolQuestStudySession({questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId:exitingWorld,progress,status:"ENDED_EARLY",reason:"School Quest exit world"}))return false;
       }else if(!await saveProgress(progress,"School Quest exit world"))return false;
       refresh();return true;
     });
@@ -629,9 +632,10 @@
       if(id==="boss"&&!progress.bossDone?.[progress.index])return false;
       if(progress.index+1>=total){
         completeWorld(progress,id);
-        progress.activeWorld=null;progress.index=0;progress.hearts=progress.maxHearts||3;
-        if(globalThis.MLUL?.endSchoolQuestStudySession){
-          if(!await globalThis.MLUL.endSchoolQuestStudySession({questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId:id,progress,status:"COMPLETED",reason:"School Quest complete world"}))return false;
+        progress.activeWorld=null;progress.index=0;progress.hearts=progress.maxHearts||CONFIG.maxHearts;
+        const bridge=appBridge();
+        if(bridge?.endSchoolQuestStudySession){
+          if(!await bridge.endSchoolQuestStudySession({questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId:id,progress,status:"COMPLETED",reason:"School Quest complete world"}))return false;
         }else if(!await saveProgress(progress,"School Quest complete world"))return false;
       }else{
         progress.index+=1;
@@ -666,8 +670,9 @@
       const done=Object.keys(progress.finalDone).filter(k=>progress.finalDone[k]).length;
       if(done>=finals.length)completeWorld(progress,"final");
       if(!await recordAttempt(progress,"final",index,"SELF_CHECKED_NO_NOTES",null,{selfReported:true,reason:"School Quest final check"}))return false;
-      if(done>=finals.length && globalThis.MLUL?.endSchoolQuestStudySession){
-        await globalThis.MLUL.endSchoolQuestStudySession({questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId:"final",progress,status:"COMPLETED",reason:"School Quest complete final world"});
+      const bridge=appBridge();
+      if(done>=finals.length && bridge?.endSchoolQuestStudySession){
+        await bridge.endSchoolQuestStudySession({questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId:"final",progress,status:"COMPLETED",reason:"School Quest complete final world"});
       }
       refresh();return true;
     });
@@ -677,7 +682,7 @@
   function closeGuide(){guideOpen=false;refresh()}
 
   async function resetGame(){
-    if(globalThis.confirm && !globalThis.confirm("Reset Moon Mountain game progress? The study content will stay."))return;
+    if(globalThis.confirm && !globalThis.confirm(CONFIG.copy.resetPrompt))return;
     await runAction(async()=>{
       const progress=freshProgress();
       if(!await saveProgress(progress,"School Quest reset"))return false;
@@ -727,7 +732,7 @@
     if(timerHandle){clearInterval(timerHandle);timerHandle=null}
     const el=globalThis.document?.getElementById?.("schoolQuestTimer");
     if(!el)return;
-    const context=globalThis.MLUL?.schoolQuestStudyContext?.(QUEST_ID);
+    const context=appBridge()?.schoolQuestStudyContext?.(QUEST_ID);
     if(!context?.startedAt){el.textContent="⏱ --:--";return}
     if(context.completedAt && Number.isFinite(context.totalResponseMs)){
       el.textContent="⏱ "+formatElapsed(context.totalResponseMs);
@@ -754,7 +759,7 @@
   }
 
   const api={
-    QUEST_ID,CONTENT_VERSION,LEGACY_GAME_KEY,render,readText,readChallenge,bindLiveTimer,hintToggled,urgencyLabel,legacyMigrationCandidate,reconstructLegacyHistory,
+    CONFIG,QUEST_ID,CONTENT_VERSION,LEGACY_GAME_KEY,render,readText,readChallenge,bindLiveTimer,hintToggled,urgencyLabel,legacyMigrationCandidate,reconstructLegacyHistory,
     chooseCompanion,startWorld,exitWorld,chooseTerm,chooseDragon,next,
     markBossDone,toggleFinal,openChest,openGuide,closeGuide,resetGame,
     __test:{freshProgress,normalizeGameProgress,flattenTermWorlds,choicesFor,dragonChoices,rankFor,worldCount,worldUnlocked,rewardForWorld,bossHealth,itemMeta,presentedItems}

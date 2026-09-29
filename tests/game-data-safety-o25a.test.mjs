@@ -4,6 +4,8 @@ import vm from 'node:vm';
 
 const engineSource=fs.readFileSync(new URL('../quest-engine.js',import.meta.url),'utf8');
 const contentSource=fs.readFileSync(new URL('../content.js',import.meta.url),'utf8');
+const configFactorySource=fs.readFileSync(new URL('../quest-config.js',import.meta.url),'utf8');
+const michaelQuestConfigSource=fs.readFileSync(new URL('../michael-school-quest-config.js',import.meta.url),'utf8');
 const planSource=fs.readFileSync(new URL('../school-plan.js',import.meta.url),'utf8');
 const appSource=fs.readFileSync(new URL('../app.js',import.meta.url),'utf8');
 const learnerSource=fs.readFileSync(new URL('../learner-config.js',import.meta.url),'utf8');
@@ -56,7 +58,7 @@ const store=new Map();
 store.set('MLUL_WTMMTM_SCHOOL_QUEST_V1',JSON.stringify(legacy));
 const pctx={localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,String(v)),removeItem:k=>store.delete(k)}};
 pctx.window=pctx;pctx.globalThis=pctx;pctx.location={reload(){}};pctx.MLUL={schoolQuestAccess:()=>({allowed:true}),getSchoolQuestProgress:()=>null,refreshSchoolPlan(){}};
-vm.createContext(pctx);vm.runInContext(contentSource,pctx);vm.runInContext(engineSource,pctx);vm.runInContext(planSource,pctx);
+vm.createContext(pctx);vm.runInContext(contentSource,pctx);vm.runInContext(engineSource,pctx);vm.runInContext(configFactorySource,pctx);vm.runInContext(michaelQuestConfigSource,pctx);vm.runInContext(planSource,pctx);
 const P=pctx.LEVEL_UP_SCHOOL_PLAN;
 const candidate=P.legacyMigrationCandidate();
 assert.ok(candidate);
