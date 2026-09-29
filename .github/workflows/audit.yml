@@ -89,3 +89,5 @@ jobs:
         run: node tests/quest-engine-o24.test.mjs
       - name: Run Patch O.2.4 Michael block-game challenge regression
         run: node tests/school-quest-o24.test.mjs
+      - name: Run Patch O.2.5a game data safety regression
+        run: node tests/game-data-safety-o25a.test.mjs
