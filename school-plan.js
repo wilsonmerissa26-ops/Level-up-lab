@@ -544,7 +544,7 @@
       if(!WORLD_ORDER.includes(id)||!worldUnlocked(progress,id))return false;
       progress.activeWorld=id;
       transientFeedback=null;
-      progress.hearts=progress.maxHearts||3;
+      progress.hearts=progress.maxHearts||CONFIG.maxHearts;
       if(id==="story"||id==="grammar"||id==="dragon"){
         const map=id==="dragon"?progress.answered.dragon:progress.answered[id];
         let next=0;
@@ -632,9 +632,10 @@
       if(id==="boss"&&!progress.bossDone?.[progress.index])return false;
       if(progress.index+1>=total){
         completeWorld(progress,id);
-        progress.activeWorld=null;progress.index=0;progress.hearts=progress.maxHearts||3;
-        if(globalThis.MLUL?.endSchoolQuestStudySession){
-          if(!await globalThis.MLUL.endSchoolQuestStudySession({questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId:id,progress,status:"COMPLETED",reason:"School Quest complete world"}))return false;
+        progress.activeWorld=null;progress.index=0;progress.hearts=progress.maxHearts||CONFIG.maxHearts;
+        const bridge=appBridge();
+        if(bridge?.endSchoolQuestStudySession){
+          if(!await bridge.endSchoolQuestStudySession({questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId:id,progress,status:"COMPLETED",reason:"School Quest complete world"}))return false;
         }else if(!await saveProgress(progress,"School Quest complete world"))return false;
       }else{
         progress.index+=1;
@@ -669,8 +670,9 @@
       const done=Object.keys(progress.finalDone).filter(k=>progress.finalDone[k]).length;
       if(done>=finals.length)completeWorld(progress,"final");
       if(!await recordAttempt(progress,"final",index,"SELF_CHECKED_NO_NOTES",null,{selfReported:true,reason:"School Quest final check"}))return false;
-      if(done>=finals.length && globalThis.MLUL?.endSchoolQuestStudySession){
-        await globalThis.MLUL.endSchoolQuestStudySession({questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId:"final",progress,status:"COMPLETED",reason:"School Quest complete final world"});
+      const bridge=appBridge();
+      if(done>=finals.length && bridge?.endSchoolQuestStudySession){
+        await bridge.endSchoolQuestStudySession({questId:QUEST_ID,contentVersion:CONTENT_VERSION,worldId:"final",progress,status:"COMPLETED",reason:"School Quest complete final world"});
       }
       refresh();return true;
     });
