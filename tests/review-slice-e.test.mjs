@@ -15,7 +15,7 @@ const CONTENT=context.window.LEVEL_UP_CONTENT;
 const ENGINE=context.window.LEVEL_UP_REVIEW_ENGINE;
 const lessonMap=new Map([...CONTENT.science,...CONTENT.math].map(l=>[l.id,l]));
 
-assert.equal(ENGINE.SKILL_IDS.length,13); pass('review engine covers all 13 Track B lesson skills');
+assert.equal(ENGINE.SKILL_IDS.length,lessonMap.size); pass('review engine covers all Track B lesson skills');
 for(const skillId of ENGINE.SKILL_IDS){
   assert.ok(lessonMap.has(skillId),`unknown review skill ${skillId}`);
   for(const windowLabel of ['Day 2','Day 7','Day 21']){
@@ -55,3 +55,4 @@ assert.match(appSource,/id:`review_ev_\$\{current\.session\.id\}_\$\{current\.se
 assert.match(appSource,/id:`ev_\$\{current\.session\.id\}_\$\{current\.session\.itemIndex\}`/); pass('lesson evidence ids are stable across retries');
 
 console.log('\nAll Slice E delayed-review checks passed.');
+

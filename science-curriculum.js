@@ -115,6 +115,9 @@
   }));
 
   const schoolExtensions=Object.freeze([
+    {id:"SCI.EXT.DOPPLER",title:"Doppler effect and red/blue shifts",reason:"Teacher-supplied Unit 2 AKS 9e",legacyLessonIds:["SCI.WAVES.DOPPLER"]},
+    {id:"SCI.EXT.INTERFERENCE",title:"Constructive and destructive interference",reason:"Teacher packet school-specific extension",legacyLessonIds:["SCI.WAVES.INTERFERENCE"]},
+    {id:"SCI.EXT.SEISMIC",title:"Seismic waves and seismographs",reason:"Teacher packet school-specific application",legacyLessonIds:["SCI.WAVES.SEISMIC"]},
     {id:"SCI.EXT.ENERGY_FORMS",title:"Energy forms vocabulary",reason:"Preserve Michael's existing school instruction even though it is broader than one Grade 8 element.",legacyLessonIds:["SCI.SPS7A.ENERGY_FORMS"]},
     {id:"SCI.EXT.TRANSFER_TRANSFORMATION",title:"Transfer vs transformation distinction",reason:"Existing school-specific teaching target.",legacyLessonIds:["SCI.SPS7A.TRANSFER_TRANSFORMATION"]},
     {id:"SCI.EXT.MECHANICAL_ENERGY",title:"Mechanical energy as kinetic + potential",reason:"Existing school-specific teaching target.",legacyLessonIds:["SCI.SPS7B.MECHANICAL"]},
@@ -127,6 +130,15 @@
   ]);
 
   const legacyAlignment=Object.freeze({
+    "SCI.WAVES.TYPES":["SCI.S8P4A.MECHANICAL_VS_EM"],
+    "SCI.WAVES.RELATIONSHIPS":["SCI.S8P4F.FREQUENCY_WAVELENGTH"],
+    "SCI.WAVES.BEHAVIORS":["SCI.S8P4D.REFLECTION"],
+    "SCI.WAVES.INTERFERENCE":["SCI.S8P4D.ABSORPTION_TRANSMISSION"],
+    "SCI.WAVES.SPEED":["SCI.S8P4E.MEDIA_DENSITY_SPEED"],
+    "SCI.WAVES.LIGHT":["SCI.S8P4B.EM_SPECTRUM_ORDER"],
+    "SCI.WAVES.SEISMIC":["SCI.S8P4A.TRANSVERSE_LONGITUDINAL"],
+    "SCI.WAVES.DOPPLER":["SCI.EXT.DOPPLER"],
+
     "SCI.SPS7A.ENERGY_FORMS":["SCI.S8P2.CONSERVATION","SCI.S8P2C.ENERGY_TRANSFORMATIONS","SCI.EXT.ENERGY_FORMS"],
     "SCI.SPS7A.TRANSFER_TRANSFORMATION":["SCI.S8P2C.ENERGY_TRANSFORMATIONS","SCI.S8P2C.TRANSFORMATION_CHAINS","SCI.EXT.TRANSFER_TRANSFORMATION"],
     "SCI.SPS7B.MECHANICAL":["SCI.S8P2A.KINETIC_MASS","SCI.S8P2A.KINETIC_SPEED","SCI.S8P2A.POTENTIAL_MASS","SCI.S8P2A.POTENTIAL_HEIGHT","SCI.S8P2B.KINETIC_POTENTIAL_SYSTEM","SCI.EXT.MECHANICAL_ENERGY"],

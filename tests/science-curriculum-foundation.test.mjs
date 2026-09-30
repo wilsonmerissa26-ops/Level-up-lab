@@ -35,7 +35,8 @@ assert.deepEqual(JSON.parse(JSON.stringify(C.teachingCycle)),[
 ]);
 
 const scienceLessonIds=CONTENT.science.map(x=>x.id);
-assert.equal(scienceLessonIds.length,11,'existing Michael science recovery lessons are preserved');
+assert.equal(scienceLessonIds.filter(id=>!id.startsWith('SCI.WAVES.')).length,11,'existing Michael science recovery lessons are preserved');
+assert.equal(scienceLessonIds.filter(id=>id.startsWith('SCI.WAVES.')).length,8,'Waves teaching is populated');
 for(const id of scienceLessonIds){
   assert.ok(C.legacyAlignment[id],id+' must map into the full curriculum or a school extension');
   assert.ok(C.legacyAlignment[id].length>=1,id+' needs at least one curriculum alignment');
