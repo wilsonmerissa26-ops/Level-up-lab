@@ -514,7 +514,7 @@
     const pct=Math.round(completed/total*100);
     const due=state.reviewSchedule.filter(r=>!r.completed && new Date(r.dueAt)<=new Date()).length;
     return shell(`<div class="grid">
-      <div class="card c8"><h2>Michael's Level-Up Home</h2><p class="muted">We are rebuilding Physical Science from the beginning while preserving every piece of evidence for the permanent system.</p><div class="progress"><div style="width:${pct}%"></div></div><p class="small muted">${completed} of ${total} current Track B lessons completed.</p><div class="row"><button class="btn primary" onclick="location.hash='track-b'">Continue Track B</button><button class="btn" onclick="location.hash='parent'">Open Parent View</button></div></div>
+      <div class="card c8"><h2>Michael's Level-Up Home</h2><p class="muted">Current science priority: Unit 2 Waves by Friday, October 2. Open Track B for teaching and practice; previous learning evidence is preserved.</p><div class="progress"><div style="width:${pct}%"></div></div><p class="small muted">${completed} of ${total} current Track B lessons completed.</p><div class="row"><button class="btn primary" onclick="location.hash='track-b'">Continue Track B</button><button class="btn" onclick="location.hash='parent'">Open Parent View</button></div></div>
       <div class="card c4"><div class="kpi"><div class="t">Evidence records</div><div class="n">${state.evidence.length}</div></div><div class="spacer"></div><div class="kpi"><div class="t">Reviews due</div><div class="n">${due}</div></div></div>
       <div class="card c6"><h3>Track B · build under audit</h3><p><strong>Immediate teaching + school recovery</strong></p><p class="small muted">Science first, then the Math bridge when formula work requires it. Read-aloud, short blocks, verbal explanation, and automatic evidence capture are built in.</p><button class="btn primary" onclick="location.hash='track-b'">Open Track B</button></div>
       <div class="card c6"><h3>Track A · protected baseline</h3><p><strong>Controlled diagnostics + mastery engine</strong></p><p class="small muted">Track A remains separate. Any Track B-taught skill enters formal evidence with PRIOR_INSTRUCTION attached.</p><button class="btn" onclick="location.hash='track-a'">See Track A rules</button></div>
@@ -803,9 +803,9 @@
 
   function trackB(){
     return shell(`<div class="grid">
-      <div class="card c8"><h2>Track B · Immediate Learning</h2><p class="muted">Teaching sequence: <strong>SEE IT → DO IT → SAY IT → SOLVE IT → EXPLAIN IT → RETRIEVE LATER.</strong></p><div class="callout green small"><strong>No more full Unit 1 retest.</strong> Michael starts at the beginning, gets taught, answers fresh checks, and returns later for delayed retrieval.</div></div>
-      <div class="card c4"><div class="label">Current priority</div><div class="big">Science</div><div class="small muted">Unit 1 Energy Recovery</div></div>
-      <div class="card c8"><h3>Physical Science · Unit 1</h3><div class="stack">${CONTENT.science.map(l=>lessonCard(l,"science")).join("")}</div></div>
+      <div class="card c8"><h2>Track B · Immediate Learning</h2><p class="muted">Teaching sequence: <strong>SEE IT → DO IT → SAY IT → SOLVE IT → EXPLAIN IT → RETRIEVE LATER.</strong></p><div class="callout green small"><strong>Waves learning goal: Friday, October 2.</strong> Wednesday: foundations and relationships. Thursday: wave behaviors, media, light, and seismic waves. Friday: Doppler and mixed review. Work through examples, say the ideas back, and return for fresh retrieval checks. The packet lists a Wednesday Mastery Check; its exact coverage is unconfirmed.</div></div>
+      <div class="card c4"><div class="label">Current priority</div><div class="big">Science</div><div class="small muted">Unit 2 Waves · learning goal Friday, Oct. 2</div></div>
+      <div class="card c8"><h3>Physical Science · Waves first, then Energy</h3><div class="stack">${CONTENT.science.map(l=>lessonCard(l,"science")).join("")}</div></div>
       <div class="card c4"><h3>Math Bridge</h3><p class="small muted">Used when Science reaches formula math. We start at numeric inverse operations before literal equations.</p><div class="stack">${CONTENT.math.map(l=>lessonCard(l,"math")).join("")}</div></div>
       <div class="card c12"><h3>Other subjects</h3><div class="row"><span class="pill">ELA · module slot ready</span><span class="pill">Social Studies · module slot ready</span><span class="pill">School Radar · integration slot ready</span></div><p class="small muted">These are intentionally not populated yet. They plug into this same system later instead of becoming separate websites.</p></div>
     </div>`)
@@ -1815,3 +1815,4 @@
   window.MLUL=appApi; // compatibility alias for the current Michael pilot UI
   init();
 })();
+

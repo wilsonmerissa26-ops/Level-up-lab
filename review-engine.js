@@ -12,7 +12,15 @@
     "SCI.SPS7E.LITERAL_REARRANGE",
     "SCI.SPS7E.CALCULATION",
     "MATH.INVERSE_OPERATIONS",
-    "MATH.LITERAL_EQUATIONS"
+    "MATH.LITERAL_EQUATIONS",
+    "SCI.WAVES.TYPES",
+    "SCI.WAVES.RELATIONSHIPS",
+    "SCI.WAVES.BEHAVIORS",
+    "SCI.WAVES.INTERFERENCE",
+    "SCI.WAVES.SPEED",
+    "SCI.WAVES.LIGHT",
+    "SCI.WAVES.SEISMIC",
+    "SCI.WAVES.DOPPLER"
   ]);
 
   function hash(text){
@@ -143,6 +151,11 @@
     ]
   };
 
+  // Distinct transfer prompts for Waves; never reuse immediate lesson checks.
+  for(const lesson of (window.LEVEL_UP_CONTENT?.science||[]).filter(l=>l.unit==="SCI.G8.WAVES")){
+    generators[lesson.id]=(r,w)=>lesson.reviewChecks.map(q=>choice(q.q,q.choices[q.answer],q.choices.filter((_,i)=>i!==q.answer),r,{why:q.why,transfer:true}));
+  }
+
   function generateReview(skillId,windowLabel,reviewId){
     const generator=generators[skillId];
     if(!generator)throw new Error(`No review generator for ${skillId}`);
@@ -159,3 +172,4 @@
 
   window.LEVEL_UP_REVIEW_ENGINE=Object.freeze({SKILL_IDS,generateReview});
 })();
+

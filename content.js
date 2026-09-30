@@ -254,3 +254,842 @@ window.LEVEL_UP_CONTENT = {
     }
   }
 };
+
+// Urgent school instruction; preserves existing lesson IDs and learner evidence.
+window.LEVEL_UP_CONTENT.science.unshift(...[
+  {
+    "id": "SCI.WAVES.TYPES",
+    "title": "Wave types + parts",
+    "schoolTag": "Unit 2 Waves",
+    "minutes": "Work at your pace",
+    "unit": "SCI.G8.WAVES",
+    "targetIds": [
+      "SCI.S8P4A.MECHANICAL_VS_EM"
+    ],
+    "studyDay": "Wednesday",
+    "sourceNote": "Teacher packet images 54–92 and supplied AKS 9e; explanations and practice questions adapted for Michael.",
+    "teach": [
+      [
+        "A wave carries energy. A medium is the material a wave travels through. Mechanical waves need a medium; electromagnetic waves can cross empty space.",
+        "Sound needs particles. Sunlight reaches Earth across space."
+      ],
+      [
+        "Transverse vibration is perpendicular to travel; longitudinal vibration is parallel.",
+        "Model: move a rope up/down while the disturbance travels forward. Push/pull a spring to make crowded compressions and spread-out rarefactions."
+      ],
+      [
+        "A crest is a high point, a trough a low point. Wavelength joins matching points; amplitude measures from rest to crest.",
+        "Guided practice: sketch and label a rope wave, then a spring wave. Explain the vibration direction before checking yourself."
+      ]
+    ],
+    "checks": [
+      {
+        "id": "waves-types-1",
+        "q": "Which can travel through empty space?",
+        "choices": [
+          "Light",
+          "Sound",
+          "Earthquake P waves"
+        ],
+        "answer": 0,
+        "why": "Light is electromagnetic.",
+        "transfer": false
+      },
+      {
+        "id": "waves-types-2",
+        "q": "A spring has alternating crowded and spread-out coils. What type is modeled?",
+        "choices": [
+          "Longitudinal",
+          "Transverse",
+          "Electromagnetic only"
+        ],
+        "answer": 0,
+        "why": "Vibration is parallel to travel.",
+        "transfer": false
+      },
+      {
+        "id": "waves-types-3",
+        "q": "Where is amplitude measured?",
+        "choices": [
+          "Rest position to crest",
+          "Crest to next crest",
+          "Crest to trough"
+        ],
+        "answer": 0,
+        "why": "Amplitude is maximum displacement from rest.",
+        "transfer": true
+      }
+    ],
+    "reviewChecks": [
+      {
+        "id": "waves-review-types-1",
+        "q": "An astronaut sees a flash but cannot hear an outside explosion through a vacuum. Why?",
+        "choices": [
+          "Light needs no medium; sound does",
+          "Both need air",
+          "Sound travels too fast"
+        ],
+        "answer": 0,
+        "why": "A vacuum lacks particles for sound.",
+        "transfer": false
+      },
+      {
+        "id": "waves-review-types-2",
+        "q": "A stadium wave moves around the stands while fans move up/down. Which pattern?",
+        "choices": [
+          "Transverse",
+          "Longitudinal",
+          "No wave"
+        ],
+        "answer": 0,
+        "why": "Movement is perpendicular to travel.",
+        "transfer": false
+      },
+      {
+        "id": "waves-review-types-3",
+        "q": "What is the spread-out region of a sound wave?",
+        "choices": [
+          "Rarefaction",
+          "Compression",
+          "Crest"
+        ],
+        "answer": 0,
+        "why": "Particles are farther apart.",
+        "transfer": true
+      }
+    ]
+  },
+  {
+    "id": "SCI.WAVES.RELATIONSHIPS",
+    "title": "Frequency, wavelength, amplitude + graphs",
+    "schoolTag": "Unit 2 Waves",
+    "minutes": "Work at your pace",
+    "unit": "SCI.G8.WAVES",
+    "targetIds": [
+      "SCI.S8P4F.FREQUENCY_WAVELENGTH"
+    ],
+    "studyDay": "Wednesday",
+    "sourceNote": "Teacher packet images 54–92 and supplied AKS 9e; explanations and practice questions adapted for Michael.",
+    "teach": [
+      [
+        "Frequency counts cycles each second, in hertz. At the same speed, shorter wavelength means higher frequency.",
+        "Worked model: at 12 m/s, wavelengths of 3 m and 6 m give 4 Hz and 2 Hz. Use speed = frequency × wavelength."
+      ],
+      [
+        "Frequency changes sound pitch; amplitude changes loudness. Greater amplitude carries more energy in the same medium.",
+        "Compare equal-height waves: closer crests mean higher pitch. Compare equal-spacing waves: taller waves mean louder sound, not higher pitch."
+      ],
+      [
+        "Read table headings and units before comparing numbers.",
+        "Guided: sketch one louder wave with the SAME pitch, and one higher-pitched wave with the SAME loudness. Say which feature you changed."
+      ]
+    ],
+    "checks": [
+      {
+        "id": "waves-relationships-1",
+        "q": "At the same speed, doubling wavelength makes frequency…",
+        "choices": [
+          "Half as large",
+          "Twice as large",
+          "Unchanged"
+        ],
+        "answer": 0,
+        "why": "Speed stays fixed.",
+        "transfer": false
+      },
+      {
+        "id": "waves-relationships-2",
+        "q": "A sound becomes louder without changing pitch. What changes?",
+        "choices": [
+          "Amplitude increases",
+          "Frequency increases",
+          "Wavelength shortens"
+        ],
+        "answer": 0,
+        "why": "Amplitude affects loudness.",
+        "transfer": false
+      },
+      {
+        "id": "waves-relationships-3",
+        "q": "Two waves have equal amplitude; B has more cycles per second. Which has higher pitch?",
+        "choices": [
+          "B",
+          "A",
+          "Neither"
+        ],
+        "answer": 0,
+        "why": "Higher frequency means higher pitch.",
+        "transfer": true
+      }
+    ],
+    "reviewChecks": [
+      {
+        "id": "waves-review-relationships-1",
+        "q": "A wave travels at 20 m/s with a 5 m wavelength. Frequency?",
+        "choices": [
+          "4 Hz",
+          "100 Hz",
+          "25 Hz"
+        ],
+        "answer": 0,
+        "why": "20 ÷ 5 = 4.",
+        "transfer": false
+      },
+      {
+        "id": "waves-review-relationships-2",
+        "q": "A table shows wavelength 2, 4, 8 m and frequency 12, 6, 3 Hz. Relationship?",
+        "choices": [
+          "As wavelength increases, frequency decreases",
+          "Both increase",
+          "No pattern"
+        ],
+        "answer": 0,
+        "why": "Speed is constant at 24 m/s.",
+        "transfer": false
+      },
+      {
+        "id": "waves-review-relationships-3",
+        "q": "Turning a speaker down while keeping the same note reduces…",
+        "choices": [
+          "Amplitude",
+          "Frequency",
+          "Wave speed"
+        ],
+        "answer": 0,
+        "why": "Lower amplitude means quieter sound.",
+        "transfer": true
+      }
+    ]
+  },
+  {
+    "id": "SCI.WAVES.BEHAVIORS",
+    "title": "Reflection, refraction + diffraction",
+    "schoolTag": "Unit 2 Waves",
+    "minutes": "Work at your pace",
+    "unit": "SCI.G8.WAVES",
+    "targetIds": [
+      "SCI.S8P4D.REFLECTION"
+    ],
+    "studyDay": "Thursday",
+    "sourceNote": "Teacher packet images 54–92 and supplied AKS 9e; explanations and practice questions adapted for Michael.",
+    "teach": [
+      [
+        "Reflection is bouncing off a boundary; incidence angle equals reflection angle, measured from the normal.",
+        "An echo is reflected sound. A mirror reflects light. Smooth surfaces give regular reflection; rough surfaces scatter reflected rays."
+      ],
+      [
+        "Refraction is a change of direction when wave speed changes across a boundary at an angle.",
+        "A straw appears bent in water because light changes speed and direction. Entering straight along the normal can change speed without bending."
+      ],
+      [
+        "Diffraction is spreading around an edge or through an opening.",
+        "Model: draw straight wave fronts reaching a doorway and curved fronts beyond it. Guided: distinguish a mirror, a bent straw, and hearing around a corner."
+      ]
+    ],
+    "checks": [
+      {
+        "id": "waves-behaviors-1",
+        "q": "An echo is an example of…",
+        "choices": [
+          "Reflection",
+          "Refraction",
+          "Dispersion"
+        ],
+        "answer": 0,
+        "why": "Sound bounces back.",
+        "transfer": false
+      },
+      {
+        "id": "waves-behaviors-2",
+        "q": "A straw appears bent at the water surface because of…",
+        "choices": [
+          "Refraction",
+          "Reflection only",
+          "Interference"
+        ],
+        "answer": 0,
+        "why": "Light bends at the boundary.",
+        "transfer": false
+      },
+      {
+        "id": "waves-behaviors-3",
+        "q": "Sound reaching you around a corner demonstrates…",
+        "choices": [
+          "Diffraction",
+          "Dispersion",
+          "Absorption"
+        ],
+        "answer": 0,
+        "why": "Waves spread around an edge.",
+        "transfer": true
+      }
+    ],
+    "reviewChecks": [
+      {
+        "id": "waves-review-behaviors-1",
+        "q": "A ray hits a mirror at 35 degrees from the normal. Reflection angle?",
+        "choices": [
+          "35 degrees",
+          "55 degrees",
+          "70 degrees"
+        ],
+        "answer": 0,
+        "why": "Both angles use the normal.",
+        "transfer": false
+      },
+      {
+        "id": "waves-review-behaviors-2",
+        "q": "Water ripples fan out after a narrow gap. Behavior?",
+        "choices": [
+          "Diffraction",
+          "Refraction",
+          "Absorption"
+        ],
+        "answer": 0,
+        "why": "The gap causes spreading.",
+        "transfer": false
+      },
+      {
+        "id": "waves-review-behaviors-3",
+        "q": "Light slows entering glass directly along the normal. Must it bend?",
+        "choices": [
+          "No",
+          "Yes always",
+          "It stops"
+        ],
+        "answer": 0,
+        "why": "Direction need not change at normal incidence.",
+        "transfer": true
+      }
+    ]
+  },
+  {
+    "id": "SCI.WAVES.INTERFERENCE",
+    "title": "Interference, transmission + materials",
+    "schoolTag": "Unit 2 Waves",
+    "minutes": "Work at your pace",
+    "unit": "SCI.G8.WAVES",
+    "targetIds": [
+      "SCI.S8P4D.ABSORPTION_TRANSMISSION"
+    ],
+    "studyDay": "Thursday",
+    "sourceNote": "Teacher packet images 54–92 and supplied AKS 9e; explanations and practice questions adapted for Michael.",
+    "teach": [
+      [
+        "Interference happens when waves overlap. Constructive interference increases displacement; destructive interference reduces it.",
+        "Model: aligned equal crests add. An equal crest and trough can cancel at that place and time; waves continue afterward."
+      ],
+      [
+        "Transmission means passing through; absorption transfers wave energy into a material.",
+        "Transparent glass transmits a clear image; translucent material blurs it; opaque material does not transmit visible light through it."
+      ],
+      [
+        "Separate overlapping waves from waves bending or bouncing.",
+        "Guided: explain noise-canceling headphones using opposing sound waves. Compare them with a curtain absorbing sound."
+      ]
+    ],
+    "checks": [
+      {
+        "id": "waves-interference-1",
+        "q": "Two equal crests overlap. Result?",
+        "choices": [
+          "Constructive interference",
+          "Destructive interference",
+          "Refraction"
+        ],
+        "answer": 0,
+        "why": "Displacements add.",
+        "transfer": false
+      },
+      {
+        "id": "waves-interference-2",
+        "q": "An equal crest and trough overlap. Result?",
+        "choices": [
+          "Destructive interference",
+          "Constructive interference",
+          "Dispersion"
+        ],
+        "answer": 0,
+        "why": "Opposing displacements cancel locally.",
+        "transfer": false
+      },
+      {
+        "id": "waves-interference-3",
+        "q": "Frosted glass passes light but blurs objects. It is…",
+        "choices": [
+          "Translucent",
+          "Opaque",
+          "Transparent"
+        ],
+        "answer": 0,
+        "why": "It transmits scattered light.",
+        "transfer": true
+      }
+    ],
+    "reviewChecks": [
+      {
+        "id": "waves-review-interference-1",
+        "q": "Two equal pulses have opposite displacement at the same point. Net displacement?",
+        "choices": [
+          "Zero at that instant",
+          "Twice as large",
+          "Waves permanently vanish"
+        ],
+        "answer": 0,
+        "why": "Cancellation is local and temporary.",
+        "transfer": false
+      },
+      {
+        "id": "waves-review-interference-2",
+        "q": "A wall blocks visible light passing through it. Classification?",
+        "choices": [
+          "Opaque",
+          "Transparent",
+          "Translucent"
+        ],
+        "answer": 0,
+        "why": "Opaque materials block transmission.",
+        "transfer": false
+      },
+      {
+        "id": "waves-review-interference-3",
+        "q": "A sound panel converts some sound energy into thermal energy. Behavior?",
+        "choices": [
+          "Absorption",
+          "Diffraction",
+          "Dispersion"
+        ],
+        "answer": 0,
+        "why": "Energy transfers into the material.",
+        "transfer": true
+      }
+    ]
+  },
+  {
+    "id": "SCI.WAVES.SPEED",
+    "title": "Sound, light + media data",
+    "schoolTag": "Unit 2 Waves",
+    "minutes": "Work at your pace",
+    "unit": "SCI.G8.WAVES",
+    "targetIds": [
+      "SCI.S8P4E.MEDIA_DENSITY_SPEED"
+    ],
+    "studyDay": "Thursday",
+    "sourceNote": "Teacher packet images 54–92 and supplied AKS 9e; explanations and practice questions adapted for Michael.",
+    "teach": [
+      [
+        "Sound travels through vibrating particles. It generally travels faster through solids than liquids than gases, but actual speed depends on material properties.",
+        "Read the packet data rather than assuming density alone controls speed: elasticity matters too."
+      ],
+      [
+        "Light travels fastest in a vacuum and more slowly in materials such as water or glass. Sound cannot travel through a vacuum.",
+        "Worked table: sound at 340 m/s in air and 1500 m/s in water reaches an equal-distance listener sooner through water."
+      ],
+      [
+        "Compare the same wave over the same distance; do not mix sound and light rules.",
+        "Guided: explain why you see lightning before hearing thunder. Identify which data supports your explanation."
+      ]
+    ],
+    "checks": [
+      {
+        "id": "waves-speed-1",
+        "q": "Which cannot carry sound?",
+        "choices": [
+          "A vacuum",
+          "Water",
+          "Steel"
+        ],
+        "answer": 0,
+        "why": "Sound needs particles.",
+        "transfer": false
+      },
+      {
+        "id": "waves-speed-2",
+        "q": "Equal distance: sound at 340 m/s or 1500 m/s arrives first?",
+        "choices": [
+          "1500 m/s",
+          "340 m/s",
+          "Same time"
+        ],
+        "answer": 0,
+        "why": "Higher speed takes less time.",
+        "transfer": false
+      },
+      {
+        "id": "waves-speed-3",
+        "q": "Where is light fastest?",
+        "choices": [
+          "Vacuum",
+          "Glass",
+          "Water"
+        ],
+        "answer": 0,
+        "why": "Materials slow light relative to vacuum.",
+        "transfer": true
+      }
+    ],
+    "reviewChecks": [
+      {
+        "id": "waves-review-speed-1",
+        "q": "A table lists sound speeds: X 500, Y 1200, Z 300 m/s. Fastest?",
+        "choices": [
+          "Y",
+          "X",
+          "Z"
+        ],
+        "answer": 0,
+        "why": "1200 is greatest.",
+        "transfer": false
+      },
+      {
+        "id": "waves-review-speed-2",
+        "q": "Why see a distant firework before its boom?",
+        "choices": [
+          "Light travels much faster than sound",
+          "Sound cannot travel in air",
+          "Light is louder"
+        ],
+        "answer": 0,
+        "why": "Compare propagation speeds.",
+        "transfer": false
+      },
+      {
+        "id": "waves-review-speed-3",
+        "q": "Can density alone predict sound speed in every material?",
+        "choices": [
+          "No; other properties matter",
+          "Yes always",
+          "Only color matters"
+        ],
+        "answer": 0,
+        "why": "Elasticity and density both matter.",
+        "transfer": true
+      }
+    ]
+  },
+  {
+    "id": "SCI.WAVES.LIGHT",
+    "title": "EM spectrum, dispersion + color",
+    "schoolTag": "Unit 2 Waves",
+    "minutes": "Work at your pace",
+    "unit": "SCI.G8.WAVES",
+    "targetIds": [
+      "SCI.S8P4B.EM_SPECTRUM_ORDER"
+    ],
+    "studyDay": "Thursday",
+    "sourceNote": "Teacher packet images 54–92 and supplied AKS 9e; explanations and practice questions adapted for Michael.",
+    "teach": [
+      [
+        "From low to high frequency: radio, microwave, infrared, visible, ultraviolet, X-ray, gamma. Wavelength decreases; photon energy increases.",
+        "Memory route: radio → microwave → infrared → visible → UV → X-ray → gamma."
+      ],
+      [
+        "In visible light, red has the longest wavelength and lowest frequency; violet has the shortest wavelength and highest frequency.",
+        "White light through a prism separates into colors because different wavelengths refract differently. This is dispersion."
+      ],
+      [
+        "An object’s visible color depends on light it reflects or transmits to your eyes.",
+        "Guided: compare red and violet using the packet table. Explain why a rainbow shows many colors rather than white."
+      ]
+    ],
+    "checks": [
+      {
+        "id": "waves-light-1",
+        "q": "Highest-frequency EM radiation?",
+        "choices": [
+          "Gamma rays",
+          "Radio waves",
+          "Infrared"
+        ],
+        "answer": 0,
+        "why": "Gamma has the highest frequency.",
+        "transfer": false
+      },
+      {
+        "id": "waves-light-2",
+        "q": "Longest visible wavelength?",
+        "choices": [
+          "Red",
+          "Violet",
+          "Blue"
+        ],
+        "answer": 0,
+        "why": "Red is longest in the visible spectrum.",
+        "transfer": false
+      },
+      {
+        "id": "waves-light-3",
+        "q": "A prism separates white light into colors. Name?",
+        "choices": [
+          "Dispersion",
+          "Destructive interference",
+          "Echo"
+        ],
+        "answer": 0,
+        "why": "Wavelengths bend differently.",
+        "transfer": true
+      }
+    ],
+    "reviewChecks": [
+      {
+        "id": "waves-review-light-1",
+        "q": "Which has higher frequency: green or orange light?",
+        "choices": [
+          "Green",
+          "Orange",
+          "Equal"
+        ],
+        "answer": 0,
+        "why": "Green has shorter wavelength.",
+        "transfer": false
+      },
+      {
+        "id": "waves-review-light-2",
+        "q": "Moving from radio toward X-rays, wavelength…",
+        "choices": [
+          "Decreases",
+          "Increases",
+          "Stays fixed"
+        ],
+        "answer": 0,
+        "why": "Frequency rises as wavelength falls.",
+        "transfer": false
+      },
+      {
+        "id": "waves-review-light-3",
+        "q": "A red shirt under white light looks red primarily because it…",
+        "choices": [
+          "Reflects red light toward your eyes",
+          "Creates all colors equally",
+          "Absorbs all red light"
+        ],
+        "answer": 0,
+        "why": "Reflected light reaches the observer.",
+        "transfer": true
+      }
+    ]
+  },
+  {
+    "id": "SCI.WAVES.SEISMIC",
+    "title": "Earthquake waves + seismographs",
+    "schoolTag": "Unit 2 Waves",
+    "minutes": "Work at your pace",
+    "unit": "SCI.G8.WAVES",
+    "targetIds": [
+      "SCI.S8P4A.TRANSVERSE_LONGITUDINAL"
+    ],
+    "studyDay": "Thursday",
+    "sourceNote": "Teacher packet images 54–92 and supplied AKS 9e; explanations and practice questions adapted for Michael.",
+    "teach": [
+      [
+        "Seismic waves are mechanical waves carrying energy from an earthquake. P waves are longitudinal; S waves are transverse.",
+        "P waves arrive first and travel through solids and liquids. S waves travel through solids but not liquids."
+      ],
+      [
+        "A seismograph records ground motion over time; arrival times help estimate distance to an earthquake.",
+        "Worked record: P arrives at 10 seconds and S at 16 seconds; the gap is 6 seconds. A larger P–S gap generally means greater distance."
+      ],
+      [
+        "Focus is where rupture begins underground; epicenter is directly above it at the surface.",
+        "Guided: draw Earth’s surface, focus, epicenter, and waves. Describe why a wave may reach one station sooner."
+      ]
+    ],
+    "checks": [
+      {
+        "id": "waves-seismic-1",
+        "q": "Which seismic wave arrives first?",
+        "choices": [
+          "P",
+          "S",
+          "All arrive together"
+        ],
+        "answer": 0,
+        "why": "P waves are faster.",
+        "transfer": false
+      },
+      {
+        "id": "waves-seismic-2",
+        "q": "Which cannot travel through liquid?",
+        "choices": [
+          "S",
+          "P",
+          "Both P and S"
+        ],
+        "answer": 0,
+        "why": "S waves require shear support.",
+        "transfer": false
+      },
+      {
+        "id": "waves-seismic-3",
+        "q": "The surface point above the focus is the…",
+        "choices": [
+          "Epicenter",
+          "Compression",
+          "Crest"
+        ],
+        "answer": 0,
+        "why": "Epicenter lies directly above the focus.",
+        "transfer": true
+      }
+    ],
+    "reviewChecks": [
+      {
+        "id": "waves-review-seismic-1",
+        "q": "P arrives at 8 s and S at 15 s. Gap?",
+        "choices": [
+          "7 seconds",
+          "23 seconds",
+          "8 seconds"
+        ],
+        "answer": 0,
+        "why": "Subtract arrival times.",
+        "transfer": false
+      },
+      {
+        "id": "waves-review-seismic-2",
+        "q": "Station A has a 3 s P–S gap, B has 9 s. Generally farther?",
+        "choices": [
+          "B",
+          "A",
+          "Cannot ever compare"
+        ],
+        "answer": 0,
+        "why": "A larger gap generally indicates greater distance.",
+        "transfer": false
+      },
+      {
+        "id": "waves-review-seismic-3",
+        "q": "Particles move side-to-side perpendicular to seismic travel. Type?",
+        "choices": [
+          "S wave",
+          "P wave",
+          "Radio wave"
+        ],
+        "answer": 0,
+        "why": "S waves are transverse.",
+        "transfer": true
+      }
+    ]
+  },
+  {
+    "id": "SCI.WAVES.DOPPLER",
+    "title": "Doppler effect + red/blue shift",
+    "schoolTag": "Unit 2 Waves",
+    "minutes": "Work at your pace",
+    "unit": "SCI.G8.WAVES",
+    "targetIds": [
+      "SCI.EXT.DOPPLER"
+    ],
+    "studyDay": "Friday",
+    "sourceNote": "Teacher packet images 54–92 and supplied AKS 9e; explanations and practice questions adapted for Michael.",
+    "teach": [
+      [
+        "The Doppler effect changes observed frequency because the source and observer move relative to each other.",
+        "Approaching source: wave fronts bunch together, shorter wavelength, higher observed frequency and pitch. Receding source: fronts spread out, lower pitch."
+      ],
+      [
+        "Distance affects loudness; relative motion along the line of sight produces the Doppler pitch shift. The source’s emitted frequency need not change.",
+        "Worked plane model: flying A → B, with A behind and B ahead: A hears lower pitch, B higher. A pilot moving with the source hears no Doppler shift from that source."
+      ],
+      [
+        "For light, approach produces blueshift and recession produces redshift. They are both Doppler shifts.",
+        "Guided: draw the plane, direction arrow, compressed fronts ahead and spread fronts behind. Explain the car’s approach using wavelength, position, frequency, and pitch; then explain departure."
+      ]
+    ],
+    "checks": [
+      {
+        "id": "waves-doppler-1",
+        "q": "A horn approaches a stationary listener. Heard pitch?",
+        "choices": [
+          "Higher",
+          "Lower",
+          "Always unchanged"
+        ],
+        "answer": 0,
+        "why": "Fronts arrive more frequently.",
+        "transfer": false
+      },
+      {
+        "id": "waves-doppler-2",
+        "q": "A source moves away. Observed wavelength?",
+        "choices": [
+          "Longer",
+          "Shorter",
+          "Zero"
+        ],
+        "answer": 0,
+        "why": "Wave fronts are farther apart.",
+        "transfer": false
+      },
+      {
+        "id": "waves-doppler-3",
+        "q": "Light from a receding source shifts toward…",
+        "choices": [
+          "Red",
+          "Blue",
+          "No possible shift"
+        ],
+        "answer": 0,
+        "why": "Recession lengthens observed wavelength.",
+        "transfer": true
+      }
+    ],
+    "reviewChecks": [
+      {
+        "id": "waves-review-doppler-1",
+        "q": "A siren moves toward you at constant emitted frequency. Why higher pitch?",
+        "choices": [
+          "Wave fronts reach you more often",
+          "The driver must change the note",
+          "Distance alone changes frequency"
+        ],
+        "answer": 0,
+        "why": "Motion changes observed frequency.",
+        "transfer": false
+      },
+      {
+        "id": "waves-review-doppler-2",
+        "q": "A pilot moves with the plane’s own sound source. Doppler shift from that source?",
+        "choices": [
+          "None from relative motion",
+          "Always higher",
+          "Always lower"
+        ],
+        "answer": 0,
+        "why": "Pilot and source move together.",
+        "transfer": false
+      },
+      {
+        "id": "waves-review-doppler-3",
+        "q": "An approaching star’s light shifts toward…",
+        "choices": [
+          "Blue",
+          "Red",
+          "Sound"
+        ],
+        "answer": 0,
+        "why": "Approach shortens observed wavelength.",
+        "transfer": true
+      }
+    ]
+  }
+]);
+window.LEVEL_UP_CONTENT.sciencePlan={
+  "title": "Unit 2: Waves",
+  "deadline": "2026-10-02",
+  "deadlineKind": "PARENT_LEARNING_GOAL",
+  "masteryCheckDate": "2026-09-30",
+  "testCoverage": "Not confirmed by the uploaded warm-up sheet",
+  "lessonIds": [
+    "SCI.WAVES.TYPES",
+    "SCI.WAVES.RELATIONSHIPS",
+    "SCI.WAVES.BEHAVIORS",
+    "SCI.WAVES.INTERFERENCE",
+    "SCI.WAVES.SPEED",
+    "SCI.WAVES.LIGHT",
+    "SCI.WAVES.SEISMIC",
+    "SCI.WAVES.DOPPLER"
+  ],
+  "sourceImages": "54.jpg\u201392.jpg",
+  "teachingNote": "Teach, model, guided practice, fade help, independent check, mixed review, delayed retrieval, and transfer. These lessons are Track B prior instruction; do not score them as cold diagnostics."
+};
