@@ -60,6 +60,7 @@
     trackAMasterySchedule:[],
     scienceGapSessions:[],
     scienceGapActiveSession:null,
+    scienceGapActiveRetention:null,
     scienceGapRetention:[],
     evidence:[],
     sessions:[],
@@ -286,6 +287,7 @@
     if(!Array.isArray(value.trackAMasterySchedule)) value.trackAMasterySchedule=[];
     if(!Array.isArray(value.scienceGapSessions)) value.scienceGapSessions=[];
     if(!Object.prototype.hasOwnProperty.call(value,"scienceGapActiveSession")) value.scienceGapActiveSession=null;
+    if(!Object.prototype.hasOwnProperty.call(value,"scienceGapActiveRetention")) value.scienceGapActiveRetention=null;
     if(!Array.isArray(value.scienceGapRetention)) value.scienceGapRetention=[];
     if(!value.settings || typeof value.settings!=="object") value.settings={readAloud:true,extraProcessing:true,parentTypesVerbatim:true};
     return value;
@@ -1172,8 +1174,36 @@
       <p class="tiny muted">Interpretation rule: improvement after simplified wording is a language-access signal, not proof of a fixed learning style. Transfer is stored separately from baseline.</p></div>`;
   }
 
+  function scienceGapRetentionView(active){
+    const item=SCIENCE_GAP?.item(active?.itemId);
+    if(!item)return shell('<div class="card"><p>Retention item unavailable.</p></div>');
+    return shell('<div class="grid"><div class="card c12"><span class="pill info">Delayed retention · '+escapeHTML(active.window||"DAY_2")+'</span><h2>Do you still know it?</h2><p class="muted small"><strong>No reteaching first.</strong> This fresh question checks whether the science idea was retained.</p><h3>'+escapeHTML(item.retentionPrompt)+'</h3>'+scienceGapChoiceBlock("scienceGapRetentionChoice",item.retentionChoices)+'<div class="row" style="margin-top:16px"><button class="btn primary" onclick="window.MLUL.submitScienceGapRetention()">Submit retention check</button></div></div></div>');
+  }
+
+  async function startNextScienceGapRetention(){
+    const record=(state.scienceGapRetention||[]).find(x=>!x.completed&&new Date(x.dueAt)<=new Date());
+    if(!record){alert("No Science Gap retention check is due yet.");return}
+    state.scienceGapActiveRetention={...record,startedAt:now(),questionStartedAt:now()};
+    await save("start science gap retention");render();
+  }
+
+  async function submitScienceGapRetention(){
+    const active=state.scienceGapActiveRetention;if(!active)return;
+    const item=SCIENCE_GAP?.item(active.itemId);if(!item)return;
+    const chosen=document.querySelector('input[name="scienceGapRetentionChoice"]:checked');if(!chosen){alert("Choose an answer first.");return}
+    const choiceIndex=Number(chosen.value),isCorrect=SCIENCE_GAP.checkChoice(item.id,choiceIndex,"DELAYED_RETENTION");
+    const latency=Math.max(0,Date.now()-Date.parse(active.questionStartedAt||active.startedAt||now()));
+    const pseudoSession={id:active.id,mode:"SCIENCE_GAP_RETENTION",responses:[],skillId:item.targetId,attemptNumber:1};
+    const ev={id:active.id+"_evidence",createdAt:now(),track:"SCIENCE_GAP",subject:"Physical Science",skillId:item.targetId,standard:item.standard,scienceDomain:item.domain,rawResponse:item.retentionChoices[choiceIndex],selectedChoiceIndex:choiceIndex,isCorrect,evidence_class:"FORMAL_CONTROLLED",interaction_purpose:"DELAYED_RETENTION",instruction_exposure_status:"POST_TEACH_DELAYED_RETENTION",prior_instruction:true,assistance_level:"INDEPENDENT",support_condition:"NONE_DELAYED_RETRIEVAL",access_condition:"SELF_READ_SILENT",access_condition_source:"PROTOCOL_ASSIGNED",fresh:true,reliable:true,responseLatencyMs:latency,retentionWindow:active.window};
+    pushEvidenceOnce(ev,pseudoSession);
+    const rec=(state.scienceGapRetention||[]).find(x=>x.id===active.id);
+    if(rec){rec.completed=true;rec.completedAt=ev.createdAt;rec.isCorrect=isCorrect;rec.evidenceId=ev.id}
+    state.scienceGapActiveRetention=null;await save("science gap delayed retention");render();
+  }
+
   function scienceGapView(){
     if(!SCIENCE_GAP)return shell(`<div class="card"><h2>Science Gap Diagnostic</h2><p class="muted">Diagnostic module did not load.</p></div>`);
+    const activeRetention=state.scienceGapActiveRetention;if(activeRetention)return scienceGapRetentionView(activeRetention);
     const session=state.scienceGapActiveSession;
     if(session?.status==="ACTIVE"){const item=scienceGapCurrentItem(session);if(item)return shell(`<div class="grid">${scienceGapActiveView(session,item)}</div>`)}
     const completed=(state.scienceGapSessions||[]).filter(x=>x.status==="COMPLETED"),latest=completed[completed.length-1]||null;
@@ -1182,6 +1212,7 @@
       <div class="callout small"><strong>Cold-baseline protection:</strong> Waves/Doppler is excluded from this starter set because Michael has already received Level-Up instruction there. Those skills remain PRIOR_INSTRUCTION rather than clean baseline evidence.</div>
       <button class="btn primary" ${studentRuntimeAllowed()?"":"disabled"} onclick="window.MLUL.startScienceGap()">${latest?"Start a new controlled session":"Start cold baseline"}</button></div>
       <div class="card c4"><div class="kpi"><div class="t">Clean baseline targets</div><div class="n">${SCIENCE_GAP.coldEligible().length}</div></div><div class="spacer"></div><div class="kpi"><div class="t">Retention due</div><div class="n">${due.length}</div></div></div>
+      ${due.length?`<div class="card c12"><h3>Retention checks due</h3><p class="small muted">${due.length} fresh delayed check${due.length===1?" is":"s are"} ready. No reteaching happens before these questions.</p><button class="btn primary" onclick="window.MLUL.startNextScienceGapRetention()">Start next retention check</button></div>`:""}
       ${latest?scienceGapParentSection():""}<div class="card c12"><h3>What Level-Up is testing</h3><p class="small muted">${SCIENCE_GAP.gapCategories.map(x=>escapeHTML(x.replaceAll("_"," "))).join(" · ")}</p></div></div>`);
   }
 
@@ -1989,7 +2020,7 @@
     render();
   }
 
-  const appApi={startScienceGap,submitScienceGapCold,submitScienceGapProbe,beginScienceGapTransfer,submitScienceGapTransfer,exportScienceGapCSV,readSchoolPlan,refreshSchoolPlan,schoolQuestAccess,getSchoolQuestProgress,schoolQuestStudyContext,saveSchoolQuestProgress,beginSchoolQuestItems,recordSchoolQuestAttempt,recordSchoolQuestAccess,endSchoolQuestStudySession,startLesson,readTeach,beginChecks,readQuestion,submitAnswer,nextQuestion,startReview,readReviewQuestion,submitReviewAnswer,startTrackADiagnostic,readTrackAQuestion,submitTrackAAnswer,startTrackARepair,readTrackARepairTeach,beginTrackARepairChecks,readTrackARepairQuestion,submitTrackARepairAnswer,nextTrackARepairCheck,startTrackAVerification,readTrackAVerificationQuestion,submitTrackAVerificationAnswer,initializeTrackAMastery,startTrackAMasteryTask,readTrackAMasteryQuestion,submitTrackAMasteryAnswer,replaceTrackAMasteryTask,finalizeTrackAMastery,resumeTrackAPath,resumeTrackADiagnostic,saveAndExitTrackA,endTrackAPath,endTrackADiagnostic,manualSave,saveAndExit,resumeInterruptedSession,endPreservedSession,exportBackup,importBackup,checkPersistenceUI,requestPersistentStorage,connectLocalDurableFile,reconnectLocalDurableFile,syncLocalDurableFile,checkLocalDurableFileUI,checkSharedPersistenceUI,acknowledgeRedundancyOverride,createNewLearnerRecord,resolveMirrorAhead,restoreMirrorAsAuthoritative,markAccessObserved,__audit:{RUNTIME_ENABLED,STATE_KEY,PROBE_KEY,ASSISTANCE_LEVELS,ACCESS_CONDITIONS,isValidLearnerState,assistanceLevelForSession,validAccessCondition,accessSourceFor,recoverableSession,captureDraftFromUI,upsertSessionRecord,answersMatch,memoryStrengthForReview,reviewOutcomeFromScore,trackAPriorInstruction,trackAPromptIsFresh,trackAActiveRecoverable,trackARouteForSkill,ensureTrackAMasterySchedule,masteryRouteInfo,maybeFinalizeTrackAMastery,sameOriginRedundancyDegraded,runtimeGateStatus,studentRuntimeAllowed,runtimeBlockMessage,sharedPersistenceStatus:()=>sharedPersistenceStatus,localDurableStatus:()=>localDurableStatus}};
+  const appApi={startScienceGap,submitScienceGapCold,submitScienceGapProbe,beginScienceGapTransfer,submitScienceGapTransfer,startNextScienceGapRetention,submitScienceGapRetention,exportScienceGapCSV,readSchoolPlan,refreshSchoolPlan,schoolQuestAccess,getSchoolQuestProgress,schoolQuestStudyContext,saveSchoolQuestProgress,beginSchoolQuestItems,recordSchoolQuestAttempt,recordSchoolQuestAccess,endSchoolQuestStudySession,startLesson,readTeach,beginChecks,readQuestion,submitAnswer,nextQuestion,startReview,readReviewQuestion,submitReviewAnswer,startTrackADiagnostic,readTrackAQuestion,submitTrackAAnswer,startTrackARepair,readTrackARepairTeach,beginTrackARepairChecks,readTrackARepairQuestion,submitTrackARepairAnswer,nextTrackARepairCheck,startTrackAVerification,readTrackAVerificationQuestion,submitTrackAVerificationAnswer,initializeTrackAMastery,startTrackAMasteryTask,readTrackAMasteryQuestion,submitTrackAMasteryAnswer,replaceTrackAMasteryTask,finalizeTrackAMastery,resumeTrackAPath,resumeTrackADiagnostic,saveAndExitTrackA,endTrackAPath,endTrackADiagnostic,manualSave,saveAndExit,resumeInterruptedSession,endPreservedSession,exportBackup,importBackup,checkPersistenceUI,requestPersistentStorage,connectLocalDurableFile,reconnectLocalDurableFile,syncLocalDurableFile,checkLocalDurableFileUI,checkSharedPersistenceUI,acknowledgeRedundancyOverride,createNewLearnerRecord,resolveMirrorAhead,restoreMirrorAsAuthoritative,markAccessObserved,__audit:{RUNTIME_ENABLED,STATE_KEY,PROBE_KEY,ASSISTANCE_LEVELS,ACCESS_CONDITIONS,isValidLearnerState,assistanceLevelForSession,validAccessCondition,accessSourceFor,recoverableSession,captureDraftFromUI,upsertSessionRecord,answersMatch,memoryStrengthForReview,reviewOutcomeFromScore,trackAPriorInstruction,trackAPromptIsFresh,trackAActiveRecoverable,trackARouteForSkill,ensureTrackAMasterySchedule,masteryRouteInfo,maybeFinalizeTrackAMastery,sameOriginRedundancyDegraded,runtimeGateStatus,studentRuntimeAllowed,runtimeBlockMessage,sharedPersistenceStatus:()=>sharedPersistenceStatus,localDurableStatus:()=>localDurableStatus}};
   window.LEVEL_UP_APP=appApi;
   window.MLUL=appApi; // compatibility alias for the current Michael pilot UI
   init();
