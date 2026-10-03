@@ -42,7 +42,10 @@
       teach:"A pure substance has a fixed composition. An element such as copper is one pure substance; salt water is a mixture.",
       transferPrompt:"Which is a mixture?",
       transferChoices:["Oxygen gas","Distilled water","Carbon dioxide","Lemonade"],
-      transferAnswerIndex:3
+      transferAnswerIndex:3,
+      retentionPrompt:"Which sample is a pure substance rather than a mixture?",
+      retentionChoices:["Soil","Air","Gold","Salt water"],
+      retentionAnswerIndex:2
     },
     {
       id:"SGD.MATTER.2",
@@ -59,7 +62,10 @@
       teach:"Adding thermal energy usually increases particle motion. Removing thermal energy usually decreases particle motion.",
       transferPrompt:"A liquid cools down. What happens to the average motion of its particles?",
       transferChoices:["It increases","It decreases","It stays exactly the same","It becomes zero immediately"],
-      transferAnswerIndex:1
+      transferAnswerIndex:1,
+      retentionPrompt:"A substance is heated. What usually happens to its particles?",
+      retentionChoices:["They move faster","They move slower","They stop moving","They lose mass"],
+      retentionAnswerIndex:0
     },
     {
       id:"SGD.ENERGY.1",
@@ -76,7 +82,10 @@
       teach:"Energy can change form. In a flashlight, chemical energy in the battery becomes electrical energy, then mostly light plus some thermal energy.",
       transferPrompt:"A toaster changes electrical energy mainly into what form?",
       transferChoices:["Thermal energy","Gravitational energy","Nuclear energy","Magnetic energy only"],
-      transferAnswerIndex:0
+      transferAnswerIndex:0,
+      retentionPrompt:"A lamp uses electrical energy. Which output is expected?",
+      retentionChoices:["Light and some thermal energy","Only gravitational energy","Only nuclear energy","No energy transformation"],
+      retentionAnswerIndex:0
     },
     {
       id:"SGD.ENERGY.2",
@@ -93,7 +102,10 @@
       teach:"Convection transfers thermal energy through the movement of fluids such as liquids and gases. Conduction transfers energy through direct particle collisions.",
       transferPrompt:"Which example is mainly conduction?",
       transferChoices:["Sunlight warming your face","A metal spoon getting hot in soup","Warm air rising","Heat traveling through empty space"],
-      transferAnswerIndex:1
+      transferAnswerIndex:1,
+      retentionPrompt:"Warm air rising above a heater is mainly which type of heat transfer?",
+      retentionChoices:["Conduction","Convection","Reflection","Refraction"],
+      retentionAnswerIndex:1
     },
     {
       id:"SGD.FORCE.1",
@@ -110,7 +122,10 @@
       teach:"Unbalanced forces create a nonzero net force. A nonzero net force causes a change in motion in the direction of the net force.",
       transferPrompt:"A box has 3 N left and 3 N right. What is true about the net force?",
       transferChoices:["It is balanced at 0 N","It is 6 N right","It is 6 N left","The forces cannot be compared"],
-      transferAnswerIndex:0
+      transferAnswerIndex:0,
+      retentionPrompt:"A toy has 8 N pushing left and 2 N pushing right. What is true?",
+      retentionChoices:["The net force is left","The net force is right","The forces are balanced","There is no force"],
+      retentionAnswerIndex:0
     },
     {
       id:"SGD.FORCE.2",
@@ -127,7 +142,10 @@
       teach:"With the same applied force, greater mass means less acceleration. More massive objects resist changes in motion more.",
       transferPrompt:"If mass stays the same and the applied force increases, what happens to acceleration?",
       transferChoices:["It increases","It decreases","It must become zero","Mass doubles"],
-      transferAnswerIndex:0
+      transferAnswerIndex:0,
+      retentionPrompt:"Two objects get the same push. Which one usually accelerates less?",
+      retentionChoices:["The object with more mass","The object with less mass","They must be identical","Neither"],
+      retentionAnswerIndex:0
     },
     {
       id:"SGD.FIELDS.1",
@@ -144,7 +162,10 @@
       teach:"Gravity, electric force, and magnetic force can act across a distance through fields, so direct contact is not required.",
       transferPrompt:"Which is another noncontact force?",
       transferChoices:["Magnetic force","Friction","Normal force","A hand pushing a cart"],
-      transferAnswerIndex:0
+      transferAnswerIndex:0,
+      retentionPrompt:"Which force can act through a field without direct contact?",
+      retentionChoices:["Magnetic force","Friction","Normal force","A hand pushing"],
+      retentionAnswerIndex:0
     },
     {
       id:"SGD.FIELDS.2",
@@ -161,7 +182,10 @@
       teach:"Conductors allow electric charge to move more easily. Insulators resist charge movement. Metals such as copper are good conductors; rubber is an insulator.",
       transferPrompt:"Which material would be best for covering an electrical wire for safety?",
       transferChoices:["Rubber","Copper","Aluminum","Steel"],
-      transferAnswerIndex:0
+      transferAnswerIndex:0,
+      retentionPrompt:"Which material is most useful as an electrical insulator?",
+      retentionChoices:["Rubber","Copper","Aluminum","Steel"],
+      retentionAnswerIndex:0
     }
   ].map(x=>Object.freeze({...x,priorInstruction:false})));
 
@@ -172,7 +196,7 @@
   function checkChoice(id,index,phase="COLD_BASELINE"){
     const q=item(id);
     if(!q) return null;
-    const answer = phase==="TRANSFER" ? q.transferAnswerIndex : q.answerIndex;
+    const answer = phase==="TRANSFER" ? q.transferAnswerIndex : phase==="DELAYED_RETENTION" ? q.retentionAnswerIndex : q.answerIndex;
     return Number(index)===Number(answer);
   }
 
