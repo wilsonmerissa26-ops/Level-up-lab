@@ -42,32 +42,40 @@
     "math-functions":{q:"A table shows x: 0,1,2 and y: 4,7,10. What is the slope?",choices:["4","7","3"],answer:2,why:"Each increase of 1 in x increases y by 3."},
     "science-bridge":{q:"Two waves travel at the same speed. Wave A has twice the frequency of B. What happens to its wavelength?",choices:["Twice as long","Half as long","No change"],answer:1,why:"At constant speed, wavelength and frequency are inversely related."}
   });
+  const extraChallenges={
+    "read-scan":{q:"Rainfall increased. Nevertheless, the harvest was smaller. What does 'nevertheless' signal?",choices:["Contrast","Definition","Sequence"],answer:0,why:"The smaller harvest contrasts with more rain."},
+    "read-meaning":{q:"Shade made plants grow taller but produce fewer flowers. What is the central idea?",choices:["Shade affected plant growth","All plants need shade","Flowers grew faster"],answer:0,why:"Shade changed both height and flowering."},
+    "math-percent":{q:"A $48 game is 25% off. What is its sale price?",choices:["$12","$36","$42"],answer:1,why:"One quarter of $48 is $12; subtract to get $36."},
+    "math-functions":{q:"When x rises 1, y rises 5. What is the slope?",choices:["1","5","6"],answer:1,why:"Slope is change in y divided by change in x, or 5/1."},
+    "science-bridge":{q:"Which wave can travel through empty space?",choices:["Sound","Water waves","Light"],answer:2,why:"Light is electromagnetic and needs no material medium."}
+  };
+  function challengeFor(id,p){return (Number(p.completedRounds)||0)%2?extraChallenges[id]:challenges[id];}
   let active=null;
   let busy=false;
   function bridge(){return globalThis.LEVEL_UP_APP||globalThis.MLUL;}
   function access(){return bridge()?.schoolQuestAccess?.();}
   function questId(id){return "PSAT.BRIDGE.2026."+id;}
   function saved(id){return bridge()?.getSchoolQuestProgress?.(questId(id))||{version:1,attempts:0,completed:false};}
-  function item(id){return {itemId:questId(id)+":transfer-1",targetId:"PSAT."+id.toUpperCase().replace(/-/g,"."),label:modules.find(m=>m.id===id)?.title,promptType:"INSTRUCTIONAL_TRANSFER"};}
+  function item(id,round=0){return {itemId:questId(id)+":transfer-"+(round+1),targetId:"PSAT."+id.toUpperCase().replace(/-/g,"."),label:modules.find(m=>m.id===id)?.title,promptType:"INSTRUCTIONAL_TRANSFER"};}
   function refresh(){bridge()?.refreshPSATBridge?.();}
   async function start(id){
     if(busy||!challenges[id])return;
     if(!access()?.allowed){alert(access()?.message||"Learner storage is not ready.");return;}
     busy=true;
     try{
-      const m=modules.find(x=>x.id===id),p=saved(id);
-      const ok=await bridge().beginSchoolQuestItems({questId:questId(id),contentVersion:1,subject:m.subject,worldId:"transfer",items:[item(id)],progress:p,reason:"PSAT instructional transfer presented"});
-      if(ok){active={id};refresh();}
+      const m=modules.find(x=>x.id===id),p=saved(id),round=Number(p.completedRounds)||0;
+      const ok=await bridge().beginSchoolQuestItems({questId:questId(id),contentVersion:1,subject:m.subject,worldId:"transfer",items:[item(id,round)],progress:p,reason:"PSAT instructional transfer presented"});
+      if(ok){active={id,round};refresh();}
     }finally{busy=false;}
   }
   async function answer(id,choice){
     if(busy||active?.id!==id)return;
     busy=true;
     try{
-      const challenge=challenges[id],p=saved(id),correct=choice===challenge.answer;
-      const next={...p,attempts:(p.attempts||0)+1,completed:p.completed||correct,lastCorrect:correct};
-      const ok=await bridge().recordSchoolQuestAttempt({questId:questId(id),contentVersion:1,worldId:"transfer",itemId:item(id).itemId,response:challenge.choices[choice],isCorrect:correct,progress:next,reason:"PSAT transfer attempt"});
-      if(ok){active={id,choice,correct};refresh();}
+      const p=saved(id),challenge=challengeFor(id,p),correct=choice===challenge.answer;
+      const next={...p,attempts:(p.attempts||0)+1,completed:p.completed||correct,completedRounds:(Number(p.completedRounds)||0)+(correct?1:0),lastCorrect:correct};
+      const ok=await bridge().recordSchoolQuestAttempt({questId:questId(id),contentVersion:1,worldId:"transfer",itemId:item(id,active.round).itemId,response:challenge.choices[choice],isCorrect:correct,progress:next,reason:"PSAT transfer attempt"});
+      if(ok){active={id,choice,correct,round:active.round,challenge};refresh();}
     }finally{busy=false;}
   }
   async function finish(id){
@@ -79,9 +87,9 @@
     }finally{busy=false;}
   }
   function challengeUI(m){
-    const c=challenges[m.id],p=saved(m.id),a=access(),current=active?.id===m.id;
+    const p=saved(m.id),c=active?.id===m.id&&active.challenge?active.challenge:challengeFor(m.id,p),a=access(),current=active?.id===m.id;
     if(!a?.allowed)return '<p class="small muted">Practice locked until the audited learner save path is ready.</p>';
-    if(!current)return `<p class="small muted">Saved attempts: ${Number(p.attempts)||0} · ${p.completed?"Transfer solved":"Ready for practice"}</p><button class="btn primary" onclick="LEVEL_UP_PSAT_BRIDGE.start('${m.id}')">Start transfer challenge</button>`;
+    if(!current)return `<p class="small muted">Saved attempts: ${Number(p.attempts)||0} · Solved rounds: ${Number(p.completedRounds)||0}</p><button class="btn primary" onclick="LEVEL_UP_PSAT_BRIDGE.start('${m.id}')">Start transfer challenge</button>`;
     return `<div><p><strong>${escape(c.q)}</strong></p>${c.choices.map((v,i)=>`<button class="btn" style="margin:4px" ${active.choice!==undefined?"disabled":""} onclick="LEVEL_UP_PSAT_BRIDGE.answer('${m.id}',${i})">${escape(v)}</button>`).join("")}${active.choice!==undefined?`<p><strong>${active.correct?"Correct":"Try the explanation"}:</strong> ${escape(c.why)}</p><button class="btn" onclick="LEVEL_UP_PSAT_BRIDGE.finish('${m.id}')">Finish and save</button>`:""}</div>`;
   }
   function render(){
@@ -98,5 +106,5 @@
       <div class="card c12"><h3>Parent implementation notes</h3><p>Recommended sequence: 8–10 minute teach block, student explanation, independent example, new-context transfer, then short break. Track help level, accuracy, latency and completion only through the existing durable School Quest/evidence bridge when that integration is implemented and audited.</p><p class="small muted">Transfer attempts now use the existing durable School Quest study tracking, including response timing and first-try accuracy. Coins and full game worlds remain future work.</p></div>
     </div>`;
   }
-  globalThis.LEVEL_UP_PSAT_BRIDGE=Object.freeze({version:"2026-10-14.2",modules,render,start,answer,finish});
+  globalThis.LEVEL_UP_PSAT_BRIDGE=Object.freeze({version:"2026-10-14.3",modules,render,start,answer,finish});
 })();
