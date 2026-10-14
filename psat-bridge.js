@@ -34,6 +34,56 @@
     ],transfer:"Interpret an unfamiliar wave diagram and explain the relationship independently."}
   ]);
   function escape(value){return String(value).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));}
+
+  const challenges=Object.freeze({
+    "read-scan":{q:"The library extended its hours. However, weekend visits stayed low. What does 'however' signal?",choices:["A contrast","A cause","A definition"],answer:0,why:"However contrasts longer hours with low weekend visits."},
+    "read-meaning":{q:"Maya practiced daily and improved her free throws. What is the central idea?",choices:["Practice helped Maya improve","Maya changed sports","Practice never works"],answer:0,why:"The whole passage connects practice to improvement."},
+    "math-percent":{q:"A $60 jacket is 15% off. What is the sale price?",choices:["$9","$51","$45"],answer:1,why:"10% is $6; 5% is $3; discount $9, so $60 minus $9 is $51."},
+    "math-functions":{q:"A table shows x: 0,1,2 and y: 4,7,10. What is the slope?",choices:["4","7","3"],answer:2,why:"Each increase of 1 in x increases y by 3."},
+    "science-bridge":{q:"Two waves travel at the same speed. Wave A has twice the frequency of B. What happens to its wavelength?",choices:["Twice as long","Half as long","No change"],answer:1,why:"At constant speed, wavelength and frequency are inversely related."}
+  });
+  let active=null;
+  let busy=false;
+  function bridge(){return globalThis.LEVEL_UP_APP||globalThis.MLUL;}
+  function access(){return bridge()?.schoolQuestAccess?.();}
+  function questId(id){return "PSAT.BRIDGE.2026."+id;}
+  function saved(id){return bridge()?.getSchoolQuestProgress?.(questId(id))||{version:1,attempts:0,completed:false};}
+  function item(id){return {itemId:questId(id)+":transfer-1",targetId:"PSAT."+id.toUpperCase().replace(/-/g,"."),label:modules.find(m=>m.id===id)?.title,promptType:"INSTRUCTIONAL_TRANSFER"};}
+  function refresh(){bridge()?.refreshPSATBridge?.();}
+  async function start(id){
+    if(busy||!challenges[id])return;
+    if(!access()?.allowed){alert(access()?.message||"Learner storage is not ready.");return;}
+    busy=true;
+    try{
+      const m=modules.find(x=>x.id===id),p=saved(id);
+      const ok=await bridge().beginSchoolQuestItems({questId:questId(id),contentVersion:1,subject:m.subject,worldId:"transfer",items:[item(id)],progress:p,reason:"PSAT instructional transfer presented"});
+      if(ok){active={id};refresh();}
+    }finally{busy=false;}
+  }
+  async function answer(id,choice){
+    if(busy||active?.id!==id)return;
+    busy=true;
+    try{
+      const challenge=challenges[id],p=saved(id),correct=choice===challenge.answer;
+      const next={...p,attempts:(p.attempts||0)+1,completed:p.completed||correct,lastCorrect:correct};
+      const ok=await bridge().recordSchoolQuestAttempt({questId:questId(id),contentVersion:1,worldId:"transfer",itemId:item(id).itemId,response:challenge.choices[choice],isCorrect:correct,progress:next,reason:"PSAT transfer attempt"});
+      if(ok){active={id,choice,correct};refresh();}
+    }finally{busy=false;}
+  }
+  async function finish(id){
+    if(busy||active?.id!==id)return;
+    busy=true;
+    try{
+      const ok=await bridge().endSchoolQuestStudySession({questId:questId(id),contentVersion:1,worldId:"transfer",progress:saved(id),status:"COMPLETED",reason:"PSAT transfer session ended"});
+      if(ok){active=null;refresh();}
+    }finally{busy=false;}
+  }
+  function challengeUI(m){
+    const c=challenges[m.id],p=saved(m.id),a=access(),current=active?.id===m.id;
+    if(!a?.allowed)return '<p class="small muted">Practice locked until the audited learner save path is ready.</p>';
+    if(!current)return `<p class="small muted">Saved attempts: ${Number(p.attempts)||0} · ${p.completed?"Transfer solved":"Ready for practice"}</p><button class="btn primary" onclick="LEVEL_UP_PSAT_BRIDGE.start('${m.id}')">Start transfer challenge</button>`;
+    return `<div><p><strong>${escape(c.q)}</strong></p>${c.choices.map((v,i)=>`<button class="btn" style="margin:4px" ${active.choice!==undefined?"disabled":""} onclick="LEVEL_UP_PSAT_BRIDGE.answer('${m.id}',${i})">${escape(v)}</button>`).join("")}${active.choice!==undefined?`<p><strong>${active.correct?"Correct":"Try the explanation"}:</strong> ${escape(c.why)}</p><button class="btn" onclick="LEVEL_UP_PSAT_BRIDGE.finish('${m.id}')">Finish and save</button>`:""}</div>`;
+  }
   function render(){
     return `<div class="grid">
       <div class="card c12"><h2>PSAT + School Skills · Level-Up</h2>
@@ -44,9 +94,9 @@
       <p class="small muted">October 3 newsletter is the latest supplied curriculum evidence. Import the new Knowledge Organizers before promoting a topic to CURRENT_UNIT.</p></div>
       ${modules.map(m=>`<div class="card c6"><span class="pill">${escape(m.subject)} · ${m.minutes} min</span><h3>${escape(m.title)}</h3>
       <ol>${m.teach.map(([name,detail])=>`<li><strong>${escape(name)}:</strong> ${escape(detail)}</li>`).join("")}</ol>
-      <p><strong>Transfer mission:</strong> ${escape(m.transfer)}</p><p class="small muted">Instructional preview · not a scored assessment · no diagnostic baseline collected.</p></div>`).join("")}
-      <div class="card c12"><h3>Parent implementation notes</h3><p>Recommended sequence: 8–10 minute teach block, student explanation, independent example, new-context transfer, then short break. Track help level, accuracy, latency and completion only through the existing durable School Quest/evidence bridge when that integration is implemented and audited.</p><p class="small muted">This first slice does not yet award coins, write learner progress, or unlock a PSAT game. Those require integration with the existing save and study-tracking APIs.</p></div>
+      <p><strong>Transfer mission:</strong> ${escape(m.transfer)}</p>${challengeUI(m)}<p class="small muted">School Success practice · PRIOR_INSTRUCTION · never a clean diagnostic baseline.</p></div>`).join("")}
+      <div class="card c12"><h3>Parent implementation notes</h3><p>Recommended sequence: 8–10 minute teach block, student explanation, independent example, new-context transfer, then short break. Track help level, accuracy, latency and completion only through the existing durable School Quest/evidence bridge when that integration is implemented and audited.</p><p class="small muted">Transfer attempts now use the existing durable School Quest study tracking, including response timing and first-try accuracy. Coins and full game worlds remain future work.</p></div>
     </div>`;
   }
-  globalThis.LEVEL_UP_PSAT_BRIDGE=Object.freeze({version:"2026-10-14.1",modules,render});
+  globalThis.LEVEL_UP_PSAT_BRIDGE=Object.freeze({version:"2026-10-14.2",modules,render,start,answer,finish});
 })();
