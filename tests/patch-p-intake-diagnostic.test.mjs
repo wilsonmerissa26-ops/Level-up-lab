@@ -38,4 +38,18 @@ assert.deepEqual(Array.from(input.profile.interests),["dinosaurs"]);
 assert.throws(()=>P.plan({grade:4,subjects:[]}),/subject/);
 assert.throws(()=>P.plan({grade:14,subjects:["math"]}),/Grade/);
 assert.throws(()=>P.plan({grade:4,subjects:["history"]}),/Unsupported/);
+
+const kindergarten=P.normalizeIntake({grade:"K",subjects:["MATH","math"],preferredBlockMinutes:15});
+assert.equal(kindergarten.grade,0);
+assert.equal(kindergarten.subjects.length,1);
+assert.equal(kindergarten.preferredBlockMinutes,15);
+assert.throws(()=>P.plan({subjects:["math"]}),/Grade/);
+assert.throws(()=>P.plan({grade:"",subjects:["math"]}),/Grade/);
+assert.throws(()=>P.plan({grade:4,subjects:["math"],preferredBlockMinutes:"many"}),/block minutes/);
+assert.throws(()=>P.plan({grade:4,subjects:["math"],preferredBlockMinutes:0}),/block minutes/);
+const unsupportedGrade=P.plan({grade:6,subjects:["math"]});
+assert.equal(unsupportedGrade.sections[0].origin,"NOT_YET_BUILT");
+assert.equal(unsupportedGrade.sections[0].itemCount,0);
+assert.equal(unsupportedGrade.sections[0].readyForPilot,false);
+
 console.log("PASS Patch P intake and planning foundation");
