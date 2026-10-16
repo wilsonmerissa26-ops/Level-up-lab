@@ -26,11 +26,15 @@
   }
   function normalizeIntake(raw){
     if(!raw||typeof raw!=="object"||Array.isArray(raw))throw Error("Intake object required");
-    var grade=Number(raw.grade==null?raw.gradeLevel:raw.grade);
+    var gradeInput=raw.grade==null?raw.gradeLevel:raw.grade;
+    var grade=gradeInput==="K"||gradeInput==="k"?0:(gradeInput==null||String(gradeInput).trim()===""?NaN:Number(gradeInput));
     if(!Number.isInteger(grade)||grade<0||grade>12)throw Error("Grade must be an integer from K (0) to 12");
     var subjects=uniqueStrings(raw.subjects||[],4).map(function(s){return s.toLowerCase()});
+    subjects=subjects.filter(function(s,i){return subjects.indexOf(s)===i});
     if(!subjects.length)throw Error("At least one subject required");
     if(subjects.some(function(s){return SUBJECTS.indexOf(s)<0}))throw Error("Unsupported subject");
+    var duration=raw.preferredBlockMinutes==null||raw.preferredBlockMinutes===""?null:Number(raw.preferredBlockMinutes);
+    if(duration!==null&&(!Number.isInteger(duration)||duration<1||duration>120))throw Error("Preferred block minutes must be a whole number from 1 to 120");
     return Object.freeze({
       grade:grade,gradeBand:grade<=5?"elementary":grade<=8?"middle":"high",
       subjects:subjects,
@@ -40,7 +44,7 @@
       responseModes:uniqueStrings(raw.responseModes,8),
       frustrationSignals:uniqueStrings(raw.frustrationSignals,12),
       readingAccess:uniqueStrings(raw.readingAccess,8),
-      preferredBlockMinutes:raw.preferredBlockMinutes==null?null:Number(raw.preferredBlockMinutes),
+      preferredBlockMinutes:duration,
       schoolDataAvailable:raw.schoolDataAvailable===true,
       priorInstructionTargets:uniqueStrings(raw.priorInstructionTargets,100)
     });
