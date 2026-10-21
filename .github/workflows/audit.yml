@@ -33,6 +33,7 @@ jobs:
           node --check shared-persistence.js
           node --check school-plan.js
           node --check quest-engine.js
+          node --check evidence-integrity.js
           node --check quest-config.js
           node --check michael-school-quest-config.js
           node --check study-tracking.js
@@ -110,3 +111,5 @@ jobs:
 
       - name: School Math and ELA teaching and persistence
         run: node tests/school-academics.test.mjs
+      - name: Run instructional integrity audit regression
+        run: node tests/instructional-integrity.test.mjs

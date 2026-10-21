@@ -41,18 +41,18 @@
         ['Try with support','For 9 V across 15 Ω: unknown I; formula I = V/R; substitute 9/15; calculate 0.60; report 0.60 A. Explain why the answer is smaller than 9. If division is the obstacle, use the numeric inverse-operations Math Bridge.'],
         ['Fade the steps','Cover the example. For a fresh resistor, write unknown → relationship → substitution → answer with units → reasonableness check. Do not multiply just because two numbers appear.']
       ],
-      checks:[mc('oi-g','Use I = V/R. A 6 V source is across 15 Ω. What is current?',['0.40 A','90 A','2.5 A'],0,'6 ÷ 15 = 0.40 A.','GUIDED_PRACTICE','CALCULATION_APPLICATION','Unknown: I. Substitute 6 ÷ 15. Check by multiplying the result by 15.'),mc('oi-f','A 12 V source is across 60 Ω. Choose current.',['5 A','0.20 A','720 A'],1,'12 ÷ 60 = 0.20 A.','FADE_HELP','CALCULATION_APPLICATION','Identify the unknown and divide voltage by resistance.'),mc('oi-i','An ideal 18 V source is across 30 Ω. Calculate current.',['0.60 A','1.67 A','540 A'],0,'I = 18/30 = 0.60 A.','INDEPENDENT_CHECK','CALCULATION_APPLICATION'),explain('oi-x','Two model circuits use the same 12 V source. One is 20 Ω and the other 60 Ω. Explain which has more current, using calculated values.',['12/20 = 0.60 A and 12/60 = 0.20 A.','At the same voltage, the lower-resistance circuit has more current.'])],
-      reviewChecks:[review('A model cart circuit has 10 V across 50 Ω. Find current.',['0.20 A','5 A','500 A'],0,'10/50 = 0.20 A.'),review('A sensor circuit has 8 V across 40 Ω. Find current.',['0.20 A','5 A','32 A'],0,'8/40 = 0.20 A.'),review('At 15 V, a 75 Ω circuit has what current?',['0.20 A','5 A','1125 A'],0,'15/75 = 0.20 A.')]
+      checks:[mc('oi-g','Use I = V/R. A 6 V source is across 15 Ω. What is current?',['0.40 A','90 A','2.5 A'],0,'6 ÷ 15 = 0.40 A.','GUIDED_PRACTICE','CALCULATION_APPLICATION','Unknown: I. Substitute 6 ÷ 15. Check by multiplying the result by 15.'),mc('oi-f','A 12 V source is across 60 Ω. Choose current.',['5 A','0.20 A','720 A'],1,'12 ÷ 60 = 0.20 A.','FADE_HELP','CALCULATION_APPLICATION','Identify the unknown and divide voltage by resistance.'),mc('oi-i','An ideal 18 V source is across 30 Ω. Calculate current.',['0.60 A','0.06 A','540 A'],0,'I = 18/30 = 0.60 A.','INDEPENDENT_CHECK','CALCULATION_APPLICATION'),explain('oi-x','Two model circuits use the same 12 V source. One is 20 Ω and the other 60 Ω. Explain which has more current, using calculated values.',['12/20 = 0.60 A and 12/60 = 0.20 A.','At the same voltage, the lower-resistance circuit has more current.'])],
+      reviewChecks:[review('A model cart circuit has 10 V across 50 Ω. Find current.',['0.20 A','5 A','500 A'],0,'10/50 = 0.20 A.'),review('A sensor circuit has 8 V across 20 Ω. Find current.',['0.40 A','0.04 A','2.5 A'],0,'8/20 = 0.40 A.'),review('At 15 V, a 60 Ω circuit has what current?',['0.25 A','4 A','900 A'],0,'15/60 = 0.25 A.')]
     },
     {
-      key:'OHM_VR',title:'4. Find the missing voltage or resistance',tag:'Ohm’s Law rearrangement',targets:['SCI.EXT.OHM_REARRANGE'],
+      key:'OHM_VR',title:'4. Find the missing voltage or resistance',tag:'Ohm’s Law rearrangement',targets:['SCI.EXT.OHM_REARRANGE'],priorSkillIds:['MATH.ONE_STEP_EQUATIONS'],
       teach:[
         ['Choose from the unknown','Use V = I × R for voltage; I = V ÷ R for current; R = V ÷ I for resistance. In each equation, the quantity on the left is isolated.'],
         ['Watch two examples','Practice voltage: I = 0.20 A and R = 30 Ω, so V = 0.20 × 30 = 6 V. Practice resistance: V = 12 V and I = 0.40 A, so R = 12 ÷ 0.40 = 30 Ω. These are practice calculations.'],
         ['Try with support','In 12 = I × 30, divide both sides by 30 to isolate I. In 12 = 0.40 × R, divide both sides by 0.40 to isolate R. Use the Math Bridge for inverse operations before science rearrangement if needed.'],
         ['Check the result','Put the answer back into V = IR. For R = 30 Ω at 0.40 A: 0.40 × 30 = 12 V. A unit check catches many swapped-formula mistakes.']
       ],
-      checks:[mc('ov-g','Use V = IR. At 0.50 A through 20 Ω, voltage is…',['10 V','40 V','0.025 V'],0,'0.50 × 20 = 10 V.','GUIDED_PRACTICE','CALCULATION_APPLICATION','Multiply the current by the resistance.'),mc('ov-f','At 9 V and 0.30 A, what is the resistance?',['2.7 Ω','30 Ω','0.033 Ω'],1,'R = 9/0.30 = 30 Ω.','FADE_HELP','CALCULATION_APPLICATION','The unknown is R; choose the equation with R alone.'),mc('ov-i','A component has 24 V across it and 0.80 A through it. Find R.',['19.2 Ω','30 Ω','0.033 Ω'],1,'24/0.80 = 30 Ω.','INDEPENDENT_CHECK','CALCULATION_APPLICATION'),explain('ov-x','A friend multiplies 12 V by 0.60 A to find resistance. Explain the correction and check your answer.',['R = V/I = 12/0.60 = 20 Ω.','Check 0.60 × 20 = 12 V.'])],
+      checks:[mc('ov-g','Use V = IR. At 0.50 A through 20 Ω, voltage is…',['10 V','40 V','0.025 V'],0,'0.50 × 20 = 10 V.','GUIDED_PRACTICE','CALCULATION_APPLICATION','Multiply the current by the resistance.'),mc('ov-f','At 9 V and 0.30 A, what is the resistance?',['2.7 Ω','30 Ω','0.033 Ω'],1,'R = 9/0.30 = 30 Ω.','FADE_HELP','CALCULATION_APPLICATION','The unknown is R; choose the equation with R alone.'),mc('ov-i','A component has 24 V across it and 0.80 A through it. Find R.',['19.2 Ω','30 Ω','3 Ω'],1,'24/0.80 = 30 Ω.','INDEPENDENT_CHECK','CALCULATION_APPLICATION'),explain('ov-x','A friend multiplies 12 V by 0.60 A to find resistance. Explain the correction and check your answer.',['R = V/I = 12/0.60 = 20 Ω.','Check 0.60 × 20 = 12 V.'])],
       reviewChecks:[review('A lamp has 0.25 A through a 40 Ω model resistor. Find voltage.',['10 V','160 V','0.00625 V'],0,'V = 0.25 × 40 = 10 V.'),review('A model resistor has 6 V across it and 0.20 A through it. Find resistance.',['30 Ω','1.2 Ω','0.033 Ω'],0,'R = 6/0.20 = 30 Ω.'),review('An instrument has 0.40 A through 25 Ω. Find voltage.',['10 V','62.5 V','0.016 V'],0,'V = IR = 10 V.')]
     },
     {
@@ -89,7 +89,7 @@
       reviewChecks:[review('A loop is drawn as a triangle instead of a rectangle without changing connections. Its number of paths…',['Stays the same','Must become three','Must become zero'],0,'Connections determine paths.'),review('Which arrow convention points positive to negative in the external DC circuit?',['Conventional current','Electron drift','Neither'],0,'Conventional current is opposite electron drift.'),review('To compare voltage across two components, the meter measures…',['Between the two ends of each component','Only at the battery’s negative terminal','Resistance by counting corners'],0,'Voltage is a two-point measurement.')]
     },
     {
-      key:'MOTOR',title:'8. Explain where a motor’s energy goes',tag:'Motor and energy transformations',targets:['SCI.EXT.CIRCUIT_MOTOR','SCI.S8P2C.TRANSFORMATION_CHAINS'],
+      key:'MOTOR',title:'8. Explain where a motor’s energy goes',tag:'Motor and energy transformations',targets:['SCI.EXT.CIRCUIT_MOTOR','SCI.S8P2C.TRANSFORMATION_CHAINS','SCI.S8P2C.ENERGY_TRANSFORMATIONS'],
       teach:[
         ['Follow the energy','A battery stores chemical energy. In a working circuit it transfers energy electrically. A motor changes some of this energy into mechanical motion; thermal energy and sound can also result. Energy is conserved.'],
         ['Connect to earlier Energy work','A battery-powered toy fan gives a useful chain: chemical → electrical → mechanical, with thermal and sound outputs. Energy changes form; current is not a substance used up by the motor.'],
@@ -122,7 +122,7 @@
       reviewChecks:[review('Which belongs in the reasoning section of a circuit report?',['A link between measured patterns and I = V/R','Only a copied data table','A claim that all motors halve current'],0,'Reasoning explains why the evidence supports the claim.'),review('Only two valid measurements are available but three are required. What should happen?',['Collect the missing evidence or report the limitation','Invent a third measurement','Rename a prediction as a measurement'],0,'A requirement is not permission to fabricate data.'),review('A result differs from the prediction. Which response is strongest?',['Report it and examine conditions and possible error','Delete it because it is inconvenient','Change numbers to fit the claim'],0,'Scientific arguments use the actual evidence.')]
     },
     {
-      key:'MIXED',title:'11. Use circuits in a new situation',tag:'Mixed review and transfer',targets:['SCI.EXT.CIRCUIT_TRANSFER'],diagram:'compare',
+      key:'MIXED',title:'11. Use circuits in a new situation',tag:'Mixed review and transfer',targets:['SCI.EXT.CIRCUIT_TRANSFER','SCI.S8P2C.ENERGY_TRANSFORMATIONS'],diagram:'compare',
       teach:[
         ['Choose a model before calculating','Ask: one complete path or multiple branches? What is given? What must stay constant? Then use the circuit rules. Do not choose a formula from a single vocabulary word.'],
         ['Work a new example','A model emergency light has two 40 Ω lamps across an ideal 8 V source. In series, total R = 80 Ω and total current = 0.10 A. In parallel, each branch has 0.20 A and total current is 0.40 A.'],
@@ -133,6 +133,11 @@
       reviewChecks:[review('Two 50 Ω model lamps are in series across 10 V. Find current.',['0.10 A','0.40 A','5 A'],0,'Total R is 100 Ω, so I = 0.10 A.'),review('Those 50 Ω lamps are instead in parallel across 10 V. Find total current.',['0.40 A','0.10 A','0.20 A'],0,'Each draws 0.20 A; total is 0.40 A.'),review('A model display must keep one light working if another branch opens. Which design fits?',['Parallel branches','One series path','An open source connection'],0,'Independent complete branches permit the other light to work.')]
     }
   ].map(l=>({...l,id:'SCI.CIRCUITS.'+l.key,schoolTag:l.tag,unit,minutes:'Work at your pace',stagedTeach:true,targetIds:l.targets,sourceNote:'Original teaching aligned to the parent-authorized science posts and circuits lab reviewed October 21, 2026. Practice values are examples, not learner lab data.'}));
+  for(const l of lessons)for(let i=0;i<l.checks.length;i++){
+    const q=l.checks[i];if(!q.choices)continue;
+    const shift=(i+l.id.length)%q.choices.length,correct=q.choices[q.answer];
+    q.choices=q.choices.slice(shift).concat(q.choices.slice(0,shift));q.answer=q.choices.indexOf(correct);
+  }
   C.science.unshift(...lessons);
   C.scienceLearningPlan={updatedAt:'2026-10-21',title:'Electricity and circuits',deadline:null,deadlineKind:'NOT_POSTED',firstLessonId:lessons[0].id,
     groups:[{title:'Learn now · Electricity and circuits',note:'Current school unit. Start with the complete path, then build toward the lab explanation.',ids:lessons.map(l=>l.id)},{title:'Review · Waves and sound',note:'Earlier school instruction: wave parts, relationships, behavior, the EM spectrum, media, seismic applications, and Doppler.',ids:C.science.filter(l=>l.unit==='SCI.G8.WAVES').map(l=>l.id)},{title:'Review · Energy and heat',note:'Earlier school instruction: energy forms, transformations, mechanical energy, heat transfer, particles, and specific heat calculations.',ids:C.science.filter(l=>l.id.startsWith('SCI.SPS7')).map(l=>l.id)}],
@@ -145,9 +150,13 @@
     if(!kind)return '';
     const parallel=kind==='parallel',simple=kind==='closed';
     if(kind==='compare')return '<div class="circuit-comparison">'+diagram('series')+diagram('parallel')+'</div>';
-    const label=simple?'Closed circuit model: one complete path through a battery and a lamp.':parallel?'Parallel model: two resistor branches connect across the same battery.':'Series model: one complete path through a battery and two resistors.';
-    const wires=simple?'<path d="M70 110V45H350V195H70V126"/><circle cx="220" cy="45" r="20"/><path d="M206 31L234 59M206 59L234 31"/>':parallel?'<path d="M70 110V45H350V195H70V126"/><rect x="180" y="32" width="60" height="26"/><rect x="180" y="182" width="60" height="26"/>':'<path d="M70 110V45H350V195H70V126"/><rect x="140" y="32" width="60" height="26"/><rect x="260" y="32" width="60" height="26"/>';
-    return '<figure class="circuit-figure"><svg viewBox="0 0 420 240" role="img" aria-label="'+label+'"><g fill="var(--card,#17243a)" stroke="#7dd3fc" stroke-width="3">'+wires+'<path d="M50 110H90M58 126H82"/></g><g fill="#e2e8f0" font-size="15" font-family="sans-serif"><text x="20" y="98">+</text><text x="20" y="145">−</text><text x="105" y="105">'+(parallel?'Branch 1':'One path')+'</text>'+(parallel?'<text x="105" y="175">Branch 2</text>':'')+'<text x="158" y="20">'+(simple?'Lamp':'R1')+'</text><text x="'+(parallel?'250':'277')+'" y="'+(parallel?'220':'25')+'">'+(simple?'':'R2')+'</text></g></svg><figcaption>'+label+'</figcaption></figure>';
+    const label=simple?'Closed circuit model: one complete path through a battery and a lamp.':parallel?'Parallel model: the battery connects to two junctions, and each resistor forms its own branch between them.':'Series model: one complete path through a battery and two resistors.';
+    // Parallel: the battery connects across a top rail and a bottom rail. Each resistor bridges the two rails on its own branch,
+    // so both branches share the same two junctions (dots). The rails do not join at the far end, which would short the battery.
+    const wires=simple?'<path d="M70 110V45H350V195H70V126"/><circle cx="220" cy="45" r="20"/><path d="M206 31L234 59M206 59L234 31"/>':parallel?'<path d="M70 110V45H310M70 126V195H310"/><path d="M200 45V95M200 145V195M310 45V95M310 145V195"/><rect x="187" y="95" width="26" height="50"/><rect x="297" y="95" width="26" height="50"/>':'<path d="M70 110V45H350V195H70V126"/><rect x="140" y="32" width="60" height="26"/><rect x="260" y="32" width="60" height="26"/>';
+    const dots=parallel?'<g fill="#7dd3fc"><circle cx="200" cy="45" r="5"/><circle cx="200" cy="195" r="5"/></g>':'';
+    const text=parallel?'<text x="225" y="125">R1</text><text x="335" y="125">R2</text><text x="160" y="30">Branch 1</text><text x="275" y="30">Branch 2</text><text x="110" y="225">Two junctions shared by both branches</text>':'<text x="105" y="105">One path</text><text x="158" y="20">'+(simple?'Lamp':'R1')+'</text><text x="277" y="25">'+(simple?'':'R2')+'</text>';
+    return '<figure class="circuit-figure"><svg viewBox="0 0 420 240" role="img" aria-label="'+label+'"><g fill="var(--card,#17243a)" stroke="#7dd3fc" stroke-width="3">'+wires+'<path d="M50 110H90M58 126H82"/></g>'+dots+'<g fill="#e2e8f0" font-size="15" font-family="sans-serif"><text x="20" y="98">+</text><text x="20" y="145">−</text>'+text+'</g></svg><figcaption>'+label+'</figcaption></figure>';
   }
   function model(v,r1,r2,arrangement){
     if(![v,r1,r2].every(Number.isFinite)||v<=0||r1<=0||r2<=0||!['series','parallel'].includes(arrangement))throw new Error('Positive circuit values and a known arrangement are required.');
@@ -168,7 +177,7 @@
       review('A low-resistance wire bypasses a model lamp directly across a battery. What is the problem?',['It can form a short circuit','It is the only correct lamp connection','It proves charge is created'],0,'A low-resistance bypass is not a useful lamp path.'),
       review('A model aquarium light has an intact battery but an open switch. Which explanation fits its being off?',['The conducting loop is incomplete','The battery must contain no electrons','The wire needs to be bent more'],0,'An open switch breaks the path.'),
       review('Which is the best replacement for a missing conducting link in a low-voltage model?',['Copper wire','Dry plastic cord','Rubber ribbon'],0,'Copper is a conductor.'),
-      review('Two battery terminals connect only to the same side of a lamp, leaving the other contact unconnected. Why might it not work?',['The lamp is not in a complete path','The shape is not square','All lamps need two batteries'],0,'Both device contacts must be part of the intended complete circuit.')
+      {...review('Both battery wires are attached to the same metal contact on a lamp, and the lamp’s other contact has no wire. Why does the lamp stay dark?',['No complete path runs through the lamp','The circuit is not drawn as a square','Every lamp needs two batteries'],0,'Current must enter one lamp contact and leave through the other; here it bypasses the lamp.'),transfer:true}
     ],
     VIR:[
       review('A circuit display changes from 0.10 A to 0.20 A. What doubled?',['Rate of charge flow','Resistance in ohms','Voltage in volts, necessarily'],0,'Amperes measure current.'),
@@ -176,7 +185,7 @@
       review('A model maintains resistance but reduces voltage. Which prediction fits?',['Current decreases','Current must increase','Current is used up'],0,'I = V/R at fixed R.'),
       review('Which instrument reading would report resistance?',['75 Ω','0.75 A','7.5 V'],0,'Ohms measure resistance.'),
       review('Which statement keeps current separate from energy?',['Current is charge flow rate; devices transfer energy','Current is energy used up at each resistor','Energy is measured only in amperes'],0,'The quantities describe different properties.'),
-      review('With an ideal source fixed at 10 V, what happens if a resistor’s resistance is reduced?',['Current increases','Voltage necessarily doubles','Current necessarily stops'],0,'I rises as R falls at fixed V.')
+      {...review('A phone charger label reads 5 V and 2 A. Which number tells how much energy each coulomb of charge receives?',['The 5 V voltage','The 2 A current','Neither; only resistance tells that'],0,'Voltage is energy per unit charge: 5 V means 5 joules per coulomb.'),transfer:true}
     ],
     MODELS:[
       review('Two complete paths share the same pair of source terminals. What identifies the arrangement?',['Parallel connections','Two corners','The color of the wires'],0,'Parallel branches connect across the same two nodes.'),
@@ -184,7 +193,7 @@
       review('An ordinary in-line ammeter is used to measure one branch current. Where does it go?',['In that branch’s series path','Across an ideal source as a bypass','Only beside the circuit without connection'],0,'An in-line ammeter measures current through its path.'),
       review('A drawing has two loops that touch only at one node. Is shape alone enough to prove two parallel branches?',['No, trace whether both branches connect the same two nodes','Yes, two loops always mean parallel','Yes, all bent lines are branches'],0,'Parallel branches must share two connection points.'),
       review('Which source description distinguishes AC from simple DC?',['AC reverses current direction periodically','AC has no charge movement','DC always has zero voltage'],0,'The direction reverses periodically in AC.'),
-      review('A voltmeter is placed across a single wire segment in an ideal-wire model. Why may it read near zero?',['The two points have nearly the same potential','Current has been used up','The battery must be missing'],0,'An ideal wire has negligible voltage drop.')
+      {...review('A voltmeter is placed across a single wire segment in an ideal-wire model. Why may it read near zero?',['The two points have nearly the same potential','Current has been used up','The battery must be missing'],0,'An ideal wire has negligible voltage drop.'),transfer:true}
     ],
     MOTOR:[
       review('A battery model boat moves and its motor gets warm. Which outputs should be counted?',['Mechanical motion and thermal energy','Only motion because heat is destroyed','Only current in ohms'],0,'Energy accounting includes useful and thermal outputs.'),
@@ -192,7 +201,7 @@
       review('Why might a working motor’s current differ when its load changes?',['Its operating conditions changed','All electrons disappeared','Resistance and current are identical'],0,'A motor is not simply a fixed ohmic resistor under every condition.'),
       review('A battery-powered mixer hums while rotating. Which energy chain fits?',['Chemical → electrical → mechanical, thermal, and sound','Chemical → no output','Electrical → destroyed energy'],0,'Several output forms can occur together.'),
       review('A report says a motor’s current increased but gives no reading or model conditions. What should the reviewer request?',['Actual current evidence and operating conditions','A more confident adjective','A copied bulb result'],0,'A comparison needs evidence and defined conditions.'),
-      review('If a simulation lacks a motor, which report is scientifically honest?',['Motor comparison not performed with this tool','Motor current was observed to halve','A resistor is always identical to a motor'],0,'State the limitation instead of inventing an observation.')
+      {...review('An electric car’s motor turns the wheels, its battery warms, and the motor hums. Which energy account is most complete?',['Chemical → electrical → mechanical, plus thermal and sound','Electrical → chemical only','Mechanical → nuclear → light'],0,'Count the useful motion and the thermal and sound outputs.'),transfer:true}
     ],
     DATA:[
       review('A resistance-current investigation uses the same source voltage for each trial. Which role does voltage have?',['Controlled variable','Dependent variable','Measured outcome that must change'],0,'It is held fixed for this comparison.'),
@@ -200,15 +209,15 @@
       review('A student plots I versus R at fixed V and joins the points as a proportional straight line through zero. What needs correction?',['I = V/R gives an inverse curve','Current is independent of resistance','Resistance belongs in amperes'],0,'The inverse relationship is not direct proportionality.'),
       review('When comparing arrangements, which design best isolates the series-parallel difference?',['Keep source voltage and resistor values fixed','Change voltage, resistor values, and arrangement together','Use invented currents'],0,'Control other relevant conditions.'),
       review('A graph has voltage on x and current on y. Which slope indicates greater resistance?',['Smaller slope','Larger slope','Slope cannot ever relate to resistance'],0,'I/V is 1/R, so a smaller slope means a greater R.'),
-      review('A table combines measured voltage and calculated current. Which label is needed?',['Identify measured and calculated quantities with units','Call every number measured','Remove the units'],0,'The source of each quantity must be clear.')
+      {...review('A graph puts current on y and voltage on x for two bulbs. Bulb P’s line is steeper than bulb Q’s. Which bulb has lower resistance?',['Bulb P','Bulb Q','They must be equal'],0,'On an I-versus-V graph the slope is 1/R, so the steeper line has lower resistance.'),transfer:true}
     ],
     CER:[
       review('A circuit report lists three numbers without units or conditions. What weakens its evidence?',['The values cannot be interpreted reliably','Numbers never count as evidence','Conditions do not matter'],0,'Units and conditions give measurements meaning.'),
       review('Which limitation could justify repeating a trial?',['A connector came loose during the reading','The result disagreed with a guess','The table had only three columns'],0,'An unstable connection can affect the measurement.'),
-      review('A claim says adding a branch lowers equivalent resistance. Which reasoning is relevant?',['An additional complete path increases total conductance','A new branch creates electrons','All voltage gets used by the first resistor'],0,'At fixed voltage an added path increases total current and lowers equivalent resistance.'),
+      review('A claim says adding a branch lowers equivalent resistance. Which reasoning is relevant?',['Another complete path lets more total current flow at the same voltage','A new branch creates new electrons','All voltage gets used by the first resistor'],0,'At fixed voltage an added path increases total current, so equivalent resistance (V ÷ total I) is lower.'),
       review('Why include an unexpected result in an argument?',['It is part of the evidence and may reveal a limitation','It should always be deleted','It automatically proves every rule wrong'],0,'Describe the result and investigate its conditions.'),
       review('Which is a specific improvement to limited circuit data?',['Repeat readings at controlled voltage and check connections','Make the report longer','Change values until the graph is smooth'],0,'Repeated, controlled measurements improve the evidence.'),
-      review('Which reflection shows a change in understanding?',['I expected less total current with another branch; my readings and branch sums changed my explanation','I copied the prediction as the result','There was a graph'],0,'Connect prior thinking to the actual evidence and revised reasoning.')
+      {...review('A classmate claims longer wires always make a bulb brighter. Which test would check the claim fairly?',['Change only the wire length, keeping the same battery and bulb','Ask several friends which bulb looks brighter','Change the battery and the wire length together'],0,'A fair test changes one variable and controls the others.'),transfer:true}
     ]
   };
   function delayedChecks(lesson,w,r){
@@ -217,31 +226,44 @@
     if(laterReviews[lesson.key])return laterReviews[lesson.key].slice((d-1)*3,d*3);
     const n=d*5+Math.floor(r()*4),v=6+n,r1=20+n*2,r2=r1*2;
     const f=x=>Number(x.toFixed(3));
-    const numerical=(q,answer,why)=>review(q+' Round to three decimal places when needed.',[String(f(answer)),String(f(answer*2)),String(f(answer/2))],0,why);
-    if(lesson.key==='OHM_I')return [
-      numerical('A '+v+' V model source is across '+r1+' Ω. Find current in A.',v/r1,'Divide voltage by resistance.'),
-      numerical('A '+(v*2)+' V model source is across '+(r1*3)+' Ω. Find current in A.',v*2/(r1*3),'Use I = V/R.'),
-      numerical('A new sensor has '+(v*3)+' V across '+(r1*2)+' Ω. Find its current in A.',v*3/(r1*2),'Apply the relationship in the new setting.')
-    ];
+    // Distractors come from named misconceptions (inverted formula, wrong arrangement, decimal slip), chosen with the seeded r(),
+    // so the key's position among the values varies and the right answer cannot be found by picking the middle number.
+    const numerical=(q,answer,pool,why,extra={})=>{
+      const key=f(answer),wrong=[];
+      for(const v0 of pool.map(f)){if(v0>0&&v0!==key&&!wrong.includes(v0))wrong.push(v0)}
+      for(let i=wrong.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[wrong[i],wrong[j]]=[wrong[j],wrong[i]]}
+      for(const v0 of [f(key*10),f(key/10)])if(wrong.length<2&&v0!==key&&!wrong.includes(v0))wrong.push(v0);
+      return {...review(q+' Round to three decimal places when needed.',[String(key),String(wrong[0]),String(wrong[1])],0,why),...extra};
+    };
+    if(lesson.key==='OHM_I'){const i0=v/r1;return [
+      numerical('A '+v+' V model source is across '+r1+' Ω. Find current in A.',v/r1,[r1/v,v*r1,i0*10,i0/10],'Divide voltage by resistance.'),
+      numerical('A '+(v*2)+' V model source is across '+(r1*3)+' Ω. Find current in A.',v*2/(r1*3),[r1*3/(v*2),v*2*r1*3,v*2/(r1*3)*10,v*2/(r1*3)/10],'Use I = V/R.'),
+      d===1?numerical('A new sensor has '+(v*3)+' V across '+(r1*2)+' Ω. Find its current in A.',v*3/(r1*2),[r1*2/(v*3),v*3/(r1*2)*10,v*3/(r1*2)/10],'Apply the relationship in the new setting.')
+        :numerical('A '+v+' V model source runs a '+r1+' Ω heater. The heater is replaced with one that has twice the resistance, on the same source. What is the new current in A?',v/(2*r1),[2*v/r1,v/r1,v/(4*r1)],'At fixed voltage, doubling resistance halves the current: V ÷ (2R).',{transfer:true})
+    ];}
     if(lesson.key==='OHM_VR')return [
-      numerical('A model resistance of '+r1+' Ω carries 0.25 A. Find voltage in V.',r1*.25,'V = IR.'),
-      numerical('A '+v+' V model component carries 0.5 A. Find its resistance in Ω.',v/.5,'R = V/I.'),
-      numerical('A new instrument carries 0.20 A through '+r2+' Ω. Find voltage in V.',r2*.2,'V = IR.')
+      numerical('A model resistance of '+r1+' Ω carries 0.25 A. Find voltage in V.',r1*.25,[r1/.25,.25/r1,r1*.25*10],'V = IR.'),
+      numerical('A '+v+' V model component carries 0.5 A. Find its resistance in Ω.',v/.5,[.5/v,v*.5,v/.5/10],'R = V/I.'),
+      d===1?numerical('A new instrument carries 0.20 A through '+r2+' Ω. Find voltage in V.',r2*.2,[r2/.2,.2/r2,r2*.2/10],'V = IR.')
+        :numerical('A model heater draws 0.5 A from a '+v+' V supply. A second heater on the same supply draws half as much current. What is its resistance in Ω?',v/.25,[v/.5,v*.25,v/.125],'Half the current at the same voltage means twice the resistance: R = V/I.',{transfer:true})
     ];
     if(lesson.key==='SERIES')return [
-      numerical('A series model uses '+r1+' Ω and '+r2+' Ω resistors. Find total resistance in Ω.',r1+r2,'Add series resistances.'),
-      numerical('Those '+r1+' Ω and '+r2+' Ω resistors share '+v+' V in series. Find current in A.',v/(r1+r2),'Use total resistance in I = V/R.'),
-      numerical('A new '+(v*2)+' V series model has resistors '+r1+' Ω and '+r2+' Ω. Find current after the second resistor in A.',v*2/(r1+r2),'The same current flows throughout the series path.')
+      numerical('A series model uses '+r1+' Ω and '+r2+' Ω resistors. Find total resistance in Ω.',r1+r2,[r1*r2/(r1+r2),r2,r2-r1],'Add series resistances.'),
+      numerical('Those '+r1+' Ω and '+r2+' Ω resistors share '+v+' V in series. Find current in A.',v/(r1+r2),[v/r1,v/r1+v/r2,(r1+r2)/v],'Use total resistance in I = V/R.'),
+      d===1?numerical('A new '+(v*2)+' V series model has resistors '+r1+' Ω and '+r2+' Ω. Find current after the second resistor in A.',v*2/(r1+r2),[v/(r1+r2),v*2/r1,v*2/r2],'The same current flows throughout the series path.')
+        :numerical('A string of 4 identical '+r1+' Ω model bulbs is connected in series to '+v+' V. Find the current in A.',v/(4*r1),[v/r1,4*v/r1,v/(2*r1)],'Total series resistance is 4 × '+r1+' Ω; divide the voltage by it.',{transfer:true})
     ];
     if(lesson.key==='PARALLEL')return [
-      numerical('A '+v+' V source connects across a '+r1+' Ω branch. Find that branch current in A.',v/r1,'Each branch gets source voltage.'),
-      numerical('A '+v+' V source connects across separate '+r1+' Ω and '+r2+' Ω branches. Find total current in A.',v/r1+v/r2,'Add the branch currents.'),
-      numerical('Two equal '+r2+' Ω branches share a source. Find equivalent resistance in Ω.',r2/2,'Two equal parallel resistances give half one branch resistance.')
+      numerical('A '+v+' V source connects across a '+r1+' Ω branch. Find that branch current in A.',v/r1,[r1/v,v/(r1+r2),v/r1*10],'Each branch gets source voltage.'),
+      numerical('A '+v+' V source connects across separate '+r1+' Ω and '+r2+' Ω branches. Find total current in A.',v/r1+v/r2,[v/(r1+r2),v/r1,v/r2],'Add the branch currents.'),
+      d===1?numerical('Two equal '+r2+' Ω branches share a source. Find equivalent resistance in Ω.',r2/2,[2*r2,r2,r2/4],'Two equal parallel resistances give half one branch resistance.')
+        :numerical('Three identical '+r2+' Ω branches share a '+v+' V source. Find the total current in A.',3*v/r2,[v/r2,v/(3*r2),2*v/r2],'Each branch draws V/R; add all three.',{transfer:true})
     ];
     return [
-      numerical('A new display has two '+r1+' Ω components in series across '+v+' V. Find current in A.',v/(2*r1),'Add series resistance before dividing.'),
-      numerical('The display reconnects those '+r1+' Ω components in parallel across '+v+' V. Find total current in A.',2*v/r1,'Find both branch currents and add.'),
-      review(d===1?'A new model alarm must keep one branch working after another branch opens. Which design fits?':'A model emergency sign removes a lamp from one branch. The other lamp must stay connected to the source. Which design fits?',['Separate complete parallel branches','One shared series path','An open battery connection'],0,'Independent complete branches can keep working.')
+      numerical('A new display has two '+r1+' Ω components in series across '+v+' V. Find current in A.',v/(2*r1),[v/r1,2*v/r1,2*r1/v],'Add series resistance before dividing.'),
+      numerical('The display reconnects those '+r1+' Ω components in parallel across '+v+' V. Find total current in A.',2*v/r1,[v/(2*r1),v/r1,r1/(2*v)],'Find both branch currents and add.'),
+      d===1?numerical('In that parallel display across '+v+' V, one '+r1+' Ω branch opens. What current does the source still supply, in A?',v/r1,[2*v/r1,v/(2*r1),r1/v],'Only the intact branch draws current: V/R.')
+        :{...review('A model emergency sign removes a lamp from one branch. The other lamp must stay connected to the source. Which design fits?',['Separate complete parallel branches','One shared series path','An open battery connection'],0,'Independent complete branches can keep working.'),transfer:true}
     ];
   }
   window.LEVEL_UP_SCHOOL_SCIENCE=Object.freeze({lessons,extensions,alignments,diagram,model,renderExplorer,updateExplorer,delayedChecks});
