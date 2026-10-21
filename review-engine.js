@@ -1,6 +1,7 @@
 (() => {
   const SKILL_IDS = Object.freeze([
     ...(window.LEVEL_UP_SCHOOL_SCIENCE?.lessons||[]).map(l=>l.id),
+    ...(window.LEVEL_UP_SCHOOL_ACADEMICS?.lessons||[]).map(l=>l.id),
     "SCI.SPS7A.ENERGY_FORMS",
     "SCI.SPS7A.TRANSFER_TRANSFORMATION",
     "SCI.SPS7B.MECHANICAL",
@@ -159,6 +160,10 @@
 
   for(const lesson of (window.LEVEL_UP_SCHOOL_SCIENCE?.lessons||[])){
     generators[lesson.id]=(r,w)=>window.LEVEL_UP_SCHOOL_SCIENCE.delayedChecks(lesson,w,r).map((q,i)=>choice(q.q,q.choices[q.answer],q.choices.filter((_,n)=>n!==q.answer),r,{why:q.why,transfer:w==="Day 21"&&i===2}));
+  }
+
+  for(const lesson of (window.LEVEL_UP_SCHOOL_ACADEMICS?.lessons||[])){
+    generators[lesson.id]=(r,w)=>window.LEVEL_UP_SCHOOL_ACADEMICS.delayedChecks(lesson,w,r).map((q,i)=>q.choices?choice(q.q,q.choices[q.answer],q.choices.filter((_,n)=>n!==q.answer),r,{why:q.why,transfer:w==="Day 21"&&i===2}):free(q.q,q.free,q.why,{transfer:w==="Day 21"&&i===2}));
   }
 
   function generateReview(skillId,windowLabel,reviewId){

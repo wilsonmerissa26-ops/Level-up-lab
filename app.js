@@ -487,7 +487,7 @@
     const raw=String(CONTENT?.student?.name||CONTENT?.student?.id||"Learner").trim()||"Learner";
     return raw.replace(/[^a-z0-9_-]+/gi,"-").replace(/^-+|-+$/g,"")||"Learner";
   }
-  function allLessons(){return [...CONTENT.science,...CONTENT.math]}
+  function allLessons(){return [...CONTENT.science,...CONTENT.math,...(CONTENT.ela||[])]}
   function lessonById(id){return allLessons().find(x=>x.id===id)}
   function lessonStatus(id){return state.lessonState[id]||{status:"NOT_STARTED",score:null,attempts:0}}
   function isReady(lesson){return !lesson.prereq || lessonStatus(lesson.prereq).status==="COMPLETED"}
@@ -513,7 +513,7 @@
       ${recoveryNotice()}
       ${state?.backup?.pendingAfterLesson?`<div class="notice" style="border-color:#b45309;background:#451a03;color:#fde68a"><strong>Portable backup still pending.</strong> A lesson completed and the browser cannot confirm that an exported file was actually saved. ${state.backup.lastExportAttemptedAt?`An export was attempted ${fmt(state.backup.lastExportAttemptedAt)}, but the browser cannot confirm the file was actually saved.`:`No export attempt is recorded for this lesson yet.`}</div>`:""}
       <div class="nav">
-        ${navBtn("dashboard","Dashboard")}${navBtn("school-plan","School Plan")}${navBtn("psat-bridge","PSAT + Skills")}${navBtn("track-b","Track B")}${navBtn("science-gap","Science Gap")}${navBtn("parent","Parent View")}${navBtn("evidence","Evidence")}${navBtn("reviews","Review Queue")}${navBtn("track-a","Track A")}${navBtn("backup","Backup")}
+        ${navBtn("dashboard","Dashboard")}${navBtn("school-plan","School Plan")}${navBtn("psat-bridge","PSAT + Skills")}${navBtn("track-b","Track B")}${navBtn("track-b-math","Math")}${navBtn("track-b-ela","ELA")}${navBtn("science-gap","Science Gap")}${navBtn("parent","Parent View")}${navBtn("evidence","Evidence")}${navBtn("reviews","Review Queue")}${navBtn("track-a","Track A")}${navBtn("backup","Backup")}
       </div>${body}<footer>Michael Level-Up Lab · v1 foundation</footer></div>`
   }
   function navBtn(route,label){return `<button class="${getRoute()===route?"active":""}" onclick="location.hash='${route}'">${label}</button>`}
@@ -524,12 +524,12 @@
     const pct=Math.round(completed/total*100);
     const due=state.reviewSchedule.filter(r=>!r.completed && new Date(r.dueAt)<=new Date()).length;
     return shell(`<div class="grid">
-      <div class="card c8"><h2>Michael's Level-Up Home</h2><p class="muted">Current science priority: electricity and circuits. Open Track B for the updated science learning plan, starting with complete paths and building toward the lab. Previous learning evidence is preserved.</p><div class="progress"><div style="width:${pct}%"></div></div><p class="small muted">${completed} of ${total} current Track B lessons completed.</p><div class="row"><button class="btn primary" onclick="location.hash='track-b'">Continue Track B</button><button class="btn" onclick="location.hash='parent'">Open Parent View</button></div></div>
+      <div class="card c8"><h2>Michael's Level-Up Home</h2><p class="muted">Your school learning plans are ready: circuits in Science, linear functions in Math, and reading and writing for The Wanderings of Odysseus in ELA. Choose a subject and start with one teaching block.</p><div class="progress"><div style="width:${pct}%"></div></div><p class="small muted">${completed} of ${total} current Track B lessons completed.</p><div class="row"><button class="btn primary" onclick="location.hash='track-b'">Science</button><button class="btn" onclick="location.hash='track-b-math'">Math</button><button class="btn" onclick="location.hash='track-b-ela'">ELA</button><button class="btn" onclick="location.hash='parent'">Open Parent View</button></div></div>
       <div class="card c4"><div class="kpi"><div class="t">Evidence records</div><div class="n">${state.evidence.length}</div></div><div class="spacer"></div><div class="kpi"><div class="t">Reviews due</div><div class="n">${due}</div></div></div>
-      <div class="card c6"><h3>Track B · build under audit</h3><p><strong>Immediate teaching + school recovery</strong></p><p class="small muted">Science first, then the Math bridge when formula work requires it. Read-aloud, short blocks, verbal explanation, and automatic evidence capture are built in.</p><button class="btn primary" onclick="location.hash='track-b'">Open Track B</button></div>
+      <div class="card c6"><h3>Track B · build under audit</h3><p><strong>Immediate teaching + school recovery</strong></p><p class="small muted">Science, Math, and ELA use the same saved teaching cycle. Read-aloud, short blocks, verbal explanation, and automatic evidence capture are built in.</p><button class="btn primary" onclick="location.hash='track-b'">Open Track B</button></div>
       <div class="card c6"><h3>Track A · protected baseline</h3><p><strong>Controlled diagnostics + mastery engine</strong></p><p class="small muted">Track A remains separate. Any Track B-taught skill enters formal evidence with PRIOR_INSTRUCTION attached.</p><button class="btn" onclick="location.hash='track-a'">See Track A rules</button></div>
-      <div class="card c12" style="border-color:#b45309"><div class="row between"><div><span class="pill warn">${escapeHTML(SCHOOL_PLAN?.urgencyLabel?.()||"SEPT. 29 TEST")}</span><h3 style="margin-top:10px">Where the Mountain Meets the Moon</h3><p class="small muted">Language Arts · teacher review + knowledge organizer</p></div><button class="btn primary" ${studentRuntimeAllowed()?"":"disabled"} onclick="location.hash='school-plan'">${studentRuntimeAllowed()?"Study now":"Pilot gate"}</button></div><p class="small" style="margin-bottom:0">Vocabulary + grammar, Dragon event sequence, borrowed line, foreshadowing, abundance, themes, and a final no-notes check.</p></div>
-      <div class="card c12"><h3>School Success snapshot</h3><div class="row"><span class="pill warn">Physical Science 47</span><span class="pill info">Math 80</span><span class="pill">No missing assignments reported</span></div><p class="small muted" style="margin-bottom:0">School Success and Core Growth remain separate lanes inside the same learner record.</p></div>
+      <div class="card c12"><h3>ELA · The Wanderings of Odysseus</h3><p>Learn the vocabulary, annotate with purpose, explain character choices and xenia, and write with real textual evidence.</p><button class="btn primary" onclick="location.hash='track-b-ela'">Open ELA learning plan</button><p class="small muted">Earlier Where the Mountain Meets the Moon practice remains in School Plan.</p></div>
+      <div class="card c12"><h3>School Success focus</h3><div class="row"><span class="pill info">Science · Circuits</span><span class="pill info">Math · Linear functions</span><span class="pill info">ELA · Odysseus</span></div><p class="small muted" style="margin-bottom:0">School Success and Core Growth remain separate lanes inside the same learner record.</p></div>
     </div>`)
   }
 
@@ -795,7 +795,7 @@
     if(!access.allowed){
       return shell(`<div class="card"><span class="pill warn">SCHOOL QUEST LOCKED</span><h2 style="margin-top:10px">School Plan</h2><p class="muted">${escapeHTML(access.message)}</p><p class="small">Level-Up will not run School Quest outside the same audited runtime gate used for learner sessions.</p></div>`);
     }
-    return shell(SCHOOL_PLAN.render(escapeHTML));
+    return shell(schoolSubjectLinks()+'<section class="card"><h2>Current learning plans</h2><p>Use Science, Math, or ELA above for the current teaching sequences. Earlier novel practice remains below with its existing progress.</p></section>'+SCHOOL_PLAN.render(escapeHTML));
   }
 
   function refreshPSATBridge(){
@@ -817,13 +817,28 @@
     speak(SCHOOL_PLAN.readText());
   }
 
-  function trackB(){
+  function schoolSubjectLinks(selected=""){
+    return '<div class="card subject-switch" aria-label="Choose a subject">'+[['science','track-b','Science'],['math','track-b-math','Math'],['ela','track-b-ela','ELA']].map(([id,route,label])=>'<button class="btn '+(id===selected?'primary':'')+'" aria-pressed="'+(id===selected)+'" onclick="location.hash=\''+route+'\'">'+label+'</button>').join("")+'</div>';
+  }
+
+  function academicTrackB(subject){
+    const plan=CONTENT.academicLearningPlans?.[subject];
+    if(!plan)return shell(schoolSubjectLinks(subject)+'<section class="card"><h2>Learning plan unavailable</h2><p>Refresh the app to load the current teaching content.</p></section>');
+    const label=subject==='math'?'Math':'ELA';
+    const cards=plan.groups.map(g=>'<section class="card c12"><h3>'+escapeHTML(g.title)+'</h3><div class="science-lesson-grid">'+g.ids.map(lessonById).filter(Boolean).map(l=>lessonCard(l,subject)).join("")+'</div></section>').join("");
+    const start='<button class="btn primary" '+(studentRuntimeAllowed()?'':'disabled')+' onclick="window.MLUL.startLesson(\''+plan.firstLessonId+'\',\''+subject+'\')">Start '+label+' foundations</button>';
+    const application=subject==='ela'?'<section class="card c12"><h3>Bring your book and packet</h3><p>Use your assigned copy of <em>The Wanderings of Odysseus</em> by Rosemary Sutcliff and the school packet. These lessons teach the skills with original practice examples. Apply them to your assigned pages using real details and page references.</p><p>Current reading: Prologue and The Sacker of Cities (pages 1–6), The Cyclops (7–16), and The Lord of the Winds (17–22), as named in the reviewed packets. Check your edition and the teacher’s directions before continuing.</p><p class="small muted">Writing is saved for adult review, not automatically graded. The app does not submit school assignments.</p></section>':'<section class="card c12"><h3>Bring the method back to class</h3><p>Use the graphing notes and assigned practice: define variables and units → find slope and starting value → write the rule → plot and check → state domain and range in context. Use the algebra bridge below when calculations get in the way.</p><p class="small muted">Practice here does not mark school assignments turned in. No new assessment due date was confirmed.</p></section>';
+    return shell(schoolSubjectLinks(subject)+'<div class="grid"><section class="card c12"><span class="pill info">'+label+' learning plan</span><h2>'+escapeHTML(plan.title)+'</h2><p>'+escapeHTML(plan.note)+'</p><p class="small muted">One teaching block → worked model → guided practice → less help → independent check → mixed practice → delayed retrieval and transfer.</p>'+start+'</section>'+application+cards+'</div>');
+  }
+
+  function trackB(subject="science"){
+    if(subject!=='science')return academicTrackB(subject);
     const plan=CONTENT.scienceLearningPlan;
     const groups=plan?.groups||[{title:"Physical Science",note:"",ids:CONTENT.science.map(l=>l.id)}];
     const cards=groups.map(g=>'<section class="card c12"><h3>'+escapeHTML(g.title)+'</h3><p class="small muted">'+escapeHTML(g.note)+'</p><div class="science-lesson-grid">'+g.ids.map(id=>lessonById(id)).filter(Boolean).map(l=>lessonCard(l,"science")).join("")+'</div></section>').join("");
     const first=plan?.firstLessonId;
     const start=first?'<button class="btn primary" '+(studentRuntimeAllowed()?'':'disabled')+' onclick="window.MLUL.startLesson(\''+first+'\',\'science\')">Start with circuit foundations</button>':'';
-    return shell('<div class="grid"><section class="card c12"><span class="pill info">Science learning plan · updated October 21</span><h2>Learn the science. Then use it.</h2><p>Current priority: electricity and circuits. Start with a complete path, build the quantities and calculations, then explain the lab with evidence.</p><p class="small muted">One teaching block at a time → worked model → guided practice → less help → independent check → mixed review → delayed retrieval and transfer.</p>'+start+'<p class="small muted">'+"Use the current circuits sequence first. Waves and Energy remain available for review."+'</p></section>'+cards+(window.LEVEL_UP_SCHOOL_SCIENCE?.renderExplorer()||"")+'<section class="card c8"><h3>Prepare for the circuits lab</h3><ol>'+(plan?.labSteps||[]).map(s=>'<li>'+escapeHTML(s)+'</li>').join("")+'</ol><a class="btn" href="'+escapeHTML(plan?.simulatorUrl||"https://phet.colorado.edu")+'" target="_blank" rel="noopener noreferrer">Open the school circuit simulator</a><p class="small muted">Examples inside these lessons are practice values. Your lab explanation must use your actual observations.</p></section><section class="card c4"><h3>Math Bridge when needed</h3><p class="small muted">Use this when number operations or formula rearrangement blocks the science. It does not need to delay the first circuit lesson.</p><div class="stack">'+CONTENT.math.map(l=>lessonCard(l,"math")).join("")+'</div><h3>Later curriculum</h3><p class="small muted">Matter and Force/Motion remain in the full curriculum map. They are not labeled as current school assignments without teacher confirmation.</p></section></div>');
+    return shell(schoolSubjectLinks('science')+'<div class="grid"><section class="card c12"><span class="pill info">Science learning plan · updated October 21</span><h2>Learn the science. Then use it.</h2><p>Current priority: electricity and circuits. Start with a complete path, build the quantities and calculations, then explain the lab with evidence.</p><p class="small muted">One teaching block at a time → worked model → guided practice → less help → independent check → mixed review → delayed retrieval and transfer.</p>'+start+'<p class="small muted">'+"Use the current circuits sequence first. Waves and Energy remain available for review."+'</p></section>'+cards+(window.LEVEL_UP_SCHOOL_SCIENCE?.renderExplorer()||"")+'<section class="card c8"><h3>Prepare for the circuits lab</h3><ol>'+(plan?.labSteps||[]).map(s=>'<li>'+escapeHTML(s)+'</li>').join("")+'</ol><a class="btn" href="'+escapeHTML(plan?.simulatorUrl||"https://phet.colorado.edu")+'" target="_blank" rel="noopener noreferrer">Open the school circuit simulator</a><p class="small muted">Examples inside these lessons are practice values. Your lab explanation must use your actual observations.</p></section><section class="card c4"><h3>Math Bridge when needed</h3><p class="small muted">Use this when number operations or formula rearrangement blocks the science. It does not need to delay the first circuit lesson.</p><div class="stack">'+CONTENT.math.filter(l=>!l.unit).map(l=>lessonCard(l,"math")).join("")+'</div><h3>Later curriculum</h3><p class="small muted">Matter and Force/Motion remain in the full curriculum map. They are not labeled as current school assignments without teacher confirmation.</p></section></div>');
   }
 
   function lessonCard(l,subject){
@@ -857,7 +872,7 @@
     const teaching=blocks.map((t,i)=>'<div class="teacher"><strong>'+escapeHTML(staged?t[0]:'Teach '+(i+1))+'</strong>'+(staged?'<p>'+escapeHTML(t[1])+'</p>':'<p>'+escapeHTML(t[0])+'</p><p class="small muted">'+escapeHTML(t[1])+'</p>')+'</div>').join("");
     const response=last?'<p><strong>Say it back:</strong> Explain the idea in your own words. A parent can type your exact words. This is teaching evidence.</p><label class="small" for="sayBack">Your explanation (optional)</label><textarea id="sayBack" rows="3" placeholder="Use your own words."></textarea>':'';
     const next=last?'<button class="btn primary" onclick="window.MLUL.beginChecks()">Continue to supported practice</button>':'<button class="btn primary" onclick="window.MLUL.advanceScienceTeach()">Next teaching block</button>';
-    document.getElementById("app").innerHTML=shell('<div class="card"><span class="pill purple">'+escapeHTML(lesson.schoolTag)+'</span><h2>'+escapeHTML(lesson.title)+'</h2><p class="muted">'+heading+' · Track B teaching</p><div class="row"><button class="btn" onclick="window.MLUL.readTeach()">🔊 Read lesson</button><button class="btn" onclick="speechSynthesis.pause()">Pause</button><button class="btn" onclick="speechSynthesis.resume()">Resume</button><button class="btn" onclick="speechSynthesis.cancel()">Stop</button></div>'+(staged&&index===1?(window.LEVEL_UP_SCHOOL_SCIENCE?.diagram(lesson.diagram)||""):"")+teaching+'<label class="small">How was this block accessed?</label><select id="teachAccess" onchange="window.MLUL.markAccessObserved(this)">'+accessOptions(session.teach_access_condition)+'</select>'+response+'<div class="spacer"></div><div class="row">'+next+'<button class="btn" onclick="window.MLUL.manualSave()">Save</button><button class="btn" onclick="window.MLUL.saveAndExit()">Save & Exit</button></div></div>');
+    document.getElementById("app").innerHTML=shell('<div class="card"><span class="pill purple">'+escapeHTML(lesson.schoolTag)+'</span><h2>'+escapeHTML(lesson.title)+'</h2><p class="muted">'+heading+' · Track B teaching</p><div class="row"><button class="btn" onclick="window.MLUL.readTeach()">🔊 Read lesson</button><button class="btn" onclick="speechSynthesis.pause()">Pause</button><button class="btn" onclick="speechSynthesis.resume()">Resume</button><button class="btn" onclick="speechSynthesis.cancel()">Stop</button></div>'+(staged&&index===1?((lesson.academicDiagram?window.LEVEL_UP_SCHOOL_ACADEMICS?.diagram(lesson.academicDiagram):window.LEVEL_UP_SCHOOL_SCIENCE?.diagram(lesson.diagram))||""):"")+teaching+'<label class="small">How was this block accessed?</label><select id="teachAccess" onchange="window.MLUL.markAccessObserved(this)">'+accessOptions(session.teach_access_condition)+'</select>'+response+'<div class="spacer"></div><div class="row">'+next+'<button class="btn" onclick="window.MLUL.manualSave()">Save</button><button class="btn" onclick="window.MLUL.saveAndExit()">Save & Exit</button></div></div>');
     renderSaveStatus();restoreDraftToUI();bindDraftAutosave();window.scrollTo({top:0,behavior:"smooth"});
   }
 
@@ -1078,7 +1093,7 @@
   function scienceExplanationSection(){
     const rows=state.evidence.filter(e=>e.requires_review).slice(-20).reverse();
     if(!rows.length)return "";
-    return '<section class="card c12"><h3>Science explanations to review</h3><p class="small muted">These responses are preserved verbatim. They have not been automatically marked correct or incorrect and are excluded from immediate scores.</p>'+rows.map(e=>'<details><summary>'+escapeHTML(lessonById(e.skillId)?.title||e.skillId)+'</summary><p><strong>Prompt:</strong> '+escapeHTML(e.prompt)+'</p><p><strong>Response:</strong> '+escapeHTML(e.rawResponse)+'</p><ul>'+(e.review_rubric||[]).map(x=>'<li>'+escapeHTML(x)+'</li>').join("")+'</ul></details>').join("")+'</section>';
+    return '<section class="card c12"><h3>Explanations and writing to review</h3><p class="small muted">These responses are preserved verbatim. They have not been automatically marked correct or incorrect and are excluded from immediate scores.</p>'+rows.map(e=>'<details><summary>'+escapeHTML(lessonById(e.skillId)?.title||e.skillId)+'</summary><p><strong>Prompt:</strong> '+escapeHTML(e.prompt)+'</p><p><strong>Response:</strong> '+escapeHTML(e.rawResponse)+'</p><ul>'+(e.review_rubric||[]).map(x=>'<li>'+escapeHTML(x)+'</li>').join("")+'</ul></details>').join("")+'</section>';
   }
 
   function scienceCurriculumSection(){
@@ -1313,7 +1328,7 @@
   }
 
   function parentView(){
-    const science=CONTENT.science.map(l=>skillRow(l)).join("");const math=CONTENT.math.map(l=>skillRow(l)).join("");
+    const science=CONTENT.science.map(l=>skillRow(l)).join("");const math=CONTENT.math.map(l=>skillRow(l)).join("");const ela=(CONTENT.ela||[]).map(l=>skillRow(l)).join("");
     const trackARows=TRACK_A_DIAGNOSTIC?TRACK_A_DIAGNOSTIC.SKILLS.map(s=>{const r=trackASkillRecord(s.id);const last=r.lastMaintenance?.result||r.lastMasteryCheck?.result||r.lastVerification?.result||r.lastRepair?.result||r.lastDiagnostic?.result||"—";return `<tr><td>${escapeHTML(s.title)}<div class="tiny muted">${escapeHTML(s.id)}</div></td><td>${escapeHTML(r.canonicalState||"UNKNOWN")}</td><td>${escapeHTML(r.memoryStrength||"FRAGILE")}</td><td>${escapeHTML(last)}</td><td>${trackAPriorInstruction(s.id)?"PRIOR_INSTRUCTION / not cold":"—"}</td></tr>`}).join(""):"";
     const formalCount=state.evidence.filter(e=>e.evidence_class==="FORMAL_CONTROLLED").length;const informalCount=state.evidence.filter(e=>e.evidence_class==="INFORMAL_TRACK_B").length;
     return shell(`<div class="grid"><div class="card c8"><h2>Parent View</h2><p class="muted">Michael's learning record separates school facts, teaching evidence, controlled evidence, lifecycle state, and memory strength. No one score gets to masquerade as the whole story.</p></div><div class="card c4"><div class="kpi"><div class="t">Track B evidence</div><div class="n">${informalCount}</div></div><div class="spacer"></div><div class="kpi"><div class="t">Track A evidence</div><div class="n">${formalCount}</div></div></div>
@@ -1322,7 +1337,8 @@
       ${scienceExplanationSection()}
       ${scienceCurriculumSection()}
       <div class="card c12"><h3>Current Physical Science teaching history</h3><p class="small muted">These are Michael's existing Track B lessons and evidence. They remain preserved inside the larger curriculum.</p><div class="tablewrap"><table><thead><tr><th>Skill</th><th>Status</th><th>Immediate score</th><th>Memory</th><th>Baseline note</th></tr></thead><tbody>${science}</tbody></table></div></div>
-      <div class="card c12"><h3>Math bridge skill map</h3><div class="tablewrap"><table><thead><tr><th>Skill</th><th>Status</th><th>Immediate score</th><th>Memory</th><th>Baseline note</th></tr></thead><tbody>${math}</tbody></table></div></div>
+      <div class="card c12"><h3>Math teaching and bridge skill map</h3><div class="tablewrap"><table><thead><tr><th>Skill</th><th>Status</th><th>Immediate score</th><th>Memory</th><th>Baseline note</th></tr></thead><tbody>${math}</tbody></table></div></div>
+      <div class="card c12"><h3>ELA teaching skill map</h3><div class="tablewrap"><table><thead><tr><th>Skill</th><th>Status</th><th>Immediate score</th><th>Memory</th><th>Baseline note</th></tr></thead><tbody>${ela}</tbody></table></div></div>
       <div class="card c12"><h3>Track A controlled math map</h3><div class="tablewrap"><table><thead><tr><th>Skill</th><th>Canonical state</th><th>Memory</th><th>Last diagnostic</th><th>Baseline note</th></tr></thead><tbody>${trackARows}</tbody></table></div></div>
     </div>`)
   }
@@ -1348,7 +1364,10 @@
   }
 
   function trackAPriorInstruction(skillId){
-    return state.evidence.some(e=>e.skillId===skillId && e.instruction_exposure_status==="PRIOR_INSTRUCTION")
+    const taughtIds=new Set(allLessons().filter(l=>(l.priorSkillIds||[]).includes(skillId)).map(l=>l.id));
+    const relevant=id=>id===skillId||taughtIds.has(id);
+    return state.evidence.some(e=>relevant(e.skillId) && e.instruction_exposure_status==="PRIOR_INSTRUCTION") ||
+      (state.sessions||[]).some(s=>s.track==="B"&&s.instructionDelivered===true&&relevant(s.lessonId));
   }
 
   function trackAPromptIsFresh(skillId,item){
@@ -2000,7 +2019,7 @@
     if(firstRunDecisionRequired){document.getElementById("app").innerHTML=firstRunView();return}
     if(storageRecoveryIssue?.type==="MIRROR_AHEAD"){document.getElementById("app").innerHTML=mirrorAheadView();return}
     if(storageRecoveryIssue?.type==="PRIMARY_MISSING_MIRROR_PRESENT"){document.getElementById("app").innerHTML=primaryMissingView();return}
-    const route=getRoute();const view={dashboard,"psat-bridge":()=>shell(PSAT_BRIDGE?.render?.()||"<p>PSAT bridge unavailable.</p>"),"school-plan":schoolPlanView,"track-b":trackB,"science-gap":scienceGapView,parent:parentView,evidence:evidenceView,reviews:reviewsView,"track-a":trackA,backup:backupView}[route]||dashboard;
+    const route=getRoute();const view={dashboard,"psat-bridge":()=>shell(PSAT_BRIDGE?.render?.()||"<p>PSAT bridge unavailable.</p>"),"school-plan":schoolPlanView,"track-b":trackB,"track-b-math":()=>trackB("math"),"track-b-ela":()=>trackB("ela"),"science-gap":scienceGapView,parent:parentView,evidence:evidenceView,reviews:reviewsView,"track-a":trackA,backup:backupView}[route]||dashboard;
     document.getElementById("app").innerHTML=view();renderSaveStatus();if(route==="backup")checkPersistenceUI();if(route==="school-plan")SCHOOL_PLAN?.bindLiveTimer?.();
   }
 
