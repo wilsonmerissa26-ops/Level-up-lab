@@ -1,5 +1,6 @@
 (() => {
   const SKILL_IDS = Object.freeze([
+    ...(window.LEVEL_UP_SCHOOL_SCIENCE?.lessons||[]).map(l=>l.id),
     "SCI.SPS7A.ENERGY_FORMS",
     "SCI.SPS7A.TRANSFER_TRANSFORMATION",
     "SCI.SPS7B.MECHANICAL",
@@ -154,6 +155,10 @@
   // Distinct transfer prompts for Waves; never reuse immediate lesson checks.
   for(const lesson of (window.LEVEL_UP_CONTENT?.science||[]).filter(l=>l.unit==="SCI.G8.WAVES")){
     generators[lesson.id]=(r,w)=>lesson.reviewChecks.map(q=>choice(q.q,q.choices[q.answer],q.choices.filter((_,i)=>i!==q.answer),r,{why:q.why,transfer:true}));
+  }
+
+  for(const lesson of (window.LEVEL_UP_SCHOOL_SCIENCE?.lessons||[])){
+    generators[lesson.id]=(r,w)=>window.LEVEL_UP_SCHOOL_SCIENCE.delayedChecks(lesson,w,r).map((q,i)=>choice(q.q,q.choices[q.answer],q.choices.filter((_,n)=>n!==q.answer),r,{why:q.why,transfer:w==="Day 21"&&i===2}));
   }
 
   function generateReview(skillId,windowLabel,reviewId){
