@@ -656,3 +656,8 @@ footer{margin:22px 0;color:#8496ad;font-size:12px;text-align:center}
 .circuit-figure svg{display:block;width:100%;max-height:260px}
 .circuit-figure figcaption{font-size:.9rem;line-height:1.5}
 #circuitV,#circuitR1,#circuitR2{width:110px;max-width:100%}
+
+.subject-switch{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.academic-figure{margin:18px auto;max-width:540px}
+.academic-figure svg{display:block;width:100%;height:auto;background:#0f172a;border-radius:12px;color:#e2e8f0}
+.academic-figure figcaption{font-size:.9rem;line-height:1.5;margin-top:10px}

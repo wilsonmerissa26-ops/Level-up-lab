@@ -38,6 +38,7 @@ jobs:
           node --check study-tracking.js
           node --check science-curriculum.js
           node --check science-school.js
+          node --check school-academics.js
           node --check science-gap-diagnostic.js
       - name: Run frozen-vocabulary and persistence regression
         run: node tests/audit-regression.test.mjs
@@ -106,3 +107,6 @@ jobs:
 
       - name: School science curriculum and learner flow
         run: node tests/science-school.test.mjs
+
+      - name: School Math and ELA teaching and persistence
+        run: node tests/school-academics.test.mjs
