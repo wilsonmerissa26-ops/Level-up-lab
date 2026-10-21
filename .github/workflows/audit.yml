@@ -37,6 +37,8 @@ jobs:
           node --check michael-school-quest-config.js
           node --check study-tracking.js
           node --check science-curriculum.js
+          node --check science-school.js
+          node --check science-gap-diagnostic.js
       - name: Run frozen-vocabulary and persistence regression
         run: node tests/audit-regression.test.mjs
       - name: Run Track B persistence slice D regression
@@ -101,3 +103,6 @@ jobs:
         run: node tests/reusable-quest-config-o25c.test.mjs
       - name: Run full Physical Science curriculum foundation regression
         run: node tests/science-curriculum-foundation.test.mjs
+
+      - name: School science curriculum and learner flow
+        run: node tests/science-school.test.mjs

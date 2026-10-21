@@ -647,3 +647,12 @@ footer{margin:22px 0;color:#8496ad;font-size:12px;text-align:center}
   .reward-chest,.gate-ring.open,.checkpoint-popup{animation:none!important}
   .answer-block,.companion-btn,.boss-health>div,.progress>div{transition:none!important}
 }
+
+
+/* Science teaching: responsive cards and exact circuit models. */
+.science-lesson-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:16px}
+.circuit-comparison{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:16px}
+.circuit-figure{margin:16px 0;padding:12px;border:1px solid #334155;border-radius:12px;background:#17243a;color:#e2e8f0}
+.circuit-figure svg{display:block;width:100%;max-height:260px}
+.circuit-figure figcaption{font-size:.9rem;line-height:1.5}
+#circuitV,#circuitR1,#circuitR2{width:110px;max-width:100%}

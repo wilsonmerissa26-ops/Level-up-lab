@@ -35,5 +35,5 @@ assert.equal(ctx.LEVEL_UP_SCHOOL_PLAN.urgencyLabel(new Date('2026-09-28T12:00:00
 assert.match(app,/School Plan/);
 assert.match(app,/school-plan/);
 assert.match(app,/readSchoolPlan/);
-assert.match(index,/school-plan\.js\?v=2026-09-\d+-o[0-9a-z]+/);
+assert.match(index,/school-plan\.js\?v=\d{4}-\d{2}-\d{2}-[a-z0-9-]+/);
 console.log('Patch O.2.2 LA test school plan: PASS');
