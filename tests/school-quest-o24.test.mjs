@@ -52,7 +52,7 @@ await api.startWorld('grammar');assert.ok(render().includes('Grammar Zoo'));
 durableProgress.completed.grammar=true;durableProgress.completed.dragon=true;
 await api.startWorld('boss');let boss=render();assert.ok(boss.includes('REVIEW BEAST'));assert.ok(boss.includes('100% BOSS HEALTH'));assert.ok(boss.includes('No fake grading'));
 
-assert.match(index,/quest-engine\.js\?v=2026-09-\d+-o[0-9a-z]+/);
+assert.match(index,/quest-engine\.js\?v=\d{4}-\d{2}-\d{2}-[a-z0-9-]+/);
 assert.ok(index.indexOf('quest-engine.js')<index.indexOf('school-plan.js'));
 for(const cls of ['.game-hud','.game-world-map','.answer-block-grid','.boss-arena','.moon-gate-scene','.reward-drop'])assert.ok(css.includes(cls),cls);
 console.log('Patch O.2.4 Michael block-game challenge UI: PASS');

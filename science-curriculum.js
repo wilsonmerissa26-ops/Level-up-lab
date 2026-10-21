@@ -126,10 +126,12 @@
     {id:"SCI.EXT.DELTA_T",title:"Temperature change ΔT",reason:"School-specific quantitative extension.",legacyLessonIds:["SCI.SPS7E.DELTA_T"]},
     {id:"SCI.EXT.QMC_SETUP",title:"Q = mcΔT setup",reason:"School-specific quantitative extension.",legacyLessonIds:["SCI.SPS7E.FORMULA_SETUP"]},
     {id:"SCI.EXT.QMC_REARRANGE",title:"Science formula rearrangement",reason:"School-specific cross-subject extension.",legacyLessonIds:["SCI.SPS7E.LITERAL_REARRANGE"]},
-    {id:"SCI.EXT.QMC_CALCULATION",title:"Specific heat calculations",reason:"School-specific quantitative extension.",legacyLessonIds:["SCI.SPS7E.CALCULATION"]}
+    {id:"SCI.EXT.QMC_CALCULATION",title:"Specific heat calculations",reason:"School-specific quantitative extension.",legacyLessonIds:["SCI.SPS7E.CALCULATION"]},
+    ...(window.LEVEL_UP_SCHOOL_SCIENCE?.extensions||[])
   ]);
 
   const legacyAlignment=Object.freeze({
+    ...(window.LEVEL_UP_SCHOOL_SCIENCE?.alignments||{}),
     "SCI.WAVES.TYPES":["SCI.S8P4A.MECHANICAL_VS_EM"],
     "SCI.WAVES.RELATIONSHIPS":["SCI.S8P4F.FREQUENCY_WAVELENGTH"],
     "SCI.WAVES.BEHAVIORS":["SCI.S8P4D.REFLECTION"],

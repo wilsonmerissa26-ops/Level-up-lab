@@ -14,6 +14,8 @@
   const SCHOOL_PLAN = window.LEVEL_UP_SCHOOL_PLAN;
   const STUDY_TRACKING = window.LEVEL_UP_STUDY_TRACKING;
   const SCIENCE_CURRICULUM = window.LEVEL_UP_SCIENCE_CURRICULUM;
+  const SCIENCE_GAP = window.LEVEL_UP_SCIENCE_GAP_DIAGNOSTIC;
+  const PSAT_BRIDGE = window.LEVEL_UP_PSAT_BRIDGE;
   const RUNTIME_GATE = window.LEVEL_UP_RUNTIME_GATE;
   const DB_NAME = "MichaelLevelUpLab";
   const DB_VERSION = 1;
@@ -57,6 +59,10 @@
     trackASkillState:{},
     trackAActiveSession:null,
     trackAMasterySchedule:[],
+    scienceGapSessions:[],
+    scienceGapActiveSession:null,
+    scienceGapActiveRetention:null,
+    scienceGapRetention:[],
     evidence:[],
     sessions:[],
     reviewSchedule:[],
@@ -280,6 +286,10 @@
     if(!value.trackASkillState || typeof value.trackASkillState!=="object") value.trackASkillState={};
     if(!Object.prototype.hasOwnProperty.call(value,"trackAActiveSession")) value.trackAActiveSession=null;
     if(!Array.isArray(value.trackAMasterySchedule)) value.trackAMasterySchedule=[];
+    if(!Array.isArray(value.scienceGapSessions)) value.scienceGapSessions=[];
+    if(!Object.prototype.hasOwnProperty.call(value,"scienceGapActiveSession")) value.scienceGapActiveSession=null;
+    if(!Object.prototype.hasOwnProperty.call(value,"scienceGapActiveRetention")) value.scienceGapActiveRetention=null;
+    if(!Array.isArray(value.scienceGapRetention)) value.scienceGapRetention=[];
     if(!value.settings || typeof value.settings!=="object") value.settings={readAloud:true,extraProcessing:true,parentTypesVerbatim:true};
     return value;
   }
@@ -503,7 +513,7 @@
       ${recoveryNotice()}
       ${state?.backup?.pendingAfterLesson?`<div class="notice" style="border-color:#b45309;background:#451a03;color:#fde68a"><strong>Portable backup still pending.</strong> A lesson completed and the browser cannot confirm that an exported file was actually saved. ${state.backup.lastExportAttemptedAt?`An export was attempted ${fmt(state.backup.lastExportAttemptedAt)}, but the browser cannot confirm the file was actually saved.`:`No export attempt is recorded for this lesson yet.`}</div>`:""}
       <div class="nav">
-        ${navBtn("dashboard","Dashboard")}${navBtn("school-plan","School Plan")}${navBtn("track-b","Track B")}${navBtn("parent","Parent View")}${navBtn("evidence","Evidence")}${navBtn("reviews","Review Queue")}${navBtn("track-a","Track A")}${navBtn("backup","Backup")}
+        ${navBtn("dashboard","Dashboard")}${navBtn("school-plan","School Plan")}${navBtn("psat-bridge","PSAT + Skills")}${navBtn("track-b","Track B")}${navBtn("science-gap","Science Gap")}${navBtn("parent","Parent View")}${navBtn("evidence","Evidence")}${navBtn("reviews","Review Queue")}${navBtn("track-a","Track A")}${navBtn("backup","Backup")}
       </div>${body}<footer>Michael Level-Up Lab · v1 foundation</footer></div>`
   }
   function navBtn(route,label){return `<button class="${getRoute()===route?"active":""}" onclick="location.hash='${route}'">${label}</button>`}
@@ -514,7 +524,7 @@
     const pct=Math.round(completed/total*100);
     const due=state.reviewSchedule.filter(r=>!r.completed && new Date(r.dueAt)<=new Date()).length;
     return shell(`<div class="grid">
-      <div class="card c8"><h2>Michael's Level-Up Home</h2><p class="muted">Current science priority: Unit 2 Waves by Friday, October 2. Open Track B for teaching and practice; previous learning evidence is preserved.</p><div class="progress"><div style="width:${pct}%"></div></div><p class="small muted">${completed} of ${total} current Track B lessons completed.</p><div class="row"><button class="btn primary" onclick="location.hash='track-b'">Continue Track B</button><button class="btn" onclick="location.hash='parent'">Open Parent View</button></div></div>
+      <div class="card c8"><h2>Michael's Level-Up Home</h2><p class="muted">Current science priority: electricity and circuits. Open Track B for the updated science learning plan, starting with complete paths and building toward the lab. Previous learning evidence is preserved.</p><div class="progress"><div style="width:${pct}%"></div></div><p class="small muted">${completed} of ${total} current Track B lessons completed.</p><div class="row"><button class="btn primary" onclick="location.hash='track-b'">Continue Track B</button><button class="btn" onclick="location.hash='parent'">Open Parent View</button></div></div>
       <div class="card c4"><div class="kpi"><div class="t">Evidence records</div><div class="n">${state.evidence.length}</div></div><div class="spacer"></div><div class="kpi"><div class="t">Reviews due</div><div class="n">${due}</div></div></div>
       <div class="card c6"><h3>Track B · build under audit</h3><p><strong>Immediate teaching + school recovery</strong></p><p class="small muted">Science first, then the Math bridge when formula work requires it. Read-aloud, short blocks, verbal explanation, and automatic evidence capture are built in.</p><button class="btn primary" onclick="location.hash='track-b'">Open Track B</button></div>
       <div class="card c6"><h3>Track A · protected baseline</h3><p><strong>Controlled diagnostics + mastery engine</strong></p><p class="small muted">Track A remains separate. Any Track B-taught skill enters formal evidence with PRIOR_INSTRUCTION attached.</p><button class="btn" onclick="location.hash='track-a'">See Track A rules</button></div>
@@ -788,6 +798,12 @@
     return shell(SCHOOL_PLAN.render(escapeHTML));
   }
 
+  function refreshPSATBridge(){
+    if(getRoute()!=="psat-bridge")return;
+    document.getElementById("app").innerHTML=shell(PSAT_BRIDGE?.render?.()||"<p>PSAT bridge unavailable.</p>");
+    renderSaveStatus();
+  }
+
   function refreshSchoolPlan(){
     if(getRoute()!=="school-plan")return;
     document.getElementById("app").innerHTML=schoolPlanView();
@@ -802,48 +818,69 @@
   }
 
   function trackB(){
-    return shell(`<div class="grid">
-      <div class="card c8"><h2>Track B · Immediate Learning</h2><p class="muted">Teaching sequence: <strong>SEE IT → DO IT → SAY IT → SOLVE IT → EXPLAIN IT → RETRIEVE LATER.</strong></p><div class="callout green small"><strong>Waves learning goal: Friday, October 2.</strong> Wednesday: foundations and relationships. Thursday: wave behaviors, media, light, and seismic waves. Friday: Doppler and mixed review. Work through examples, say the ideas back, and return for fresh retrieval checks. The packet lists a Wednesday Mastery Check; its exact coverage is unconfirmed.</div></div>
-      <div class="card c4"><div class="label">Current priority</div><div class="big">Science</div><div class="small muted">Unit 2 Waves · learning goal Friday, Oct. 2</div></div>
-      <div class="card c8"><h3>Physical Science · Waves first, then Energy</h3><div class="stack">${CONTENT.science.map(l=>lessonCard(l,"science")).join("")}</div></div>
-      <div class="card c4"><h3>Math Bridge</h3><p class="small muted">Used when Science reaches formula math. We start at numeric inverse operations before literal equations.</p><div class="stack">${CONTENT.math.map(l=>lessonCard(l,"math")).join("")}</div></div>
-      <div class="card c12"><h3>Other subjects</h3><div class="row"><span class="pill">ELA · module slot ready</span><span class="pill">Social Studies · module slot ready</span><span class="pill">School Radar · integration slot ready</span></div><p class="small muted">These are intentionally not populated yet. They plug into this same system later instead of becoming separate websites.</p></div>
-    </div>`)
+    const plan=CONTENT.scienceLearningPlan;
+    const groups=plan?.groups||[{title:"Physical Science",note:"",ids:CONTENT.science.map(l=>l.id)}];
+    const cards=groups.map(g=>'<section class="card c12"><h3>'+escapeHTML(g.title)+'</h3><p class="small muted">'+escapeHTML(g.note)+'</p><div class="science-lesson-grid">'+g.ids.map(id=>lessonById(id)).filter(Boolean).map(l=>lessonCard(l,"science")).join("")+'</div></section>').join("");
+    const first=plan?.firstLessonId;
+    const start=first?'<button class="btn primary" '+(studentRuntimeAllowed()?'':'disabled')+' onclick="window.MLUL.startLesson(\''+first+'\',\'science\')">Start with circuit foundations</button>':'';
+    return shell('<div class="grid"><section class="card c12"><span class="pill info">Science learning plan · updated October 21</span><h2>Learn the science. Then use it.</h2><p>Current priority: electricity and circuits. Start with a complete path, build the quantities and calculations, then explain the lab with evidence.</p><p class="small muted">One teaching block at a time → worked model → guided practice → less help → independent check → mixed review → delayed retrieval and transfer.</p>'+start+'<p class="small muted">'+"Use the current circuits sequence first. Waves and Energy remain available for review."+'</p></section>'+cards+(window.LEVEL_UP_SCHOOL_SCIENCE?.renderExplorer()||"")+'<section class="card c8"><h3>Prepare for the circuits lab</h3><ol>'+(plan?.labSteps||[]).map(s=>'<li>'+escapeHTML(s)+'</li>').join("")+'</ol><a class="btn" href="'+escapeHTML(plan?.simulatorUrl||"https://phet.colorado.edu")+'" target="_blank" rel="noopener noreferrer">Open the school circuit simulator</a><p class="small muted">Examples inside these lessons are practice values. Your lab explanation must use your actual observations.</p></section><section class="card c4"><h3>Math Bridge when needed</h3><p class="small muted">Use this when number operations or formula rearrangement blocks the science. It does not need to delay the first circuit lesson.</p><div class="stack">'+CONTENT.math.map(l=>lessonCard(l,"math")).join("")+'</div><h3>Later curriculum</h3><p class="small muted">Matter and Force/Motion remain in the full curriculum map. They are not labeled as current school assignments without teacher confirmation.</p></section></div>');
   }
 
   function lessonCard(l,subject){
-    const st=lessonStatus(l.id);const prereqReady=isReady(l);const usable=studentRuntimeAllowed() && prereqReady;
+    const st=lessonStatus(l.id);const explanationPill=st.pendingExplanationCount?'<span class="pill warn">Explanation awaiting review</span>':"";const prereqReady=isReady(l);const usable=studentRuntimeAllowed() && prereqReady;
     const pill=!studentRuntimeAllowed()?`<span class="pill warn">Pilot gate</span>`:st.status==="COMPLETED"?`<span class="pill good">Completed · ${st.score}%</span>`:prereqReady?`<span class="pill info">Ready</span>`:`<span class="pill warn">Prerequisite first</span>`;
-    return `<div class="lesson-card ${usable?"":"locked"}"><h3>${escapeHTML(l.title)}</h3><div class="row"><span class="pill purple">${escapeHTML(l.schoolTag)}</span><span class="pill">${l.minutes}</span>${pill}</div><div class="lesson-actions"><button class="btn ${st.status==="COMPLETED"?"good":"primary"}" ${usable?"":"disabled"} onclick="window.MLUL.startLesson('${l.id}','${subject}')">${!studentRuntimeAllowed()?"Open audited app":st.status==="COMPLETED"?"Review lesson":"Start lesson"}</button></div></div>`
+    return `<div class="lesson-card ${usable?"":"locked"}"><h3>${escapeHTML(l.title)}</h3><div class="row"><span class="pill purple">${escapeHTML(l.schoolTag)}</span><span class="pill">${l.minutes}</span>${pill}${explanationPill}</div><div class="lesson-actions"><button class="btn ${st.status==="COMPLETED"?"good":"primary"}" ${usable?"":"disabled"} onclick="window.MLUL.startLesson('${l.id}','${subject}')">${!studentRuntimeAllowed()?"Open audited app":st.status==="COMPLETED"?"Review lesson":"Start lesson"}</button></div></div>`
   }
 
   async function startLesson(id,subject){
     if(!evidenceSessionAllowed())return;
+    if(state.scienceGapActiveSession?.status==="ACTIVE"){alert("Finish the active Science Gap session before starting new teaching, so its baseline stays interpretable.");return;}
+    if(recoverableSession()){alert("Resume or end the preserved lesson before starting another one.");return;}
     if(!studentRuntimeAllowed()){blockStudentRuntime();return}
     const lesson=lessonById(id);if(!lesson)return;
     if(!isReady(lesson)){alert("Finish the prerequisite first.");return}
     const ok=await persistenceHealthCheck();renderSaveStatus();
     if(!ok){alert("The app cannot verify persistence, so the lesson will not start.");return}
-    const session={id:`sess_${Date.now()}`,mode:"LESSON",track:"B",subject,lessonId:id,startedAt:now(),phase:"TEACH",instructionDelivered:false,itemIndex:0,responses:[],access_policy:{allowed_access_conditions:[...ACCESS_CONDITIONS],extra_processing_available:true,parent_verbatim_available:true},teach_access_condition:null,teach_access_condition_source:"UNRECORDED",status:"ACTIVE"};
+    const session={id:`sess_${Date.now()}`,mode:"LESSON",track:"B",subject,lessonId:id,startedAt:now(),phase:"TEACH",instructionDelivered:lesson.stagedTeach===true,teachIndex:0,targetIds:[...(lesson.targetIds||[])],itemIndex:0,responses:[],access_policy:{allowed_access_conditions:[...ACCESS_CONDITIONS],extra_processing_available:true,parent_verbatim_available:true},teach_access_condition:null,teach_access_condition_source:"UNRECORDED",status:"ACTIVE"};
     state.activeSession=session;upsertSessionRecord(session);
     if(!await save("start lesson"))return;
     current={lesson,session};renderLessonTeach();
   }
 
   function renderLessonTeach(){
-    const {lesson}=current;
-    document.getElementById("app").innerHTML=shell(`<div class="card"><div class="row between"><div><span class="pill purple">${lesson.schoolTag}</span><h2 style="margin-top:10px">${lesson.title}</h2><p class="muted">Track B teaching session · PRIOR_INSTRUCTION</p></div><span class="badge warn">Teaching evidence</span></div>
-      <div class="row"><button class="btn" onclick="window.MLUL.readTeach()">🔊 Read lesson</button><button class="btn" onclick="speechSynthesis.pause()">⏸ Pause</button><button class="btn" onclick="speechSynthesis.resume()">▶ Resume</button><button class="btn" onclick="speechSynthesis.cancel()">■ Stop</button></div>
-      <div class="spacer"></div>${lesson.teach.map((t,i)=>`<div class="teacher"><strong>Teach ${i+1}</strong><p>${escapeHTML(t[0])}</p><p class="small muted">${escapeHTML(t[1])}</p></div>`).join("")}
-      <div class="callout purple"><strong>Say it back:</strong> Michael explains the idea in his own words. Parent can type his exact words below. This is teaching evidence, not a diagnostic score.</div>
-      <label class="small">How did Michael access this teaching block?</label><select id="teachAccess" onchange="window.MLUL.markAccessObserved(this)">${accessOptions(current.session.teach_access_condition)}</select>
-      <div class="spacer"></div><label class="small">Michael's explanation (optional but useful)</label><textarea id="sayBack" rows="3" placeholder="Type exactly what Michael says"></textarea>
-      <div class="spacer"></div><div class="row"><button class="btn primary" onclick="window.MLUL.beginChecks()">Continue to Try</button><button class="btn" onclick="window.MLUL.manualSave()">Save</button><button class="btn" onclick="window.MLUL.saveAndExit()">Save & Exit</button></div>
-    </div>`);renderSaveStatus();restoreDraftToUI();bindDraftAutosave();window.scrollTo({top:0,behavior:"smooth"});
+    const {lesson,session}=current;
+    const staged=lesson.stagedTeach===true;
+    const index=Math.min(session.teachIndex||0,lesson.teach.length-1);
+    const blocks=staged?[lesson.teach[index]]:lesson.teach;
+    const last=!staged||index===lesson.teach.length-1;
+    const heading=staged?'Teaching block '+(index+1)+' of '+lesson.teach.length:'Teaching';
+    const teaching=blocks.map((t,i)=>'<div class="teacher"><strong>'+escapeHTML(staged?t[0]:'Teach '+(i+1))+'</strong>'+(staged?'<p>'+escapeHTML(t[1])+'</p>':'<p>'+escapeHTML(t[0])+'</p><p class="small muted">'+escapeHTML(t[1])+'</p>')+'</div>').join("");
+    const response=last?'<p><strong>Say it back:</strong> Explain the idea in your own words. A parent can type your exact words. This is teaching evidence.</p><label class="small" for="sayBack">Your explanation (optional)</label><textarea id="sayBack" rows="3" placeholder="Use your own words."></textarea>':'';
+    const next=last?'<button class="btn primary" onclick="window.MLUL.beginChecks()">Continue to supported practice</button>':'<button class="btn primary" onclick="window.MLUL.advanceScienceTeach()">Next teaching block</button>';
+    document.getElementById("app").innerHTML=shell('<div class="card"><span class="pill purple">'+escapeHTML(lesson.schoolTag)+'</span><h2>'+escapeHTML(lesson.title)+'</h2><p class="muted">'+heading+' · Track B teaching</p><div class="row"><button class="btn" onclick="window.MLUL.readTeach()">🔊 Read lesson</button><button class="btn" onclick="speechSynthesis.pause()">Pause</button><button class="btn" onclick="speechSynthesis.resume()">Resume</button><button class="btn" onclick="speechSynthesis.cancel()">Stop</button></div>'+(staged&&index===1?(window.LEVEL_UP_SCHOOL_SCIENCE?.diagram(lesson.diagram)||""):"")+teaching+'<label class="small">How was this block accessed?</label><select id="teachAccess" onchange="window.MLUL.markAccessObserved(this)">'+accessOptions(session.teach_access_condition)+'</select>'+response+'<div class="spacer"></div><div class="row">'+next+'<button class="btn" onclick="window.MLUL.manualSave()">Save</button><button class="btn" onclick="window.MLUL.saveAndExit()">Save & Exit</button></div></div>');
+    renderSaveStatus();restoreDraftToUI();bindDraftAutosave();window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  async function advanceScienceTeach(){
+    if(!current?.lesson.stagedTeach||current.session.phase!=="TEACH")return;
+    if(!saveHealthy){alert("Saving must be repaired before continuing.");return;}
+    if(!evidenceSessionAllowed())return;
+    const previousIndex=current.session.teachIndex||0;
+    captureDraftFromUI();
+    current.session.teach_access_condition=current.session.draft?.access_condition||current.session.teach_access_condition;
+    current.session.teach_access_condition_source=current.session.draft?.access_condition_source||current.session.teach_access_condition_source;
+    current.session.teachIndex=Math.min((current.session.teachIndex||0)+1,current.lesson.teach.length-1);
+    current.session.instructionDelivered=true;
+    current.session.draft=null;state.activeSession=current.session;upsertSessionRecord(current.session);
+    if(!await save("advance science teaching block")){
+      current.session.teachIndex=previousIndex;upsertSessionRecord(current.session);return;
+    }
+    speechSynthesis.cancel();renderLessonTeach();
   }
 
   function readTeach(){
-    const t=current.lesson.teach.map(x=>x.join(" ")).join(" ");
+    const blocks=current.lesson.stagedTeach?[current.lesson.teach[current.session.teachIndex||0]]:current.lesson.teach;
+    const t=blocks.map(x=>x.join(" ")).join(" ");
     current.session.teach_access_condition="SYSTEM_READ_ALOUD";
     current.session.teach_access_condition_source="OBSERVED";
     const selector=document.getElementById("teachAccess");if(selector){selector.value="SYSTEM_READ_ALOUD";markAccessObserved(selector)}
@@ -868,14 +905,13 @@
 
   function renderQuestion(){
     const q=current.lesson.checks[current.session.itemIndex];
-    const input=q.choices?q.choices.map((x,i)=>`<label class="choice"><input type="radio" name="answer" value="${i}"><span>${escapeHTML(x)}</span></label>`).join(""):`<input type="text" id="freeAnswer" placeholder="Type Michael's answer exactly. 'I don't know' is allowed.">`;
-    document.getElementById("app").innerHTML=shell(`<div class="card"><div class="row between"><div><span class="pill purple">${current.lesson.schoolTag}</span><h2 style="margin-top:10px">Try ${current.session.itemIndex+1} of ${current.lesson.checks.length}</h2></div><span class="badge warn">Track B</span></div>
-      <div class="row"><button class="btn" onclick="window.MLUL.readQuestion()">🔊 Read to me</button><button class="btn" onclick="speechSynthesis.cancel()">■ Stop</button></div>
-      <div class="question">${escapeHTML(q.q)}</div><div class="choices">${input}</div>
-      <label class="small">How was this question accessed?</label><select id="itemAccessCondition" onchange="window.MLUL.markAccessObserved(this)">${accessOptions(null)}</select>
-      <div class="spacer"></div><div class="row"><label class="small"><input type="radio" name="confidence" value="sure"> Sure</label><label class="small"><input type="radio" name="confidence" value="kinda"> Kinda sure</label><label class="small"><input type="radio" name="confidence" value="guess"> Guessing</label></div>
-      <div class="spacer"></div><div class="row"><button class="btn primary" onclick="window.MLUL.submitAnswer()">Submit answer</button><button class="btn" onclick="window.MLUL.manualSave()">Save</button><button class="btn" onclick="window.MLUL.saveAndExit()">Save & Exit</button></div><div id="feedback"></div>
-    </div>`);renderSaveStatus();restoreDraftToUI();bindDraftAutosave();
+    const input=q.choices?q.choices.map((x,i)=>'<label class="choice"><input type="radio" name="answer" value="'+i+'"><span>'+escapeHTML(x)+'</span></label>').join(""):q.rubric?'<textarea id="freeAnswer" rows="5" placeholder="Explain in your own words. This response will be saved for review."></textarea>':'<input type="text" id="freeAnswer" placeholder="Type the answer exactly. I do not know is allowed.">';
+    const labels={GUIDED_PRACTICE:"Try with support",FADE_HELP:"Try with less help",INDEPENDENT_CHECK:"Try independently",MIX_OLD_AND_NEW:"Connect old and new",GENERALIZE:"Explain in a new situation"};
+    const stage=labels[q.stage]||"Practice";
+    const support=q.support?'<p class="teacher"><strong>Support:</strong> '+escapeHTML(q.support)+'</p>':'';
+    const assistance=q.stage?'<label class="small">Any additional help on this item?</label><select id="itemAssistanceLevel">'+assistanceOptions(current.session.draft?.assistance_level||"INDEPENDENT")+'</select>':'';
+    document.getElementById("app").innerHTML=shell('<div class="card"><span class="pill purple">'+escapeHTML(current.lesson.schoolTag)+'</span><h2>'+stage+' · '+(current.session.itemIndex+1)+' of '+current.lesson.checks.length+'</h2><p class="small muted">This follows teaching. It is not a cold diagnostic or a mastery decision.</p><div class="row"><button class="btn" onclick="window.MLUL.readQuestion()">🔊 Read to me</button><button class="btn" onclick="speechSynthesis.cancel()">Stop</button></div><div class="question">'+escapeHTML(q.q)+'</div>'+support+'<div class="choices">'+input+'</div><label class="small">How was this question accessed?</label><select id="itemAccessCondition" onchange="window.MLUL.markAccessObserved(this)">'+accessOptions(null)+'</select>'+assistance+'<div class="spacer"></div><div class="row"><label class="small"><input type="radio" name="confidence" value="sure"> Sure</label><label class="small"><input type="radio" name="confidence" value="kinda"> Kinda sure</label><label class="small"><input type="radio" name="confidence" value="guess"> Guessing</label></div><div class="spacer"></div><div class="row"><button class="btn primary" onclick="window.MLUL.submitAnswer()">Submit answer</button><button class="btn" onclick="window.MLUL.manualSave()">Save</button><button class="btn" onclick="window.MLUL.saveAndExit()">Save & Exit</button></div><div id="feedback"></div></div>');
+    renderSaveStatus();restoreDraftToUI();const assistanceEl=document.getElementById("itemAssistanceLevel");if(assistanceEl&&current.session.draft?.assistance_level)assistanceEl.value=current.session.draft.assistance_level;bindDraftAutosave();
   }
 
   function readQuestion(){
@@ -887,17 +923,18 @@
   async function submitAnswer(){
     const q=current.lesson.checks[current.session.itemIndex];let raw="",correct=false;
     if(q.choices){const chosen=document.querySelector("input[name=answer]:checked");if(!chosen){alert("Choose Michael's answer first.");return}const idx=Number(chosen.value);raw=q.choices[idx];correct=idx===q.answer}
-    else{const el=document.getElementById("freeAnswer");raw=el.value.trim();if(!raw){alert("Type Michael's answer exactly. 'I don't know' is a valid answer.");return}correct=answersMatch(raw,q.free)}
+    else{const el=document.getElementById("freeAnswer");raw=el.value.trim();if(!raw){alert("Type Michael's answer exactly. 'I don't know' is a valid answer.");return}correct=q.rubric?null:answersMatch(raw,q.free)}
     const confidence=document.querySelector("input[name=confidence]:checked")?.value||"not_recorded";
     const accessSelector=document.getElementById("itemAccessCondition");
     const accessCondition=validAccessCondition(accessSelector?.value);
     const accessConditionSource=accessSourceFor(accessSelector,accessCondition);
-    const assistanceLevel=assistanceLevelForSession(current.session);
-    const ev={id:`ev_${current.session.id}_${current.session.itemIndex}`,createdAt:now(),studentId:"michael",track:"B",evidence_class:"INFORMAL_TRACK_B",instruction_exposure_status:"PRIOR_INSTRUCTION",subject:current.session.subject,skillId:current.lesson.id,itemId:q.id,prompt:q.q,rawResponse:raw,isCorrect:correct,confidence,assistance_level:assistanceLevel,access_condition:accessCondition,access_condition_source:accessConditionSource,access_observation:{access_condition:accessCondition,access_condition_source:accessConditionSource,extra_processing_available:true,parent_verbatim_available:true},interpretation:correct?"immediate taught-response correct":"immediate taught-response needs more support"};
+    const selectedAssistance=document.getElementById("itemAssistanceLevel")?.value;
+    const assistanceLevel=q.stage?((ASSISTANCE_LEVELS.includes(selectedAssistance)&&selectedAssistance!=="INDEPENDENT")?selectedAssistance:q.stage==="GUIDED_PRACTICE"?"GUIDED":q.stage==="FADE_HELP"?"HINTED":"INDEPENDENT"):assistanceLevelForSession(current.session);
+    const ev={id:`ev_${current.session.id}_${current.session.itemIndex}`,createdAt:now(),studentId:"michael",track:"B",evidence_class:"INFORMAL_TRACK_B",instruction_exposure_status:"PRIOR_INSTRUCTION",subject:current.session.subject,skillId:current.lesson.id,itemId:q.id,prompt:q.q,rawResponse:raw,isCorrect:correct,confidence,teaching_stage:q.stage||"CHECK_AFTER_TEACH",performance_mode:q.performanceMode||null,requires_review:!!q.rubric,review_rubric:q.rubric||null,assistance_level:assistanceLevel,access_condition:accessCondition,access_condition_source:accessConditionSource,access_observation:{access_condition:accessCondition,access_condition_source:accessConditionSource,extra_processing_available:true,parent_verbatim_available:true},interpretation:q.rubric?"Explanation saved; parent or teacher review required":correct?"immediate taught-response correct":"immediate taught-response needs more support"};
     pushEvidenceOnce(ev);pushSessionResponseOnce(current.session,ev);current.session.draft=null;state.activeSession=current.session;upsertSessionRecord(current.session);
     if(!await save("answer"))return;
-    document.querySelectorAll("input").forEach(x=>x.disabled=true);
-    const fb=document.getElementById("feedback");fb.className="feedback "+(correct?"good":"warn");fb.innerHTML=`<strong>${correct?"Yes — that's it.":"Not yet."}</strong><div class="small" style="margin-top:6px">${escapeHTML(q.why)}</div><div class="small muted" style="margin-top:6px">Because this is Track B, teaching feedback is allowed after Michael answers.</div><button class="btn ${correct?"good":"warn"}" style="margin-top:10px" onclick="window.MLUL.nextQuestion()">${current.session.itemIndex===current.lesson.checks.length-1?"Finish lesson":"Next"}</button>`;
+    document.querySelectorAll("input,textarea,select").forEach(x=>x.disabled=true);
+    const fb=document.getElementById("feedback");fb.className="feedback "+(correct?"good":"warn");fb.innerHTML=`<strong>${q.rubric?"Explanation saved for review":correct?"Yes — that's it.":"Not yet."}</strong><div class="small" style="margin-top:6px">${escapeHTML(q.why)}</div><div class="small muted" style="margin-top:6px">Because this is Track B, teaching feedback is allowed after Michael answers.</div><button class="btn ${correct?"good":"warn"}" style="margin-top:10px" onclick="window.MLUL.nextQuestion()">${current.session.itemIndex===current.lesson.checks.length-1?"Finish lesson":"Next"}</button>`;
   }
 
   async function nextQuestion(){
@@ -907,14 +944,14 @@
   }
 
   async function finishLesson(){
-    const r=current.session.responses;const correct=r.filter(x=>x.isCorrect).length;const total=r.length;const score=Math.round(correct/total*100);
-    const old=lessonStatus(current.lesson.id);state.lessonState[current.lesson.id]={status:"COMPLETED",score,attempts:(old.attempts||0)+1,completedAt:now(),trackBProgress:trackBProgressFromScore(score),memoryStrength:"FRAGILE",instruction_exposure_status:"PRIOR_INSTRUCTION"};
+    const r=current.session.responses;const scored=r.filter(x=>typeof x.isCorrect==="boolean");const pending=r.filter(x=>x.requires_review).length;const correct=scored.filter(x=>x.isCorrect).length;const total=scored.length;const score=total?Math.round(correct/total*100):null;
+    const old=lessonStatus(current.lesson.id);state.lessonState[current.lesson.id]={status:"COMPLETED",score,scoredCount:total,pendingExplanationCount:pending,attempts:(old.attempts||0)+1,completedAt:now(),trackBProgress:trackBProgressFromScore(score),memoryStrength:"FRAGILE",instruction_exposure_status:"PRIOR_INSTRUCTION"};
     current.session.status="COMPLETED";current.session.completedAt=now();current.session.draft=null;upsertSessionRecord(current.session);state.activeSession=null;
     scheduleReviews(current.lesson.id,current.session.subject);
     if(!state.backup)state.backup={lastExportAttemptedAt:null,pendingAfterLesson:false};
     state.backup.pendingAfterLesson=true;
     if(!await save("finish lesson"))return;
-    document.getElementById("app").innerHTML=shell(`<div class="card center"><span class="pill good">Lesson complete</span><h2 style="margin-top:12px">${current.lesson.title}</h2><div class="big">${correct}/${total}</div><p class="muted">Immediate Track B check</p><div class="callout"><strong>This is not mastery and does not write a canonical lifecycle state.</strong> Track B immediate-check result: ${trackBProgressFromScore(score)}. Memory remains FRAGILE until delayed retrieval shows it sticks.</div><div class="callout warn" style="margin-top:14px"><strong>Portable backup due now.</strong> Download the learner backup before ending this local-only pilot session.</div><div class="row" style="justify-content:center"><button class="btn primary" onclick="window.MLUL.exportBackup()">Download backup now</button><button class="btn" onclick="location.hash='track-b'">Back to Track B</button></div></div>`);renderSaveStatus();current=null;
+    document.getElementById("app").innerHTML=shell(`<div class="card center"><span class="pill good">Lesson complete</span><h2 style="margin-top:12px">${current.lesson.title}</h2><div class="big">${correct}/${total}</div><p class="muted">Immediate Track B check</p><p class="small">${pending?pending+" explanation saved for parent or teacher review; excluded from this score.":""}</p><div class="callout"><strong>This is not mastery and does not write a canonical lifecycle state.</strong> Track B immediate-check result: ${trackBProgressFromScore(score)}. Memory remains FRAGILE until delayed retrieval shows it sticks.</div><div class="callout warn" style="margin-top:14px"><strong>Portable backup due now.</strong> Download the learner backup before ending this local-only pilot session.</div><div class="row" style="justify-content:center"><button class="btn primary" onclick="window.MLUL.exportBackup()">Download backup now</button><button class="btn" onclick="location.hash='track-b'">Back to Track B</button></div></div>`);renderSaveStatus();current=null;
   }
 
   function scheduleReviews(skillId,subject){
@@ -1038,6 +1075,12 @@
     </div>`;
   }
 
+  function scienceExplanationSection(){
+    const rows=state.evidence.filter(e=>e.requires_review).slice(-20).reverse();
+    if(!rows.length)return "";
+    return '<section class="card c12"><h3>Science explanations to review</h3><p class="small muted">These responses are preserved verbatim. They have not been automatically marked correct or incorrect and are excluded from immediate scores.</p>'+rows.map(e=>'<details><summary>'+escapeHTML(lessonById(e.skillId)?.title||e.skillId)+'</summary><p><strong>Prompt:</strong> '+escapeHTML(e.prompt)+'</p><p><strong>Response:</strong> '+escapeHTML(e.rawResponse)+'</p><ul>'+(e.review_rubric||[]).map(x=>'<li>'+escapeHTML(x)+'</li>').join("")+'</ul></details>').join("")+'</section>';
+  }
+
   function scienceCurriculumSection(){
     if(!SCIENCE_CURRICULUM)return "";
     const coverage=SCIENCE_CURRICULUM.standardsCoverage();
@@ -1058,12 +1101,225 @@
       <div class="callout small"><strong>Teaching rule:</strong> every curriculum target will use ${escapeHTML(SCIENCE_CURRICULUM.teachingCycle.join(" → "))}. Performance is tracked separately across vocabulary, concepts, models, data/graphs, investigations, explanations, evidence-based arguments, and calculation/application where appropriate.</div>
     </div>`;
   }
+
+  function scienceGapSessionRecord(session){
+    if(!session)return;
+    state.scienceGapSessions=state.scienceGapSessions||[];
+    const copy=JSON.parse(JSON.stringify(session));
+    const i=state.scienceGapSessions.findIndex(x=>x.id===session.id);
+    if(i>=0)state.scienceGapSessions[i]=copy;else state.scienceGapSessions.push(copy);
+  }
+
+  function scienceGapEvidence(session,item,phase,{rawResponse,isCorrect,choiceIndex=null,confidence=null,explanationRaw="",supportCondition="NONE_COLD",latencyMs=null}={}){
+    const id=`${session.id}_${item.id}_${phase}_${session.responses.filter(x=>x.itemId===item.id&&x.phase===phase).length+1}`;
+    const ev={
+      id,createdAt:now(),track:"SCIENCE_GAP",subject:"Physical Science",skillId:item.targetId,
+      standard:item.standard,scienceDomain:item.domain,rawResponse:String(rawResponse??""),
+      selectedChoiceIndex:choiceIndex,isCorrect:isCorrect===true,explanationRaw:String(explanationRaw||""),
+      confidence:confidence||null,evidence_class:"FORMAL_CONTROLLED",interaction_purpose:phase,
+      instruction_exposure_status:phase==="COLD_BASELINE"?"COLD_BASELINE":(phase==="CONTROLLED_PROBE"?"COLD_BASELINE_PROBE":"POST_TEACH_TRANSFER"),
+      prior_instruction:false,assistance_level:phase==="COLD_BASELINE"?"INDEPENDENT":phase==="CONTROLLED_PROBE"?"CLARIFIED":"TAUGHT",
+      support_condition:supportCondition,access_condition:"SELF_READ_SILENT",access_condition_source:"PROTOCOL_ASSIGNED",
+      fresh:true,reliable:true,responseLatencyMs:Number.isFinite(latencyMs)?latencyMs:null,gapHints:item.gapHints||[]
+    };
+    pushEvidenceOnce(ev,session);
+    session.responses.push({evidenceId:id,itemId:item.id,targetId:item.targetId,phase,rawResponse:String(rawResponse??""),choiceIndex,isCorrect:isCorrect===true,confidence:confidence||null,explanationRaw:String(explanationRaw||""),supportCondition,latencyMs:Number.isFinite(latencyMs)?latencyMs:null,createdAt:ev.createdAt});
+    return ev;
+  }
+
+  function scienceGapPriorInstruction(item){
+    const lessons=CONTENT.science.filter(l=>(l.targetIds||SCIENCE_CURRICULUM?.legacyAlignment?.[l.id]||[]).includes(item.targetId));
+    const ids=new Set([item.targetId,...lessons.map(l=>l.id)]);
+    return state.evidence.some(e=>ids.has(e.skillId)&&e.instruction_exposure_status==="PRIOR_INSTRUCTION")||(state.sessions||[]).some(s=>ids.has(s.lessonId)&&s.instructionDelivered);
+  }
+  function scienceGapEligibleItems(){return SCIENCE_GAP.coldEligible().filter(item=>!scienceGapPriorInstruction(item));}
+
+  function scienceGapCurrentItem(session=state.scienceGapActiveSession){
+    if(!SCIENCE_GAP||!session)return null;
+    const ids=session.coldItemIds||scienceGapEligibleItems().map(x=>x.id);
+    return SCIENCE_GAP.item(ids[session.itemIndex])||null;
+  }
+
+  async function startScienceGap(){
+    if(!SCIENCE_GAP){alert("Science Gap Diagnostic is not loaded.");return}
+    if(!studentRuntimeAllowed()){alert(runtimeBlockMessage());return}
+    if(!evidenceSessionAllowed())return;
+    if(state.scienceGapActiveSession && state.scienceGapActiveSession.status==="ACTIVE"){location.hash="science-gap";return}
+    if(recoverableSession()){alert("Resume or end the preserved teaching session before starting a controlled diagnostic.");return;}
+    const eligible=scienceGapEligibleItems();
+    if(!eligible.length){alert("No untouched items remain in this bank. Taught targets need prior-instruction checks, not a cold baseline.");return;}
+    const nowIso=now();
+    const session={
+      id:`science_gap_${Date.now()}`,mode:"SCIENCE_GAP",status:"ACTIVE",stage:"COLD_BASELINE",
+      itemIndex:0,startedAt:nowIso,questionStartedAt:nowIso,responses:[],
+      coldItemIds:eligible.map(x=>x.id),protocolVersion:SCIENCE_GAP.version,
+      source:"LEVEL_UP_APP",priorInstructionExcluded:["SCI.G8.WAVES","SCI.EXT.DOPPLER",...SCIENCE_GAP.coldEligible().filter(x=>scienceGapPriorInstruction(x)).map(x=>x.targetId)]
+    };
+    state.scienceGapActiveSession=session;scienceGapSessionRecord(session);
+    if(!await save("start science gap diagnostic"))return;
+    location.hash="science-gap";render();
+  }
+
+  function scienceGapChoiceBlock(name,choices){
+    return `<div class="stack">${choices.map((x,i)=>`<label class="choice"><input type="radio" name="${name}" value="${i}"> <span>${escapeHTML(x)}</span></label>`).join("")}</div>`;
+  }
+
+  function scienceGapActiveView(session,item){
+    const done=session.itemIndex,total=(session.coldItemIds||scienceGapEligibleItems()).length,pct=Math.round((done/total)*100);
+    if(session.stage==="COLD_BASELINE"){
+      return `<div class="card c12"><div class="row between"><div><span class="pill info">Cold baseline</span><h2 style="margin-top:8px">Science Gap Diagnostic</h2></div><span class="badge">${done+1} / ${total}</span></div>
+        <p class="muted small"><strong>No help on this part.</strong> No hints, reteaching, simplified wording, or read-aloud. We need to see what Michael can do independently first.</p>
+        <div class="progress"><div style="width:${pct}%"></div></div><h3>${escapeHTML(item.prompt)}</h3>
+        ${scienceGapChoiceBlock("scienceGapChoice",item.choices)}
+        <label class="label" style="margin-top:16px">Why did you choose that answer?</label>
+        <textarea id="scienceGapExplain" rows="3" placeholder="Explain it in your own words."></textarea>
+        <label class="label">How sure are you?</label>
+        <select id="scienceGapConfidence"><option value="LOW">Not sure</option><option value="MEDIUM" selected>Kind of sure</option><option value="HIGH">Very sure</option></select>
+        <div class="row" style="margin-top:16px"><button class="btn primary" onclick="window.MLUL.submitScienceGapCold()">Submit answer</button></div></div>`;
+    }
+    if(session.stage==="CONTROLLED_PROBE"){
+      return `<div class="card c12"><span class="pill warn">Controlled probe</span><h2>Same science idea, one change</h2>
+        <p class="muted small">The wording has been simplified. Nothing is being taught yet. This tests whether language load changes performance.</p>
+        <h3>${escapeHTML(item.simplifiedPrompt)}</h3>${scienceGapChoiceBlock("scienceGapProbeChoice",item.simplifiedChoices)}
+        <label class="label" style="margin-top:16px">Explain the relationship in your own words</label>
+        <textarea id="scienceGapProbeExplain" rows="3" placeholder="${escapeHTML(item.relationshipPrompt)}"></textarea>
+        <div class="row" style="margin-top:16px"><button class="btn primary" onclick="window.MLUL.submitScienceGapProbe()">Submit probe</button></div></div>`;
+    }
+    if(session.stage==="TEACH"){
+      return `<div class="card c12"><span class="pill good">Teach</span><h2>Fill the gap</h2><div class="callout"><strong>${escapeHTML(item.domain)}:</strong> ${escapeHTML(item.teach)}</div>
+        <p class="small muted">Teaching is stored separately from the cold baseline. The next question measures transfer after instruction.</p>
+        <button class="btn primary" onclick="window.MLUL.beginScienceGapTransfer()">I understand — test it a new way</button></div>`;
+    }
+    if(session.stage==="TRANSFER"){
+      return `<div class="card c12"><span class="pill info">Transfer check</span><h2>New example</h2><p class="muted small">Use the idea you just learned in a different situation.</p>
+        <h3>${escapeHTML(item.transferPrompt)}</h3>${scienceGapChoiceBlock("scienceGapTransferChoice",item.transferChoices)}
+        <div class="row" style="margin-top:16px"><button class="btn primary" onclick="window.MLUL.submitScienceGapTransfer()">Submit transfer</button></div></div>`;
+    }
+    return `<div class="card"><p>Science Gap session is waiting for the next step.</p></div>`;
+  }
+
+  function scienceGapCompletedSummary(session){
+    const cold=session.responses.filter(x=>x.phase==="COLD_BASELINE"),probes=session.responses.filter(x=>x.phase==="CONTROLLED_PROBE"),transfer=session.responses.filter(x=>x.phase==="TRANSFER");
+    const coldCorrect=cold.filter(x=>x.isCorrect).length;
+    const languageSignal=probes.filter(p=>{const base=cold.find(c=>c.itemId===p.itemId);return base&&!base.isCorrect&&p.isCorrect}).length;
+    return {coldCount:cold.length,coldCorrect,languageSignal,transferCount:transfer.length,transferRecovered:transfer.filter(x=>x.isCorrect).length};
+  }
+
+  function scienceGapParentSection(){
+    const completed=(state.scienceGapSessions||[]).filter(x=>x.status==="COMPLETED");
+    if(!completed.length)return `<div class="card c12"><h3>Science Gap data</h3><p class="small muted">No completed Science Gap Diagnostic yet.</p><button class="btn" onclick="location.hash='science-gap'">Open Science Gap</button></div>`;
+    const latest=completed[completed.length-1],s=scienceGapCompletedSummary(latest);
+    const rows=latest.responses.filter(x=>x.phase==="COLD_BASELINE").map(r=>{
+      const item=SCIENCE_GAP?.item(r.itemId),probe=latest.responses.find(x=>x.itemId===r.itemId&&x.phase==="CONTROLLED_PROBE"),transfer=latest.responses.find(x=>x.itemId===r.itemId&&x.phase==="TRANSFER");
+      return `<tr><td>${escapeHTML(item?.domain||r.itemId)}</td><td>${r.isCorrect?"✓":"Needs work"}</td><td>${probe?(probe.isCorrect?"Improved":"Still missed"):"Not needed"}</td><td>${transfer?(transfer.isCorrect?"Transferred":"Needs reteach"):"—"}</td><td>${r.latencyMs==null?"—":Math.round(r.latencyMs/1000)+"s"}</td></tr>`;
+    }).join("");
+    return `<div class="card c12"><div class="row between"><div><h3>Science Gap data</h3><p class="small muted">Latest completed controlled session · ${fmt(latest.completedAt)}</p></div><button class="btn" onclick="window.MLUL.exportScienceGapCSV()">Export school data CSV</button></div>
+      <div class="grid"><div class="card c3"><div class="kpi"><div class="t">Cold baseline</div><div class="n">${s.coldCorrect}/${s.coldCount}</div></div></div><div class="card c3"><div class="kpi"><div class="t">Language-access signals</div><div class="n">${s.languageSignal}</div></div></div><div class="card c3"><div class="kpi"><div class="t">Transfer after teaching</div><div class="n">${s.transferRecovered}/${s.transferCount}</div></div></div><div class="card c3"><div class="kpi"><div class="t">Retention checks</div><div class="n">${(state.scienceGapRetention||[]).filter(x=>!x.completed).length}</div></div></div></div>
+      <div class="tablewrap"><table><thead><tr><th>Domain</th><th>Cold</th><th>Simplified language</th><th>Transfer</th><th>Cold response time</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <p class="tiny muted">Interpretation rule: improvement after simplified wording is a language-access signal, not proof of a fixed learning style. Transfer is stored separately from baseline.</p></div>`;
+  }
+
+  function scienceGapRetentionView(active){
+    const item=SCIENCE_GAP?.item(active?.itemId);
+    if(!item)return shell('<div class="card"><p>Retention item unavailable.</p></div>');
+    return shell('<div class="grid"><div class="card c12"><span class="pill info">Delayed retention · '+escapeHTML(active.window||"DAY_2")+'</span><h2>Do you still know it?</h2><p class="muted small"><strong>No reteaching first.</strong> This fresh question checks whether the science idea was retained.</p><h3>'+escapeHTML(item.retentionPrompt)+'</h3>'+scienceGapChoiceBlock("scienceGapRetentionChoice",item.retentionChoices)+'<div class="row" style="margin-top:16px"><button class="btn primary" onclick="window.MLUL.submitScienceGapRetention()">Submit retention check</button></div></div></div>');
+  }
+
+  async function startNextScienceGapRetention(){
+    const record=(state.scienceGapRetention||[]).find(x=>!x.completed&&new Date(x.dueAt)<=new Date());
+    if(!record){alert("No Science Gap retention check is due yet.");return}
+    state.scienceGapActiveRetention={...record,startedAt:now(),questionStartedAt:now()};
+    await save("start science gap retention");render();
+  }
+
+  async function submitScienceGapRetention(){
+    const active=state.scienceGapActiveRetention;if(!active)return;
+    const item=SCIENCE_GAP?.item(active.itemId);if(!item)return;
+    const chosen=document.querySelector('input[name="scienceGapRetentionChoice"]:checked');if(!chosen){alert("Choose an answer first.");return}
+    const choiceIndex=Number(chosen.value),isCorrect=SCIENCE_GAP.checkChoice(item.id,choiceIndex,"DELAYED_RETENTION");
+    const latency=Math.max(0,Date.now()-Date.parse(active.questionStartedAt||active.startedAt||now()));
+    const pseudoSession={id:active.id,mode:"SCIENCE_GAP_RETENTION",responses:[],skillId:item.targetId,attemptNumber:1};
+    const ev={id:active.id+"_evidence",createdAt:now(),track:"SCIENCE_GAP",subject:"Physical Science",skillId:item.targetId,standard:item.standard,scienceDomain:item.domain,rawResponse:item.retentionChoices[choiceIndex],selectedChoiceIndex:choiceIndex,isCorrect,evidence_class:"FORMAL_CONTROLLED",interaction_purpose:"DELAYED_RETENTION",instruction_exposure_status:"POST_TEACH_DELAYED_RETENTION",prior_instruction:true,assistance_level:"INDEPENDENT",support_condition:"NONE_DELAYED_RETRIEVAL",access_condition:"SELF_READ_SILENT",access_condition_source:"PROTOCOL_ASSIGNED",fresh:true,reliable:true,responseLatencyMs:latency,retentionWindow:active.window};
+    pushEvidenceOnce(ev,pseudoSession);
+    const rec=(state.scienceGapRetention||[]).find(x=>x.id===active.id);
+    if(rec){rec.completed=true;rec.completedAt=ev.createdAt;rec.isCorrect=isCorrect;rec.evidenceId=ev.id}
+    state.scienceGapActiveRetention=null;await save("science gap delayed retention");render();
+  }
+
+  function scienceGapView(){
+    if(!SCIENCE_GAP)return shell(`<div class="card"><h2>Science Gap Diagnostic</h2><p class="muted">Diagnostic module did not load.</p></div>`);
+    const activeRetention=state.scienceGapActiveRetention;if(activeRetention)return scienceGapRetentionView(activeRetention);
+    const session=state.scienceGapActiveSession;
+    if(session?.status==="ACTIVE"){const item=scienceGapCurrentItem(session);if(item)return shell(`<div class="grid">${scienceGapActiveView(session,item)}</div>`)}
+    const completed=(state.scienceGapSessions||[]).filter(x=>x.status==="COMPLETED"),latest=completed[completed.length-1]||null;
+    const due=(state.scienceGapRetention||[]).filter(x=>!x.completed&&new Date(x.dueAt)<=new Date());
+    return shell(`<div class="grid"><div class="card c8"><h2>Michael's Science Gap Diagnostic</h2><p class="muted">Find the breakdown — not just the wrong answer. Cold baseline → controlled language probe → teach → transfer → delayed retention.</p>
+      <div class="callout small"><strong>Cold-baseline protection:</strong> Waves/Doppler is excluded from this starter set because Michael has already received Level-Up instruction there. Those skills remain PRIOR_INSTRUCTION rather than clean baseline evidence.</div>
+      <button class="btn primary" ${studentRuntimeAllowed()?"":"disabled"} onclick="window.MLUL.startScienceGap()">${latest?"Start a new controlled session":"Start cold baseline"}</button></div>
+      <div class="card c4"><div class="kpi"><div class="t">Clean baseline targets</div><div class="n">${scienceGapEligibleItems().length}</div></div><div class="spacer"></div><div class="kpi"><div class="t">Retention due</div><div class="n">${due.length}</div></div></div>
+      ${due.length?`<div class="card c12"><h3>Retention checks due</h3><p class="small muted">${due.length} fresh delayed check${due.length===1?" is":"s are"} ready. No reteaching happens before these questions.</p><button class="btn primary" onclick="window.MLUL.startNextScienceGapRetention()">Start next retention check</button></div>`:""}
+      ${latest?scienceGapParentSection():""}<div class="card c12"><h3>What Level-Up is testing</h3><p class="small muted">${SCIENCE_GAP.gapCategories.map(x=>escapeHTML(x.replaceAll("_"," "))).join(" · ")}</p></div></div>`);
+  }
+
+  async function submitScienceGapCold(){
+    const session=state.scienceGapActiveSession,item=scienceGapCurrentItem(session);if(!session||!item)return;
+    const chosen=document.querySelector('input[name="scienceGapChoice"]:checked');if(!chosen){alert("Choose an answer first.");return}
+    const latency=Math.max(0,Date.now()-Date.parse(session.questionStartedAt||session.startedAt||now()));
+    const choiceIndex=Number(chosen.value),isCorrect=SCIENCE_GAP.checkChoice(item.id,choiceIndex,"COLD_BASELINE");
+    scienceGapEvidence(session,item,"COLD_BASELINE",{rawResponse:item.choices[choiceIndex],choiceIndex,isCorrect,confidence:document.getElementById("scienceGapConfidence")?.value||null,explanationRaw:document.getElementById("scienceGapExplain")?.value||"",supportCondition:"NONE_COLD",latencyMs:latency});
+    if(isCorrect){session.itemIndex+=1;session.stage="COLD_BASELINE";session.questionStartedAt=now();if(session.itemIndex>=(session.coldItemIds||scienceGapEligibleItems()).length)await completeScienceGapSession(session)}
+    else{session.stage="CONTROLLED_PROBE";session.questionStartedAt=now()}
+    scienceGapSessionRecord(session);await save("science gap cold response");render();
+  }
+
+  async function submitScienceGapProbe(){
+    const session=state.scienceGapActiveSession,item=scienceGapCurrentItem(session);if(!session||!item)return;
+    const chosen=document.querySelector('input[name="scienceGapProbeChoice"]:checked');if(!chosen){alert("Choose an answer first.");return}
+    const latency=Math.max(0,Date.now()-Date.parse(session.questionStartedAt||now()));
+    const choiceIndex=Number(chosen.value),isCorrect=Number(choiceIndex)===Number(item.answerIndex);
+    scienceGapEvidence(session,item,"CONTROLLED_PROBE",{rawResponse:item.simplifiedChoices[choiceIndex],choiceIndex,isCorrect,explanationRaw:document.getElementById("scienceGapProbeExplain")?.value||"",supportCondition:"SIMPLIFIED_LANGUAGE",latencyMs:latency});
+    session.stage="TEACH";session.questionStartedAt=null;scienceGapSessionRecord(session);await save("science gap controlled probe");render();
+  }
+
+  async function beginScienceGapTransfer(){
+    const session=state.scienceGapActiveSession;if(!session)return;
+    session.stage="TRANSFER";session.questionStartedAt=now();scienceGapSessionRecord(session);await save("science gap begin transfer");render();
+  }
+
+  async function submitScienceGapTransfer(){
+    const session=state.scienceGapActiveSession,item=scienceGapCurrentItem(session);if(!session||!item)return;
+    const chosen=document.querySelector('input[name="scienceGapTransferChoice"]:checked');if(!chosen){alert("Choose an answer first.");return}
+    const latency=Math.max(0,Date.now()-Date.parse(session.questionStartedAt||now()));
+    const choiceIndex=Number(chosen.value),isCorrect=SCIENCE_GAP.checkChoice(item.id,choiceIndex,"TRANSFER");
+    scienceGapEvidence(session,item,"TRANSFER",{rawResponse:item.transferChoices[choiceIndex],choiceIndex,isCorrect,supportCondition:"POST_TEACH_NOVEL_CONTEXT",latencyMs:latency});
+    session.itemIndex+=1;session.stage="COLD_BASELINE";session.questionStartedAt=now();
+    if(session.itemIndex>=(session.coldItemIds||scienceGapEligibleItems()).length)await completeScienceGapSession(session);
+    scienceGapSessionRecord(session);await save("science gap transfer response");render();
+  }
+
+  async function completeScienceGapSession(session){
+    session.status="COMPLETED";session.completedAt=now();
+    const misses=session.responses.filter(x=>x.phase==="COLD_BASELINE"&&!x.isCorrect);state.scienceGapRetention=state.scienceGapRetention||[];
+    for(const miss of misses){if(state.scienceGapRetention.some(x=>x.sessionId===session.id&&x.itemId===miss.itemId))continue;state.scienceGapRetention.push({id:`science_gap_retention_${session.id}_${miss.itemId}`,sessionId:session.id,itemId:miss.itemId,targetId:miss.targetId,dueAt:new Date(Date.now()+2*24*60*60*1000).toISOString(),window:"DAY_2",completed:false})}
+    scienceGapSessionRecord(session);state.scienceGapActiveSession=null;
+  }
+
+  function exportScienceGapCSV(){
+    const rows=(state.evidence||[]).filter(e=>e.track==="SCIENCE_GAP");if(!rows.length){alert("No Science Gap evidence to export yet.");return}
+    const headers=["createdAt","sessionId","skillId","standard","scienceDomain","interaction_purpose","rawResponse","isCorrect","confidence","explanationRaw","support_condition","responseLatencyMs","instruction_exposure_status","prior_instruction"];
+    const q=v=>`"${String(v??"").replaceAll('"','""')}"`;
+    const csv=[headers.join(","),...rows.map(r=>headers.map(h=>q(r[h])).join(","))].join("\n");
+    const blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`${learnerFileToken()}-Science-Gap-${new Date().toISOString().slice(0,10)}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  }
+
   function parentView(){
     const science=CONTENT.science.map(l=>skillRow(l)).join("");const math=CONTENT.math.map(l=>skillRow(l)).join("");
     const trackARows=TRACK_A_DIAGNOSTIC?TRACK_A_DIAGNOSTIC.SKILLS.map(s=>{const r=trackASkillRecord(s.id);const last=r.lastMaintenance?.result||r.lastMasteryCheck?.result||r.lastVerification?.result||r.lastRepair?.result||r.lastDiagnostic?.result||"—";return `<tr><td>${escapeHTML(s.title)}<div class="tiny muted">${escapeHTML(s.id)}</div></td><td>${escapeHTML(r.canonicalState||"UNKNOWN")}</td><td>${escapeHTML(r.memoryStrength||"FRAGILE")}</td><td>${escapeHTML(last)}</td><td>${trackAPriorInstruction(s.id)?"PRIOR_INSTRUCTION / not cold":"—"}</td></tr>`}).join(""):"";
     const formalCount=state.evidence.filter(e=>e.evidence_class==="FORMAL_CONTROLLED").length;const informalCount=state.evidence.filter(e=>e.evidence_class==="INFORMAL_TRACK_B").length;
     return shell(`<div class="grid"><div class="card c8"><h2>Parent View</h2><p class="muted">Michael's learning record separates school facts, teaching evidence, controlled evidence, lifecycle state, and memory strength. No one score gets to masquerade as the whole story.</p></div><div class="card c4"><div class="kpi"><div class="t">Track B evidence</div><div class="n">${informalCount}</div></div><div class="spacer"></div><div class="kpi"><div class="t">Track A evidence</div><div class="n">${formalCount}</div></div></div>
       ${studyResultsSection()}
+      ${scienceGapParentSection()}
+      ${scienceExplanationSection()}
       ${scienceCurriculumSection()}
       <div class="card c12"><h3>Current Physical Science teaching history</h3><p class="small muted">These are Michael's existing Track B lessons and evidence. They remain preserved inside the larger curriculum.</p><div class="tablewrap"><table><thead><tr><th>Skill</th><th>Status</th><th>Immediate score</th><th>Memory</th><th>Baseline note</th></tr></thead><tbody>${science}</tbody></table></div></div>
       <div class="card c12"><h3>Math bridge skill map</h3><div class="tablewrap"><table><thead><tr><th>Skill</th><th>Status</th><th>Immediate score</th><th>Memory</th><th>Baseline note</th></tr></thead><tbody>${math}</tbody></table></div></div>
@@ -1744,7 +2000,7 @@
     if(firstRunDecisionRequired){document.getElementById("app").innerHTML=firstRunView();return}
     if(storageRecoveryIssue?.type==="MIRROR_AHEAD"){document.getElementById("app").innerHTML=mirrorAheadView();return}
     if(storageRecoveryIssue?.type==="PRIMARY_MISSING_MIRROR_PRESENT"){document.getElementById("app").innerHTML=primaryMissingView();return}
-    const route=getRoute();const view={dashboard,"school-plan":schoolPlanView,"track-b":trackB,parent:parentView,evidence:evidenceView,reviews:reviewsView,"track-a":trackA,backup:backupView}[route]||dashboard;
+    const route=getRoute();const view={dashboard,"psat-bridge":()=>shell(PSAT_BRIDGE?.render?.()||"<p>PSAT bridge unavailable.</p>"),"school-plan":schoolPlanView,"track-b":trackB,"science-gap":scienceGapView,parent:parentView,evidence:evidenceView,reviews:reviewsView,"track-a":trackA,backup:backupView}[route]||dashboard;
     document.getElementById("app").innerHTML=view();renderSaveStatus();if(route==="backup")checkPersistenceUI();if(route==="school-plan")SCHOOL_PLAN?.bindLiveTimer?.();
   }
 
@@ -1810,7 +2066,7 @@
     render();
   }
 
-  const appApi={readSchoolPlan,refreshSchoolPlan,schoolQuestAccess,getSchoolQuestProgress,schoolQuestStudyContext,saveSchoolQuestProgress,beginSchoolQuestItems,recordSchoolQuestAttempt,recordSchoolQuestAccess,endSchoolQuestStudySession,startLesson,readTeach,beginChecks,readQuestion,submitAnswer,nextQuestion,startReview,readReviewQuestion,submitReviewAnswer,startTrackADiagnostic,readTrackAQuestion,submitTrackAAnswer,startTrackARepair,readTrackARepairTeach,beginTrackARepairChecks,readTrackARepairQuestion,submitTrackARepairAnswer,nextTrackARepairCheck,startTrackAVerification,readTrackAVerificationQuestion,submitTrackAVerificationAnswer,initializeTrackAMastery,startTrackAMasteryTask,readTrackAMasteryQuestion,submitTrackAMasteryAnswer,replaceTrackAMasteryTask,finalizeTrackAMastery,resumeTrackAPath,resumeTrackADiagnostic,saveAndExitTrackA,endTrackAPath,endTrackADiagnostic,manualSave,saveAndExit,resumeInterruptedSession,endPreservedSession,exportBackup,importBackup,checkPersistenceUI,requestPersistentStorage,connectLocalDurableFile,reconnectLocalDurableFile,syncLocalDurableFile,checkLocalDurableFileUI,checkSharedPersistenceUI,acknowledgeRedundancyOverride,createNewLearnerRecord,resolveMirrorAhead,restoreMirrorAsAuthoritative,markAccessObserved,__audit:{RUNTIME_ENABLED,STATE_KEY,PROBE_KEY,ASSISTANCE_LEVELS,ACCESS_CONDITIONS,isValidLearnerState,assistanceLevelForSession,validAccessCondition,accessSourceFor,recoverableSession,captureDraftFromUI,upsertSessionRecord,answersMatch,memoryStrengthForReview,reviewOutcomeFromScore,trackAPriorInstruction,trackAPromptIsFresh,trackAActiveRecoverable,trackARouteForSkill,ensureTrackAMasterySchedule,masteryRouteInfo,maybeFinalizeTrackAMastery,sameOriginRedundancyDegraded,runtimeGateStatus,studentRuntimeAllowed,runtimeBlockMessage,sharedPersistenceStatus:()=>sharedPersistenceStatus,localDurableStatus:()=>localDurableStatus}};
+  const appApi={advanceScienceTeach,refreshPSATBridge,startScienceGap,submitScienceGapCold,submitScienceGapProbe,beginScienceGapTransfer,submitScienceGapTransfer,startNextScienceGapRetention,submitScienceGapRetention,exportScienceGapCSV,readSchoolPlan,refreshSchoolPlan,schoolQuestAccess,getSchoolQuestProgress,schoolQuestStudyContext,saveSchoolQuestProgress,beginSchoolQuestItems,recordSchoolQuestAttempt,recordSchoolQuestAccess,endSchoolQuestStudySession,startLesson,readTeach,beginChecks,readQuestion,submitAnswer,nextQuestion,startReview,readReviewQuestion,submitReviewAnswer,startTrackADiagnostic,readTrackAQuestion,submitTrackAAnswer,startTrackARepair,readTrackARepairTeach,beginTrackARepairChecks,readTrackARepairQuestion,submitTrackARepairAnswer,nextTrackARepairCheck,startTrackAVerification,readTrackAVerificationQuestion,submitTrackAVerificationAnswer,initializeTrackAMastery,startTrackAMasteryTask,readTrackAMasteryQuestion,submitTrackAMasteryAnswer,replaceTrackAMasteryTask,finalizeTrackAMastery,resumeTrackAPath,resumeTrackADiagnostic,saveAndExitTrackA,endTrackAPath,endTrackADiagnostic,manualSave,saveAndExit,resumeInterruptedSession,endPreservedSession,exportBackup,importBackup,checkPersistenceUI,requestPersistentStorage,connectLocalDurableFile,reconnectLocalDurableFile,syncLocalDurableFile,checkLocalDurableFileUI,checkSharedPersistenceUI,acknowledgeRedundancyOverride,createNewLearnerRecord,resolveMirrorAhead,restoreMirrorAsAuthoritative,markAccessObserved,__audit:{RUNTIME_ENABLED,STATE_KEY,PROBE_KEY,ASSISTANCE_LEVELS,ACCESS_CONDITIONS,isValidLearnerState,assistanceLevelForSession,validAccessCondition,accessSourceFor,recoverableSession,captureDraftFromUI,upsertSessionRecord,answersMatch,memoryStrengthForReview,reviewOutcomeFromScore,trackAPriorInstruction,trackAPromptIsFresh,trackAActiveRecoverable,trackARouteForSkill,ensureTrackAMasterySchedule,masteryRouteInfo,maybeFinalizeTrackAMastery,sameOriginRedundancyDegraded,runtimeGateStatus,studentRuntimeAllowed,runtimeBlockMessage,sharedPersistenceStatus:()=>sharedPersistenceStatus,localDurableStatus:()=>localDurableStatus}};
   window.LEVEL_UP_APP=appApi;
   window.MLUL=appApi; // compatibility alias for the current Michael pilot UI
   init();
