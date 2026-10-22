@@ -429,7 +429,7 @@
     if(!await save("resume session"))return;
     if(session.mode==="REVIEW" || session.reviewId){
       const review=reviewById(session.reviewId);if(!review||!REVIEW_ENGINE){alert("The preserved review cannot be reconstructed safely.");current=null;return}
-      const reviewItems=REVIEW_ENGINE.generateReview(session.lessonId,review.window,review.id);current={lesson,session,review,reviewItems};renderReviewQuestion();
+      const reviewItems=buildReviewItems(review,session);current={lesson,session,review,reviewItems};renderReviewQuestion();
     }else{
       current={lesson,session};if(session.phase==="TEACH")renderLessonTeach();else renderQuestion();
     }
@@ -465,10 +465,21 @@
   function escapeHTML(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
   function normalize(s){return String(s).trim().toLowerCase().replace(/[^a-z0-9.+-]/g,"")}
   function numericFromResponse(value){const m=String(value??"").replace(/,/g,"").match(/[-+]?\d*\.?\d+/);return m?Number(m[0]):null}
+  // Reads the learner's final numeric answer. Typographic minus signs count as negative, the value after the last "=" is used
+  // when work is shown, and an equivalent fraction (6/3, -6/-3) counts. A response with several unrelated numbers is not guessed at.
+  function finalNumericAnswer(value){
+    let s=String(value??"").replace(/[−–—﹣－]/g,"-").replace(/,/g,"").trim();
+    if(s.includes("="))s=s.slice(s.lastIndexOf("=")+1);
+    const num="[-+]?(?:\\d+\\.?\\d*|\\.\\d+)";
+    const frac=s.match(new RegExp("^\\s*\\(?("+num+")\\)?\\s*/\\s*\\(?("+num+")\\)?(?![\\d.])"));
+    if(frac){const d=Number(frac[2]);if(d!==0)return Number(frac[1])/d;return null}
+    const all=s.match(new RegExp(num,"g"))||[];
+    return all.length===1?Number(all[0]):null;
+  }
   function answersMatch(raw,expected){
-    const expectedNum=numericFromResponse(expected);
-    if(expectedNum!==null && /^[-+]?\d*\.?\d+$/.test(String(expected).trim())){
-      const rawNum=numericFromResponse(raw);return rawNum!==null && Math.abs(rawNum-expectedNum)<1e-9;
+    if(/^[-+]?\d*\.?\d+$/.test(String(expected).trim())){
+      const expectedNum=Number(String(expected).trim());
+      const rawNum=finalNumericAnswer(raw);return rawNum!==null && Math.abs(rawNum-expectedNum)<1e-9;
     }
     return normalize(raw)===normalize(expected);
   }
@@ -960,13 +971,14 @@
 
   async function finishLesson(){
     const r=current.session.responses;const scored=r.filter(x=>typeof x.isCorrect==="boolean");const pending=r.filter(x=>x.requires_review).length;const correct=scored.filter(x=>x.isCorrect).length;const total=scored.length;const score=total?Math.round(correct/total*100):null;
-    const old=lessonStatus(current.lesson.id);state.lessonState[current.lesson.id]={status:"COMPLETED",score,scoredCount:total,pendingExplanationCount:pending,attempts:(old.attempts||0)+1,completedAt:now(),trackBProgress:trackBProgressFromScore(score),memoryStrength:"FRAGILE",instruction_exposure_status:"PRIOR_INSTRUCTION"};
+    const indep=scored.filter(x=>x.assistance_level==="INDEPENDENT"&&["INDEPENDENT_CHECK","MIX_OLD_AND_NEW"].includes(x.teaching_stage)),indepCorrect=indep.filter(x=>x.isCorrect).length;
+    const old=lessonStatus(current.lesson.id);state.lessonState[current.lesson.id]={status:"COMPLETED",score,scoredCount:total,independentCorrect:indepCorrect,independentCount:indep.length,pendingExplanationCount:pending,attempts:(old.attempts||0)+1,completedAt:now(),trackBProgress:trackBProgressFromScore(score),memoryStrength:"FRAGILE",instruction_exposure_status:"PRIOR_INSTRUCTION"};
     current.session.status="COMPLETED";current.session.completedAt=now();current.session.draft=null;upsertSessionRecord(current.session);state.activeSession=null;
     scheduleReviews(current.lesson.id,current.session.subject);
     if(!state.backup)state.backup={lastExportAttemptedAt:null,pendingAfterLesson:false};
     state.backup.pendingAfterLesson=true;
     if(!await save("finish lesson"))return;
-    document.getElementById("app").innerHTML=shell(`<div class="card center"><span class="pill good">Lesson complete</span><h2 style="margin-top:12px">${current.lesson.title}</h2><div class="big">${correct}/${total}</div><p class="muted">Immediate Track B check</p><p class="small">${pending?pending+" explanation saved for parent or teacher review; excluded from this score.":""}</p><div class="callout"><strong>This is not mastery and does not write a canonical lifecycle state.</strong> Track B immediate-check result: ${trackBProgressFromScore(score)}. Memory remains FRAGILE until delayed retrieval shows it sticks.</div><div class="callout warn" style="margin-top:14px"><strong>Portable backup due now.</strong> Download the learner backup before ending this local-only pilot session.</div><div class="row" style="justify-content:center"><button class="btn primary" onclick="window.MLUL.exportBackup()">Download backup now</button><button class="btn" onclick="location.hash='track-b'">Back to Track B</button></div></div>`);renderSaveStatus();current=null;
+    document.getElementById("app").innerHTML=shell(`<div class="card center"><span class="pill good">Lesson complete</span><h2 style="margin-top:12px">${current.lesson.title}</h2><div class="big">${correct}/${total}</div><p class="muted">Immediate Track B check</p><p class="small">Independent items: <strong>${indep.length?indepCorrect+"/"+indep.length:"none"}</strong> · Supported items (guided or less help) are included in the total above but are not independent evidence.</p><p class="small">${pending?pending+" explanation saved for parent or teacher review; excluded from this score.":""}</p><div class="callout"><strong>This is not mastery and does not write a canonical lifecycle state.</strong> Track B immediate-check result: ${trackBProgressFromScore(score)}. Memory remains FRAGILE until delayed retrieval shows it sticks.</div><div class="callout warn" style="margin-top:14px"><strong>Portable backup due now.</strong> Download the learner backup before ending this local-only pilot session.</div><div class="row" style="justify-content:center"><button class="btn primary" onclick="window.MLUL.exportBackup()">Download backup now</button><button class="btn" onclick="location.hash='track-b'">Back to Track B</button></div></div>`);renderSaveStatus();current=null;
   }
 
   function scheduleReviews(skillId,subject){
@@ -991,6 +1003,19 @@
     return ASSISTANCE_LEVELS.map(v=>`<option value="${v}" ${v===selected?"selected":""}>${labels[v]}</option>`).join("");
   }
 
+  // A review item whose prompt Michael has already seen for this skill (in the lesson or an earlier review, before this review
+  // started) is practice evidence, not retention evidence, and can never count as transfer.
+  function reviewSeenPrompts(skillId,beforeIso){
+    const before=new Date(beforeIso||now()).getTime();const key=t=>String(t??"").trim().toLowerCase().replace(/\s+/g," ");
+    const seen=new Set((lessonById(skillId)?.checks||[]).map(q=>key(q.q)));
+    for(const e of state.evidence||[])if(e.skillId===skillId&&e.prompt&&new Date(e.createdAt).getTime()<before)seen.add(key(e.prompt));
+    return {has:t=>seen.has(key(t))};
+  }
+  function buildReviewItems(review,session){
+    const seen=reviewSeenPrompts(review.skillId,session.startedAt);
+    return REVIEW_ENGINE.generateReview(review.skillId,review.window,review.id).map(q=>{const previouslySeen=seen.has(q.q);return {...q,previouslySeen,transfer:q.transfer===true&&!previouslySeen}});
+  }
+
   async function startReview(reviewId){
     if(!evidenceSessionAllowed())return;
     if(!studentRuntimeAllowed()){blockStudentRuntime();return}
@@ -1000,8 +1025,8 @@
     if(!REVIEW_ENGINE){alert("The fresh review engine is not available.");return}
     const lesson=lessonById(review.skillId);if(!lesson)return;
     const ok=await persistenceHealthCheck();renderSaveStatus();if(!ok){alert("The app cannot verify persistence, so the review will not start.");return}
-    const reviewItems=REVIEW_ENGINE.generateReview(review.skillId,review.window,review.id);
     const session={id:`review_sess_${Date.now()}`,mode:"REVIEW",track:"B",subject:review.subject,lessonId:review.skillId,reviewId:review.id,reviewWindow:review.window,startedAt:now(),phase:"RETRIEVAL",instructionDelivered:false,itemIndex:0,responses:[],access_policy:{allowed_access_conditions:[...ACCESS_CONDITIONS],extra_processing_available:true,parent_verbatim_available:true},status:"ACTIVE",draft:null};
+    const reviewItems=buildReviewItems(review,session);
     state.activeSession=session;upsertSessionRecord(session);if(!await save("start review"))return;
     current={lesson,session,review,reviewItems};renderReviewQuestion();
   }
@@ -1031,7 +1056,7 @@
     const confidence=document.querySelector("input[name=confidence]:checked")?.value||"not_recorded";
     const accessSelector=document.getElementById("itemAccessCondition");const accessCondition=validAccessCondition(accessSelector?.value);const accessConditionSource=accessSourceFor(accessSelector,accessCondition);
     const assistanceSelector=document.getElementById("itemAssistanceLevel");const assistance=ASSISTANCE_LEVELS.includes(assistanceSelector?.value)?assistanceSelector.value:"INDEPENDENT";
-    const ev={id:`review_ev_${current.session.id}_${current.session.itemIndex}`,createdAt:now(),studentId:"michael",track:"B",evidence_class:"INFORMAL_TRACK_B",instruction_exposure_status:"PRIOR_INSTRUCTION",evidenceType:"DELAYED_RETRIEVAL",subject:current.session.subject,skillId:current.review.skillId,itemId:q.id,prompt:q.q,rawResponse:raw,isCorrect:correct,confidence,review_window:current.review.window,transfer:!!q.transfer,assistance_level:assistance,access_condition:accessCondition,access_condition_source:accessConditionSource,access_observation:{access_condition:accessCondition,access_condition_source:accessConditionSource,extra_processing_available:true,parent_verbatim_available:true},interpretation:correct?"delayed retrieval correct":"delayed retrieval miss"};
+    const ev={id:`review_ev_${current.session.id}_${current.session.itemIndex}`,createdAt:now(),studentId:"michael",track:"B",evidence_class:"INFORMAL_TRACK_B",instruction_exposure_status:"PRIOR_INSTRUCTION",evidenceType:"DELAYED_RETRIEVAL",subject:current.session.subject,skillId:current.review.skillId,itemId:q.id,prompt:q.q,rawResponse:raw,isCorrect:correct,confidence,review_window:current.review.window,transfer:q.transfer===true,previously_seen:q.previouslySeen===true,evidence_role:(q.previouslySeen===true||assistance!=="INDEPENDENT")?"PRACTICE":"RETENTION",assistance_level:assistance,access_condition:accessCondition,access_condition_source:accessConditionSource,access_observation:{access_condition:accessCondition,access_condition_source:accessConditionSource,extra_processing_available:true,parent_verbatim_available:true},interpretation:correct?"delayed retrieval correct":"delayed retrieval miss"};
     pushEvidenceOnce(ev);pushSessionResponseOnce(current.session,ev);current.session.draft=null;state.activeSession=current.session;upsertSessionRecord(current.session);if(!await save("review answer"))return;
     current.session.itemIndex++;
     if(current.session.itemIndex<current.reviewItems.length){state.activeSession=current.session;upsertSessionRecord(current.session);if(!await save("review next question"))return;renderReviewQuestion();return}
@@ -1039,12 +1064,20 @@
   }
 
   async function finishReview(){
-    const responses=current.session.responses;const correct=responses.filter(x=>x.isCorrect).length;const total=responses.length;const score=Math.round(correct/total*100);const transferResponses=responses.filter(x=>x.transfer);const transferCorrect=transferResponses.length>0&&transferResponses.every(x=>x.isCorrect);
-    const review=reviewById(current.review.id);review.completed=true;review.completedAt=now();review.score=score;review.outcome=reviewOutcomeFromScore(score);review.transferCorrect=transferCorrect;
-    const lessonState=state.lessonState[current.review.skillId]||{};lessonState.memoryStrength=memoryStrengthForReview(review.window,score,transferCorrect);lessonState.lastReviewAt=review.completedAt;lessonState.lastReviewWindow=review.window;lessonState.trackBReviewOutcome=review.outcome;state.lessonState[current.review.skillId]=lessonState;
+    // Same thresholds as before. A correct answer counts toward retention only if the item was new to Michael and he answered it
+    // independently; repeated or assisted answers are kept as practice evidence and count as not yet shown.
+    const responses=current.session.responses;const correct=responses.filter(x=>x.isCorrect).length;const total=responses.length;const rawScore=Math.round(correct/total*100);
+    const retention=x=>x.isCorrect===true&&x.previously_seen!==true&&x.assistance_level==="INDEPENDENT";
+    const score=Math.round(responses.filter(retention).length/total*100);
+    const transferResponses=responses.filter(x=>x.transfer&&x.previously_seen!==true);const transferCorrect=transferResponses.length>0&&transferResponses.every(retention);
+    const review=reviewById(current.review.id);review.completed=true;review.completedAt=now();review.score=score;review.rawScore=rawScore;review.practiceOnlyCount=responses.filter(x=>x.evidence_role==="PRACTICE").length;review.outcome=reviewOutcomeFromScore(score);review.transferCorrect=transferCorrect;
+    const lessonState=state.lessonState[current.review.skillId]||{};
+    const eligible=responses.filter(x=>x.previously_seen!==true&&x.assistance_level==="INDEPENDENT");
+    // When nothing in the review was new, independent evidence, memory strength stays where it was.
+    if(eligible.length){lessonState.memoryStrength=memoryStrengthForReview(review.window,score,transferCorrect)}else{review.outcome="PRACTICE_ONLY";lessonState.memoryStrength=lessonState.memoryStrength||"FRAGILE"}lessonState.lastReviewAt=review.completedAt;lessonState.lastReviewWindow=review.window;lessonState.trackBReviewOutcome=review.outcome;state.lessonState[current.review.skillId]=lessonState;
     current.session.status="COMPLETED";current.session.completedAt=now();current.session.draft=null;upsertSessionRecord(current.session);state.activeSession=null;if(!await save("finish review"))return;
     const corrections=current.reviewItems.map((q,i)=>{const r=responses[i];const expected=q.choices?q.choices[q.answer]:q.free;return `<div class="teacher"><strong>${r?.isCorrect?"✓":"Review"} ${escapeHTML(q.q)}</strong><p class="small">Michael: ${escapeHTML(r?.rawResponse||"")}</p><p class="small muted">Answer: ${escapeHTML(expected)}${q.why?` · ${escapeHTML(q.why)}`:""}</p></div>`}).join("");
-    document.getElementById("app").innerHTML=shell(`<div class="card"><span class="pill good">${review.window} retrieval complete</span><h2 style="margin-top:12px">${current.lesson.title}</h2><div class="big">${correct}/${total}</div><p class="muted">${review.outcome} · Memory: ${lessonState.memoryStrength}</p><div class="callout"><strong>Still not a mastery declaration.</strong> Delayed retrieval updates memory evidence only. Track A owns canonical mastery transitions.</div><div class="spacer"></div>${corrections}<div class="row"><button class="btn primary" onclick="location.hash='reviews'">Back to Review Queue</button></div></div>`);renderSaveStatus();current=null;
+    document.getElementById("app").innerHTML=shell(`<div class="card"><span class="pill good">${review.window} retrieval complete</span><h2 style="margin-top:12px">${current.lesson.title}</h2><div class="big">${correct}/${total}</div><p class="muted">${review.outcome} · Memory: ${lessonState.memoryStrength}</p>${review.practiceOnlyCount?`<p class="small muted">${review.practiceOnlyCount} answer${review.practiceOnlyCount===1?" was":"s were"} practice only (seen before or answered with help), so ${review.practiceOnlyCount===1?"it does":"they do"} not count toward memory strength.</p>`:""}<div class="callout"><strong>Still not a mastery declaration.</strong> Delayed retrieval updates memory evidence only. Track A owns canonical mastery transitions.</div><div class="spacer"></div>${corrections}<div class="row"><button class="btn primary" onclick="location.hash='reviews'">Back to Review Queue</button></div></div>`);renderSaveStatus();current=null;
   }
 
   function formatStudyMs(ms){
@@ -1064,8 +1097,14 @@
     const sessions=(state.studySessions||[]).filter(x=>x.questId===questId);
     const reconstructed=sessions.some(x=>x.status==="RECONSTRUCTED");
     const liveSessions=sessions.filter(x=>x.status!=="RECONSTRUCTED");
-    const items=liveSessions.flatMap(x=>(x.items||[]).map(item=>({...item,worldId:x.worldId,sessionId:x.id})));
-    const firstTryKnown=items.filter(x=>typeof x.firstAnswerCorrect==="boolean");
+    const metBefore=new Set();
+    const items=[];
+    for(const x of liveSessions.slice().sort((a,b)=>String(a.startedAt).localeCompare(String(b.startedAt)))){
+      const rows=(x.items||[]).map(item=>({...item,worldId:x.worldId,sessionId:x.id,replay:metBefore.has(item.itemId)}));
+      rows.forEach(r=>metBefore.add(r.itemId));items.push(...rows);
+    }
+    const replays=items.filter(x=>x.replay).length;
+    const firstTryKnown=items.filter(x=>!x.replay&&typeof x.firstAnswerCorrect==="boolean");
     const firstTryCorrect=firstTryKnown.filter(x=>x.firstAnswerCorrect===true).length;
     const retries=items.filter(x=>Number.isInteger(x.attemptCount)&&x.attemptCount>1).length;
     const firstTimes=items.map(x=>x.firstResponseMs).filter(Number.isFinite);
@@ -1073,7 +1112,7 @@
     const readAloud=items.reduce((n,x)=>n+(Number.isInteger(x.readAloudCount)?x.readAloudCount:0),0);
     const hints=items.reduce((n,x)=>n+(Number.isInteger(x.hintCount)?x.hintCount:0),0);
     const rows=items.slice().reverse().slice(0,30).map(x=>{
-      const first=typeof x.firstAnswerCorrect==="boolean"?(x.firstAnswerCorrect?"✓ First try":"Needed retry"):(x.selfReported?"Self-check":"—");
+      const first=typeof x.firstAnswerCorrect==="boolean"?(x.replay?(x.firstAnswerCorrect?"Replay: correct (seen before)":"Replay: needed retry"):(x.firstAnswerCorrect?"✓ First try":"Needed retry")):(x.selfReported?"Self-check":"—");
       const attempts=Number.isInteger(x.attemptCount)?x.attemptCount:"—";
       return `<tr><td>${escapeHTML(x.worldId||"—")}</td><td>${escapeHTML(x.label||x.itemId)}</td><td>${escapeHTML(first)}</td><td>${attempts}</td><td>${formatStudyMs(x.firstResponseMs)}</td><td>${formatStudyMs(x.totalResponseMs)}</td><td>${x.readAloudCount||0}</td><td>${x.hintCount||0}</td></tr>`;
     }).join("");
@@ -1085,7 +1124,7 @@
         <div class="card c4"><div class="kpi"><div class="t">Questions needing retry</div><div class="n">${items.length?retries:"—"}</div></div></div>
         <div class="card c4"><div class="kpi"><div class="t">Average first response</div><div class="n">${avgFirst==null?"—":formatStudyMs(avgFirst)}</div></div></div>
       </div>
-      <p class="tiny muted">Read-aloud uses: ${readAloud} · Hint opens: ${hints} · Detailed tracking begins with Patch O.2.5b.</p>
+      <p class="tiny muted">Read-aloud uses: ${readAloud} · Hint opens: ${hints} · Replayed questions: ${replays} (seen in an earlier session, so excluded from first-try counts) · Detailed tracking begins with Patch O.2.5b.</p><p class="tiny muted">Game progress, XP, badges, and cleared worlds show practice completed. They are never mastery evidence.</p>
       ${rows?`<div class="tablewrap"><table><thead><tr><th>World</th><th>Question / target</th><th>First response</th><th>Attempts</th><th>First response time</th><th>Total time</th><th>Read aloud</th><th>Hints</th></tr></thead><tbody>${rows}</tbody></table></div>`:`<p class="muted small">No detailed post-upgrade study attempts yet.</p>`}
     </div>`;
   }
@@ -1133,7 +1172,8 @@
       selectedChoiceIndex:choiceIndex,isCorrect:isCorrect===true,explanationRaw:String(explanationRaw||""),
       confidence:confidence||null,evidence_class:"FORMAL_CONTROLLED",interaction_purpose:phase,
       instruction_exposure_status:phase==="COLD_BASELINE"?"COLD_BASELINE":(phase==="CONTROLLED_PROBE"?"COLD_BASELINE_PROBE":"POST_TEACH_TRANSFER"),
-      prior_instruction:false,assistance_level:phase==="COLD_BASELINE"?"INDEPENDENT":phase==="CONTROLLED_PROBE"?"CLARIFIED":"TAUGHT",
+      // Transfer follows Level-Up teaching, so it is never a cold response. "Cold" here means no recorded Level-Up instruction; classroom instruction is not tracked by the app.
+      prior_instruction:phase==="TRANSFER",cold_scope:phase==="TRANSFER"?null:"NO_RECORDED_LEVEL_UP_INSTRUCTION",school_instruction_status:"NOT_RECORDED",assistance_level:phase==="COLD_BASELINE"?"INDEPENDENT":phase==="CONTROLLED_PROBE"?"CLARIFIED":"TAUGHT",
       support_condition:supportCondition,access_condition:"SELF_READ_SILENT",access_condition_source:"PROTOCOL_ASSIGNED",
       fresh:true,reliable:true,responseLatencyMs:Number.isFinite(latencyMs)?latencyMs:null,gapHints:item.gapHints||[]
     };
@@ -1291,7 +1331,7 @@
     const session=state.scienceGapActiveSession,item=scienceGapCurrentItem(session);if(!session||!item)return;
     const chosen=document.querySelector('input[name="scienceGapProbeChoice"]:checked');if(!chosen){alert("Choose an answer first.");return}
     const latency=Math.max(0,Date.now()-Date.parse(session.questionStartedAt||now()));
-    const choiceIndex=Number(chosen.value),isCorrect=Number(choiceIndex)===Number(item.answerIndex);
+    const choiceIndex=Number(chosen.value),isCorrect=SCIENCE_GAP.checkChoice(item.id,choiceIndex,"CONTROLLED_PROBE");
     scienceGapEvidence(session,item,"CONTROLLED_PROBE",{rawResponse:item.simplifiedChoices[choiceIndex],choiceIndex,isCorrect,explanationRaw:document.getElementById("scienceGapProbeExplain")?.value||"",supportCondition:"SIMPLIFIED_LANGUAGE",latencyMs:latency});
     session.stage="TEACH";session.questionStartedAt=null;scienceGapSessionRecord(session);await save("science gap controlled probe");render();
   }
@@ -1327,11 +1367,23 @@
     const blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`${learnerFileToken()}-Science-Gap-${new Date().toISOString().slice(0,10)}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
   }
 
+  // Historical records written by since-corrected rules. Records are never changed; this view shows the corrected reading.
+  function evidenceIntegrityFlags(){return window.LEVEL_UP_EVIDENCE_INTEGRITY?window.LEVEL_UP_EVIDENCE_INTEGRITY.review(state,{lessons:allLessons()}):[]}
+  function evidenceIntegritySection(){
+    const flags=evidenceIntegrityFlags();
+    if(!flags.length)return `<div class="card c12"><h3>Evidence integrity review</h3><p class="small muted">No saved records were affected by the scoring and labeling corrections of October 21, 2026.</p></div>`;
+    const counts=window.LEVEL_UP_EVIDENCE_INTEGRITY.summary(flags);
+    const fmtBool=v=>v===true?"correct":v===false?"not correct":"—";
+    const rows=flags.slice(0,60).map(f=>`<tr><td>${escapeHTML(f.createdAt?fmt(f.createdAt):"—")}</td><td>${escapeHTML(f.skillId||"—")}</td><td>${escapeHTML(f.code)}</td><td class="small">${escapeHTML(f.detail)}</td><td class="small">${"correctedIsCorrect" in f?`Saved: ${fmtBool(f.savedIsCorrect)} · Corrected: ${fmtBool(f.correctedIsCorrect)}`:escapeHTML(f.correctedLabel||f.correctedStage||f.correctedRole||(f.correctedFresh===false?"Not fresh":f.correctedPriorInstruction?"PRIOR_INSTRUCTION":"Adult review"))}</td></tr>`).join("");
+    return `<div class="card c12"><h3>Evidence integrity review</h3><p class="small muted">These saved records were written by a scoring or labeling rule that has since been corrected. The original records are preserved unchanged. Do not rely on the saved result where a corrected reading is shown. Any change to a Track A lifecycle state based on these records needs an adult decision.</p><p class="small">${Object.entries(counts).map(([k,v])=>`<span class="pill warn">${escapeHTML(k)}: ${v}</span>`).join(" ")}</p><div class="tablewrap"><table><thead><tr><th>When</th><th>Skill</th><th>Issue</th><th>What happened</th><th>Corrected reading</th></tr></thead><tbody>${rows}</tbody></table></div>${flags.length>60?`<p class="tiny muted">Showing 60 of ${flags.length}.</p>`:""}</div>`;
+  }
+
   function parentView(){
     const science=CONTENT.science.map(l=>skillRow(l)).join("");const math=CONTENT.math.map(l=>skillRow(l)).join("");const ela=(CONTENT.ela||[]).map(l=>skillRow(l)).join("");
     const trackARows=TRACK_A_DIAGNOSTIC?TRACK_A_DIAGNOSTIC.SKILLS.map(s=>{const r=trackASkillRecord(s.id);const last=r.lastMaintenance?.result||r.lastMasteryCheck?.result||r.lastVerification?.result||r.lastRepair?.result||r.lastDiagnostic?.result||"—";return `<tr><td>${escapeHTML(s.title)}<div class="tiny muted">${escapeHTML(s.id)}</div></td><td>${escapeHTML(r.canonicalState||"UNKNOWN")}</td><td>${escapeHTML(r.memoryStrength||"FRAGILE")}</td><td>${escapeHTML(last)}</td><td>${trackAPriorInstruction(s.id)?"PRIOR_INSTRUCTION / not cold":"—"}</td></tr>`}).join(""):"";
     const formalCount=state.evidence.filter(e=>e.evidence_class==="FORMAL_CONTROLLED").length;const informalCount=state.evidence.filter(e=>e.evidence_class==="INFORMAL_TRACK_B").length;
     return shell(`<div class="grid"><div class="card c8"><h2>Parent View</h2><p class="muted">Michael's learning record separates school facts, teaching evidence, controlled evidence, lifecycle state, and memory strength. No one score gets to masquerade as the whole story.</p></div><div class="card c4"><div class="kpi"><div class="t">Track B evidence</div><div class="n">${informalCount}</div></div><div class="spacer"></div><div class="kpi"><div class="t">Track A evidence</div><div class="n">${formalCount}</div></div></div>
+      ${evidenceIntegritySection()}
       ${studyResultsSection()}
       ${scienceGapParentSection()}
       ${scienceExplanationSection()}
@@ -1370,9 +1422,19 @@
       (state.sessions||[]).some(s=>s.track==="B"&&s.instructionDelivered===true&&relevant(s.lessonId));
   }
 
+  // Every prompt Michael has already seen for this skill, including Track B repair practice whose answer was shown.
+  // A previously seen prompt is practice evidence, never a fresh controlled probe.
+  function trackASeenFingerprints(skillId){
+    const seen=new Set();
+    for(const e of state.evidence||[]){
+      if(e.skillId!==skillId)continue;
+      if(e.prompt_fingerprint)seen.add(e.prompt_fingerprint);
+      if(e.prompt)seen.add(TRACK_A_DIAGNOSTIC.fingerprint({q:e.prompt}));
+    }
+    return seen;
+  }
   function trackAPromptIsFresh(skillId,item){
-    const fp=TRACK_A_DIAGNOSTIC.fingerprint(item);
-    return !state.evidence.some(e=>e.track==="A" && e.skillId===skillId && e.prompt_fingerprint===fp)
+    return !trackASeenFingerprints(skillId).has(TRACK_A_DIAGNOSTIC.fingerprint(item));
   }
 
 
@@ -1613,7 +1675,7 @@
   async function startTrackAVerification(skillId){
     if(!evidenceSessionAllowed())return;
     if(!studentRuntimeAllowed()){blockStudentRuntime();return}if(!TRACK_A_VERIFICATION||!TRACK_A_ENGINE){alert("Track A verification module is unavailable.");return}if(state.activeSession||state.trackAActiveSession){alert("Finish, resume, or end the preserved session first.");return}const rec=trackASkillRecord(skillId);if(rec.canonicalState!=="PRACTICING"){alert("Formal verification requires the skill to be in PRACTICING.");return}if(rec.lastRepair?.result!=="COMPONENT_VERIFIED"){alert("The smallest corrected component must be explicitly verified before formal verification.");return}const ok=await persistenceHealthCheck();renderSaveStatus();if(!ok){alert("The app cannot verify persistence, so formal verification will not start.");return}
-    const id=`ta_verify_${Date.now()}_${skillId.replace(/[^A-Z0-9]/gi,"_")}`;const excluded=state.evidence.filter(e=>e.track==="A"&&e.skillId===skillId&&e.prompt_fingerprint).map(e=>e.prompt_fingerprint);const items=TRACK_A_VERIFICATION.generateVerification(skillId,id,excluded);const session={id,mode:"TRACK_A_VERIFICATION",track:"A",subject:"Math",skillId,startedAt:now(),phase:"VERIFICATION",itemIndex:0,items,responses:[],status:"ACTIVE"};state.trackAActiveSession=session;if(!await save("start Track A two-probe verification"))return;currentTrackA={session,skill:TRACK_A_DIAGNOSTIC.skill(skillId)};renderTrackAVerificationQuestion();
+    const id=`ta_verify_${Date.now()}_${skillId.replace(/[^A-Z0-9]/gi,"_")}`;const excluded=[...trackASeenFingerprints(skillId)];const items=TRACK_A_VERIFICATION.generateVerification(skillId,id,excluded);const session={id,mode:"TRACK_A_VERIFICATION",track:"A",subject:"Math",skillId,startedAt:now(),phase:"VERIFICATION",itemIndex:0,items,responses:[],status:"ACTIVE"};state.trackAActiveSession=session;if(!await save("start Track A two-probe verification"))return;currentTrackA={session,skill:TRACK_A_DIAGNOSTIC.skill(skillId)};renderTrackAVerificationQuestion();
   }
 
   function renderTrackAVerificationQuestion(){
@@ -1656,7 +1718,7 @@
     if(task.dueAt&&new Date(task.dueAt)>new Date()){alert("This formal task is not due yet.");return}
     const rec=trackASkillRecord(task.skillId);if(task.type==="MAINTENANCE"&&rec.canonicalState!=="MASTERED"){alert("Day 21 maintenance stays locked until mastery is established.");return}if(task.type!=="MAINTENANCE"&&rec.canonicalState!=="PROVISIONAL"){alert("Formal retrieval and transfer require PROVISIONAL state.");return}
     const ok=await persistenceHealthCheck();renderSaveStatus();if(!ok){alert("The app cannot verify persistence, so formal retrieval will not start.");return}
-    const id=`ta_mastery_${Date.now()}_${task.id.replace(/[^A-Z0-9]/gi,"_")}`;const excluded=state.evidence.filter(e=>e.track==="A"&&e.skillId===task.skillId&&e.prompt_fingerprint).map(e=>e.prompt_fingerprint);const items=task.type==="TRANSFER"?TRACK_A_MASTERY.generateTransfer(task.skillId,id,excluded):TRACK_A_MASTERY.generateRetention(task.skillId,task.checkpoint,id,excluded);
+    const id=`ta_mastery_${Date.now()}_${task.id.replace(/[^A-Z0-9]/gi,"_")}`;const excluded=[...trackASeenFingerprints(task.skillId)];const items=task.type==="TRANSFER"?TRACK_A_MASTERY.generateTransfer(task.skillId,id,excluded):TRACK_A_MASTERY.generateRetention(task.skillId,task.checkpoint,id,excluded);
     const phase=task.type==="TRANSFER"?"TRANSFER":task.type==="MAINTENANCE"?"MAINTENANCE":"DELAYED_RETRIEVAL";const session={id,mode:"TRACK_A_MASTERY",track:"A",subject:"Math",skillId:task.skillId,taskId:task.id,checkpoint:task.checkpoint,masteryType:task.type,startedAt:now(),phase,itemIndex:0,items,responses:[],status:"ACTIVE"};state.trackAActiveSession=session;if(!await save("start Track A formal mastery task"))return;currentTrackA={session,skill:TRACK_A_DIAGNOSTIC.skill(task.skillId),task};renderTrackAMasteryQuestion();
   }
 
