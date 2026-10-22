@@ -29,6 +29,7 @@
   const items = Object.freeze([
     {
       id:"SGD.MATTER.1",
+      simplifiedAnswerIndex:2,
       targetId:"SCI.S8P1A.PURE_VS_MIXTURE",
       standard:"S8P1.a",
       domain:"Matter",
@@ -49,6 +50,7 @@
     },
     {
       id:"SGD.MATTER.2",
+      simplifiedAnswerIndex:1,
       targetId:"SCI.S8P1B.THERMAL_PARTICLE_MOTION",
       standard:"S8P1.b",
       domain:"Matter",
@@ -64,11 +66,12 @@
       transferChoices:["It increases","It decreases","It stays exactly the same","It becomes zero immediately"],
       transferAnswerIndex:1,
       retentionPrompt:"A substance is heated. What usually happens to its particles?",
-      retentionChoices:["They move faster","They move slower","They stop moving","They lose mass"],
-      retentionAnswerIndex:0
+      retentionChoices:["They move slower","They stop moving","They move faster","They lose mass"],
+      retentionAnswerIndex:2
     },
     {
       id:"SGD.ENERGY.1",
+      simplifiedAnswerIndex:0,
       targetId:"SCI.S8P2C.ENERGY_TRANSFORMATIONS",
       standard:"S8P2.c",
       domain:"Energy",
@@ -79,16 +82,17 @@
       simplifiedPrompt:"When a flashlight is turned on, what useful energy comes out and what extra energy is also produced?",
       simplifiedChoices:["Light and heat","Gravity and sound","Nuclear and gravity","Only chemical energy"],
       relationshipPrompt:"Describe the energy transformation from the battery to the light you see.",
-      teach:"Energy can change form. In a flashlight, chemical energy in the battery becomes electrical energy, then mostly light plus some thermal energy.",
+      teach:"Energy can change form. In a flashlight, chemical energy in the battery becomes electrical energy, then light and thermal energy. Light is the useful output, but much of the energy becomes thermal energy.",
       transferPrompt:"A toaster changes electrical energy mainly into what form?",
-      transferChoices:["Thermal energy","Gravitational energy","Nuclear energy","Magnetic energy only"],
-      transferAnswerIndex:0,
+      transferChoices:["Gravitational energy","Nuclear energy","Thermal energy","Magnetic energy only"],
+      transferAnswerIndex:2,
       retentionPrompt:"A lamp uses electrical energy. Which output is expected?",
-      retentionChoices:["Light and some thermal energy","Only gravitational energy","Only nuclear energy","No energy transformation"],
-      retentionAnswerIndex:0
+      retentionChoices:["Only gravitational energy","Only nuclear energy","No energy transformation","Light and some thermal energy"],
+      retentionAnswerIndex:3
     },
     {
       id:"SGD.ENERGY.2",
+      simplifiedAnswerIndex:1,
       targetId:"SCI.S8P2D.HEAT_TRANSFER_COMPARE",
       standard:"S8P2.d",
       domain:"Energy",
@@ -109,6 +113,7 @@
     },
     {
       id:"SGD.FORCE.1",
+      simplifiedAnswerIndex:0,
       targetId:"SCI.S8P3B.UNBALANCED_FORCES",
       standard:"S8P3.b",
       domain:"Force and Motion",
@@ -121,14 +126,15 @@
       relationshipPrompt:"Explain how unequal forces can change an object's motion.",
       teach:"Unbalanced forces create a nonzero net force. A nonzero net force causes a change in motion in the direction of the net force.",
       transferPrompt:"A box has 3 N left and 3 N right. What is true about the net force?",
-      transferChoices:["It is balanced at 0 N","It is 6 N right","It is 6 N left","The forces cannot be compared"],
-      transferAnswerIndex:0,
+      transferChoices:["It is 6 N right","It is balanced at 0 N","It is 6 N left","The forces cannot be compared"],
+      transferAnswerIndex:1,
       retentionPrompt:"A toy has 8 N pushing left and 2 N pushing right. What is true?",
-      retentionChoices:["The net force is left","The net force is right","The forces are balanced","There is no force"],
-      retentionAnswerIndex:0
+      retentionChoices:["The net force is right","The net force is left","The forces are balanced","There is no force"],
+      retentionAnswerIndex:1
     },
     {
       id:"SGD.FORCE.2",
+      simplifiedAnswerIndex:0,
       targetId:"SCI.S8P3C.MASS_INERTIA",
       standard:"S8P3.c",
       domain:"Force and Motion",
@@ -141,14 +147,15 @@
       relationshipPrompt:"Explain the relationship among mass, force, and acceleration in this example.",
       teach:"With the same applied force, greater mass means less acceleration. More massive objects resist changes in motion more.",
       transferPrompt:"If mass stays the same and the applied force increases, what happens to acceleration?",
-      transferChoices:["It increases","It decreases","It must become zero","Mass doubles"],
-      transferAnswerIndex:0,
+      transferChoices:["It decreases","It must become zero","Mass doubles","It increases"],
+      transferAnswerIndex:3,
       retentionPrompt:"Two objects get the same push. Which one usually accelerates less?",
-      retentionChoices:["The object with more mass","The object with less mass","They must be identical","Neither"],
-      retentionAnswerIndex:0
+      retentionChoices:["The object with less mass","They must be identical","The object with more mass","Neither"],
+      retentionAnswerIndex:2
     },
     {
       id:"SGD.FIELDS.1",
+      simplifiedAnswerIndex:0,
       targetId:"SCI.S8P5A.NONCONTACT_FORCES",
       standard:"S8P5.a",
       domain:"Gravity, Electricity and Magnetism",
@@ -161,31 +168,32 @@
       relationshipPrompt:"What makes gravity a noncontact force?",
       teach:"Gravity, electric force, and magnetic force can act across a distance through fields, so direct contact is not required.",
       transferPrompt:"Which is another noncontact force?",
-      transferChoices:["Magnetic force","Friction","Normal force","A hand pushing a cart"],
-      transferAnswerIndex:0,
+      transferChoices:["Friction","Normal force","Magnetic force","A hand pushing a cart"],
+      transferAnswerIndex:2,
       retentionPrompt:"Which force can act through a field without direct contact?",
-      retentionChoices:["Magnetic force","Friction","Normal force","A hand pushing"],
-      retentionAnswerIndex:0
+      retentionChoices:["Friction","Normal force","A hand pushing","Magnetic force"],
+      retentionAnswerIndex:3
     },
     {
       id:"SGD.FIELDS.2",
+      simplifiedAnswerIndex:0,
       targetId:"SCI.S8P5B.CONDUCTORS_INSULATORS",
       standard:"S8P5.b",
       domain:"Gravity, Electricity and Magnetism",
       prompt:"Which material is most likely to allow electric charge to move easily?",
       choices:["Copper wire","Rubber","Dry plastic","Glass"],
       answerIndex:0,
-      gapHints:["CONTENT_KNOWLEDGE","ARGUMENT_FROM_EVIDENCE"],
+      gapHints:["CONTENT_KNOWLEDGE","SCIENTIFIC_REASONING"],
       simplifiedPrompt:"Which material is the best electrical conductor?",
       simplifiedChoices:["Copper wire","Rubber","Plastic","Glass"],
       relationshipPrompt:"Why are metals often used for wires while rubber is used around the outside?",
       teach:"Conductors allow electric charge to move more easily. Insulators resist charge movement. Metals such as copper are good conductors; rubber is an insulator.",
       transferPrompt:"Which material would be best for covering an electrical wire for safety?",
-      transferChoices:["Rubber","Copper","Aluminum","Steel"],
-      transferAnswerIndex:0,
+      transferChoices:["Copper","Rubber","Aluminum","Steel"],
+      transferAnswerIndex:1,
       retentionPrompt:"Which material is most useful as an electrical insulator?",
-      retentionChoices:["Rubber","Copper","Aluminum","Steel"],
-      retentionAnswerIndex:0
+      retentionChoices:["Copper","Aluminum","Rubber","Steel"],
+      retentionAnswerIndex:2
     }
   ].map(x=>Object.freeze({...x,priorInstruction:false})));
 
@@ -196,12 +204,16 @@
   function checkChoice(id,index,phase="COLD_BASELINE"){
     const q=item(id);
     if(!q) return null;
-    const answer = phase==="TRANSFER" ? q.transferAnswerIndex : phase==="DELAYED_RETENTION" ? q.retentionAnswerIndex : q.answerIndex;
-    return Number(index)===Number(answer);
+    // Each phase has its own option list, so each phase uses its own key.
+    const phases={COLD_BASELINE:[q.choices,q.answerIndex],CONTROLLED_PROBE:[q.simplifiedChoices,q.simplifiedAnswerIndex],TRANSFER:[q.transferChoices,q.transferAnswerIndex],DELAYED_RETENTION:[q.retentionChoices,q.retentionAnswerIndex]};
+    const entry=phases[phase];
+    if(!entry) throw new Error(`Unknown Science Gap phase: ${phase}`);
+    const [choices,answer]=entry,i=Number(index);
+    return Number.isInteger(i)&&i>=0&&i<choices.length&&choices[i]===choices[answer];
   }
 
   const api = Object.freeze({
-    version:"1.0.0",
+    version:"1.1.0",
     name:"Michael Science Gap Diagnostic",
     subject:"Physical Science",
     grade:"8",

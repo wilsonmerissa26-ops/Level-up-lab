@@ -56,7 +56,8 @@
     const base=`${seed}_p${i+1}`;const boundary=n(seed+'x',-5,8),b=n(seed+'b',2,9);
     if(i===0){const rhs=boundary+b,q=`Solve: x + ${b} > ${rhs}`;const right=`x > ${boundary}`;const choices=[right,`x < ${boundary}`,`x > ${rhs}`,`x ≥ ${boundary}`];const r=n(seed+'r',0,3),rot=choices.slice(r).concat(choices.slice(0,r));return choiceItem(base,q,rot,rot.indexOf(right),'INEQ.ONE.ADD')}
     if(i===1){const rhs=boundary-b,q=`Solve: x - ${b} ≤ ${rhs}`;const right=`x ≤ ${boundary}`;const choices=[right,`x ≥ ${boundary}`,`x < ${rhs}`,`x ≤ ${rhs}`];const r=n(seed+'r',0,3),rot=choices.slice(r).concat(choices.slice(0,r));return choiceItem(base,q,rot,rot.indexOf(right),'INEQ.ONE.SUB')}
-    const a=-n(seed+'a',2,6),rhs=a*boundary,q=`Solve: ${a}x > ${rhs}`;const right=`x < ${boundary}`;const choices=[right,`x > ${boundary}`,`x ≤ ${boundary}`,`x < ${rhs}`];const r=n(seed+'r',0,3),rot=choices.slice(r).concat(choices.slice(0,r));return choiceItem(base,q,rot,rot.indexOf(right),'INEQ.NEGATIVE.FLIP')
+    // rhs equals the boundary when the boundary is 0, so that distractor would duplicate the key. Use the unflipped non-strict sign instead.
+    const a=-n(seed+'a',2,6),rhs=a*boundary+0,q=`Solve: ${a}x > ${rhs}`;const right=`x < ${boundary}`;const choices=[right,`x > ${boundary}`,`x ≤ ${boundary}`,rhs===boundary?`x ≥ ${boundary}`:`x < ${rhs}`];const r=n(seed+'r',0,3),rot=choices.slice(r).concat(choices.slice(0,r));return choiceItem(base,q,rot,rot.indexOf(right),'INEQ.NEGATIVE.FLIP')
   }
 
   const GENERATORS={
@@ -73,12 +74,14 @@
     return [0,1,2].map(i=>GENERATORS[skillId](`${sessionId}_${skillId}_${i}`,i));
   }
   function normalizeNumeric(raw){
-    const s=String(raw??'').trim().toLowerCase().replace(/\s+/g,'');
-    const stripped=s.replace(/^x=/,'');
+    // Typographic minus signs and dashes are normalized so a correct negative answer is not scored wrong.
+    const s=String(raw??'').trim().toLowerCase().replace(/[−–—﹣－]/g,'-').replace(/\s+/g,'');
+    const stripped=s.replace(/^x=/,'').replace(/^\+/,'');
     return /^-?\d+(?:\.\d+)?$/.test(stripped)?Number(stripped):null;
   }
   function checkAnswer(item,raw,choiceIndex=null){
-    if(Array.isArray(item.choices))return Number(choiceIndex)===item.answer;
+    // Score by the selected text as well as the index, so identical option text can never be scored differently.
+    if(Array.isArray(item.choices)){const i=Number(choiceIndex);return Number.isInteger(i)&&i>=0&&i<item.choices.length&&(i===item.answer||item.choices[i]===item.choices[item.answer]);}
     const got=normalizeNumeric(raw),want=normalizeNumeric(item.free);
     return got!==null&&want!==null&&Math.abs(got-want)<1e-9;
   }

@@ -49,7 +49,11 @@
     "math-functions":{q:"When x rises 1, y rises 5. What is the slope?",choices:["1","5","6"],answer:1,why:"Slope is change in y divided by change in x, or 5/1."},
     "science-bridge":{q:"Which wave can travel through empty space?",choices:["Sound","Water waves","Light"],answer:2,why:"Light is electromagnetic and needs no material medium."}
   };
-  function challengeFor(id,p){return (Number(p.completedRounds)||0)%2?extraChallenges[id]:challenges[id];}
+  // The item alternates with every attempt, so the next attempt after a miss is a different item.
+  // Both items are seen after two attempts; later attempts are replays of a previously seen item and are labeled as practice.
+  function variantFor(p){return (Number(p.attempts)||0)%2;}
+  function challengeFor(id,p,variant=variantFor(p)){return variant?extraChallenges[id]:challenges[id];}
+  function isReplay(p){return (Number(p.attempts)||0)>=2;}
   let active=null;
   let busy=false;
   function bridge(){return globalThis.LEVEL_UP_APP||globalThis.MLUL;}
@@ -63,19 +67,19 @@
     if(!access()?.allowed){alert(access()?.message||"Learner storage is not ready.");return;}
     busy=true;
     try{
-      const m=modules.find(x=>x.id===id),p=saved(id),round=Number(p.completedRounds)||0;
+      const m=modules.find(x=>x.id===id),p=saved(id),round=variantFor(p);
       const ok=await bridge().beginSchoolQuestItems({questId:questId(id),contentVersion:1,subject:m.subject,worldId:"transfer",items:[item(id,round)],progress:p,reason:"PSAT instructional transfer presented"});
-      if(ok){active={id,round};refresh();}
+      if(ok){active={id,round,replay:isReplay(p)};refresh();}
     }finally{busy=false;}
   }
   async function answer(id,choice){
     if(busy||active?.id!==id)return;
     busy=true;
     try{
-      const p=saved(id),challenge=challengeFor(id,p),correct=choice===challenge.answer;
+      const p=saved(id),challenge=challengeFor(id,p,active.round),correct=choice===challenge.answer;
       const next={...p,attempts:(p.attempts||0)+1,completed:p.completed||correct,completedRounds:(Number(p.completedRounds)||0)+(correct?1:0),lastCorrect:correct};
       const ok=await bridge().recordSchoolQuestAttempt({questId:questId(id),contentVersion:1,worldId:"transfer",itemId:item(id,active.round).itemId,response:challenge.choices[choice],isCorrect:correct,progress:next,reason:"PSAT transfer attempt"});
-      if(ok){active={id,choice,correct,round:active.round,challenge};refresh();}
+      if(ok){active={id,choice,correct,round:active.round,replay:active.replay,challenge};refresh();}
     }finally{busy=false;}
   }
   async function finish(id){
@@ -87,10 +91,10 @@
     }finally{busy=false;}
   }
   function challengeUI(m){
-    const p=saved(m.id),c=active?.id===m.id&&active.challenge?active.challenge:challengeFor(m.id,p),a=access(),current=active?.id===m.id;
+    const p=saved(m.id),c=active?.id===m.id&&active.challenge?active.challenge:challengeFor(m.id,p,active?.id===m.id?active.round:variantFor(p)),a=access(),current=active?.id===m.id;
     if(!a?.allowed)return '<p class="small muted">Practice locked until the audited learner save path is ready.</p>';
     if(!current)return `<p class="small muted">Saved attempts: ${Number(p.attempts)||0} · Solved rounds: ${Number(p.completedRounds)||0}</p><button class="btn primary" onclick="LEVEL_UP_PSAT_BRIDGE.start('${m.id}')">Start transfer challenge</button>`;
-    return `<div><p><strong>${escape(c.q)}</strong></p>${c.choices.map((v,i)=>`<button class="btn" style="margin:4px" ${active.choice!==undefined?"disabled":""} onclick="LEVEL_UP_PSAT_BRIDGE.answer('${m.id}',${i})">${escape(v)}</button>`).join("")}${active.choice!==undefined?`<p><strong>${active.correct?"Correct":"Try the explanation"}:</strong> ${escape(c.why)}</p><button class="btn" onclick="LEVEL_UP_PSAT_BRIDGE.finish('${m.id}')">Finish and save</button>`:""}</div>`;
+    return `<div>${active.replay?'<p class="small muted">Replay practice: Michael has seen this item before, so this attempt is practice, not new evidence.</p>':""}<p><strong>${escape(c.q)}</strong></p>${c.choices.map((v,i)=>`<button class="btn" style="margin:4px" ${active.choice!==undefined?"disabled":""} onclick="LEVEL_UP_PSAT_BRIDGE.answer('${m.id}',${i})">${escape(v)}</button>`).join("")}${active.choice!==undefined?`<p><strong>${active.correct?"Correct":"Try the explanation"}:</strong> ${escape(c.why)}</p><button class="btn" onclick="LEVEL_UP_PSAT_BRIDGE.finish('${m.id}')">Finish and save</button>`:""}</div>`;
   }
   function render(){
     return `<div class="grid">

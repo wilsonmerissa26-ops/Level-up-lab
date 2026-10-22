@@ -20,7 +20,8 @@ assert.equal(new Set([...C.science,...C.math,...C.ela].map(l=>l.id)).size,52);
 for(const subject of ['math','ela'])assert.equal(C.academicLearningPlans[subject].firstLessonId,A[subject][0].id);
 for(const l of A.lessons){
  assert.equal(l.teach.length,4);assert(l.stagedTeach);
- assert.deepEqual(Array.from(l.checks.slice(0,4).map(q=>q.stage)),['GUIDED_PRACTICE','FADE_HELP','INDEPENDENT_CHECK','MIX_OLD_AND_NEW']);
+ // Corrected Oct 21 2026: the fourth item tests the same lesson, so it is an independent check, not a mixed old-and-new item.
+ assert.deepEqual(Array.from(l.checks.slice(0,4).map(q=>q.stage)),['GUIDED_PRACTICE','FADE_HELP','INDEPENDENT_CHECK','INDEPENDENT_CHECK']);
  assert(l.checks.at(-1).rubric);assert(!('free' in l.checks.at(-1)));
  for(const q of l.checks.filter(q=>q.choices)){assert(q.choices[q.answer]);assert.equal(new Set(q.choices).size,q.choices.length);}
  const prompts=new Set();
@@ -33,11 +34,14 @@ for(const l of A.lessons){
    if(q.choices){assert(q.choices[q.answer]);assert.equal(new Set(q.choices).size,q.choices.length);}else assert(Number.isFinite(Number(q.free)));
   }
   assert.deepEqual(JSON.parse(JSON.stringify(items)),JSON.parse(JSON.stringify(R.generateReview(l.id,w,'academic-'+l.id+'-'+w))),'A saved review reconstructs exactly');
-  if(w==='Day 21')assert(items.at(-1).transfer);
+  // Corrected Oct 21 2026: transfer is marked on the genuinely new item, wherever it sits in the window.
+  assert.equal(items.filter(q=>q.transfer).length,w==='Day 21'?1:0,l.id+' '+w+' transfer count');
  }
 }
 // Check generated mathematics independently over multiple parameter values and windows.
-for(const w of ['Day 2','Day 7','Day 21'])for(let seed=0;seed<24;seed++){
+// Corrected Oct 21 2026: Day 7 and Day 21 now use different templates, so these Day 2 formulas apply to Day 2 only.
+// tests/instructional-integrity.test.mjs checks every Day 7 and Day 21 template against independent answers.
+for(const w of ['Day 2'])for(let seed=0;seed<24;seed++){
  const value=seed/24,n={'Day 2':0,'Day 7':1,'Day 21':2}[w],a=2+Math.floor(value*4),b=3+Math.floor(value*7),x=2+n;
  const ask=key=>A.delayedChecks(A.math.find(l=>l.id.endsWith('.'+key)),w,()=>value);
  assert.equal(Number(ask('FUNCTION')[0].free),a*x+b);
@@ -103,7 +107,7 @@ T.reset('MATH.SCHOOL.GRAPH');await ctx.MLUL.advanceScienceTeach();assert.match(e
 assert.match(T.trackB('ela'),/The Wanderings of Odysseus/);assert.match(T.trackB('math'),/domain and range/);
 assert.doesNotMatch(T.trackB('ela'),/Alexis.Walker|@gcps|October 28|Interim grades|conference/i,'No private email, schedule, or grade details in public lesson UI');
 const index=source('index.html');assert(index.indexOf('school-academics.js')<index.indexOf('review-engine.js'));
-assert.match(index,/2026-10-21-math-ela/);
+assert.match(index,/school-academics\.js\?v=\d{4}-\d{2}-\d{2}-[a-z0-9-]+/);
 if(process.env.ACADEMIC_QA_DIR){
  const dir=process.env.ACADEMIC_QA_DIR;fs.mkdirSync(dir,{recursive:true});
  const wrap=(title,body)=>'<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>'+title+'</title><link rel="stylesheet" href="styles.css"></head><body>'+body+'</body></html>';
