@@ -1,6 +1,7 @@
 (() => {
   const CONTENT = window.LEVEL_UP_CONTENT;
   const HOMEWORK = window.LEVEL_UP_HOMEWORK;
+  const VISUAL_TEACHING = window.LEVEL_UP_VISUAL_TEACHING;
   const REVIEW_ENGINE = window.LEVEL_UP_REVIEW_ENGINE;
   const TRACK_A_ENGINE = window.LEVEL_UP_TRACK_A_ENGINE;
   const TRACK_A_DIAGNOSTIC = window.LEVEL_UP_TRACK_A_DIAGNOSTIC;
@@ -341,6 +342,8 @@
     if(session.phase==="TEACH"){
       const teachAccess=document.getElementById("teachAccess");
       draft.sayBack=document.getElementById("sayBack")?.value??"";
+      const code=document.getElementById("teachingCode");
+      if(code){draft.teachingCode=code.value;draft.teachIndex=session.teachIndex||0;}
       draft.access_condition=validAccessCondition(teachAccess?.value);
       draft.access_condition_source=accessSourceFor(teachAccess,draft.access_condition);
     }else if(session.phase==="CHECK_AFTER_TEACH" || session.phase==="CHECK_ONLY" || session.phase==="RETRIEVAL"){
@@ -368,6 +371,7 @@
     if(d.phase!==current.session.phase || d.itemIndex!==current.session.itemIndex)return;
     if(current.session.phase==="TEACH"){
       const sayBack=document.getElementById("sayBack");if(sayBack)sayBack.value=d.sayBack??"";
+      const code=document.getElementById("teachingCode");if(code&&d.teachIndex===(current.session.teachIndex||0)&&typeof d.teachingCode==="string")code.value=d.teachingCode;
       const access=document.getElementById("teachAccess");if(access){access.value=d.access_condition??"";access.dataset.accessConditionSource=d.access_condition_source||"UNRECORDED"}
     }else{
       const free=document.getElementById("freeAnswer");if(free)free.value=d.freeAnswer??"";
@@ -380,7 +384,7 @@
 
   function bindDraftAutosave(){
     if(!current)return;
-    const selectors=["#sayBack","#teachAccess","#freeAnswer","#itemAccessCondition","#itemAssistanceLevel","input[name=answer]","input[name=confidence]"];
+    const selectors=["#teachingCode","#sayBack","#teachAccess","#freeAnswer","#itemAccessCondition","#itemAssistanceLevel","input[name=answer]","input[name=confidence]"];
     document.querySelectorAll(selectors.join(",")).forEach(el=>{
       const isTyping=el.tagName==="INPUT" && el.type==="text" || el.tagName==="TEXTAREA";
       const event=isTyping?"input":"change";
@@ -509,11 +513,45 @@
 
   function getRoute(){return (location.hash||"#dashboard").slice(1)}
 
+  function speechControl(action){
+    if(!("speechSynthesis" in window)){alert("Read-aloud is not supported in this browser. Try Microsoft Edge or Chrome.");return false;}
+    if(["pause","resume","cancel"].includes(action))window.speechSynthesis[action]();
+    const status=document.getElementById("pageAudioStatus");
+    if(status)status.textContent={pause:"Reading paused",resume:"Reading resumed",cancel:"Reading stopped"}[action]||"";
+    return true;
+  }
   function speak(text){
-    if(!("speechSynthesis" in window)){alert("Read-aloud is not supported in this browser.");return}
-    speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(text.replaceAll("ΔT","delta T").replaceAll("×"," times ").replaceAll("÷"," divided by ").replaceAll("="," equals "));
-    u.rate=.9;speechSynthesis.speak(u);
+    if(!speechControl("cancel"))return;
+    const plain=String(text).replaceAll("ΔT","delta T").replaceAll("×"," times ").replaceAll("÷"," divided by ").replaceAll("="," equals ").replaceAll("Ω"," ohms ").replaceAll("²"," squared ");
+    const chunks=plain.match(/[^.!?]{1,230}(?:[.!?]|$)|.{1,230}/g)||[];
+    chunks.forEach((chunk,i)=>{
+      const u=new SpeechSynthesisUtterance(chunk);u.rate=.9;u.lang="en-US";
+      if(i===chunks.length-1)u.onend=()=>{const status=document.getElementById("pageAudioStatus");if(status)status.textContent="Finished reading";};
+      speechSynthesis.speak(u);
+    });
+    const status=document.getElementById("pageAudioStatus");if(status)status.textContent="Reading aloud";
+  }
+  function pageReadingControls(){
+    const instructionsOnly=getRoute()==="science-gap"&&(state?.scienceGapActiveSession?.status==="ACTIVE"||state?.scienceGapActiveRetention);
+    return `<div class="page-reading" role="region" aria-label="Read aloud controls"><button class="btn primary" onclick="window.MLUL.readCurrentPage()">🔊 ${instructionsOnly?"Read instructions":"Read this page"}</button><button class="btn" onclick="window.MLUL.speechControl('pause')">Pause</button><button class="btn" onclick="window.MLUL.speechControl('resume')">Resume</button><button class="btn" onclick="window.MLUL.speechControl('cancel')">Stop</button><span id="pageAudioStatus" class="small" role="status" aria-live="polite"></span>${instructionsOnly?'<p class="small">This controlled check uses silent question reading. Audio reads directions only.</p>':''}</div>`;
+  }
+  function readCurrentPage(){
+    if(!("speechSynthesis" in window)){alert("Read-aloud is not supported in this browser. Try Microsoft Edge or Chrome.");return;}
+    // A silent-reading diagnostic cannot covertly become an audio-access item.
+    if(getRoute()==="science-gap"&&(state?.scienceGapActiveSession?.status==="ACTIVE"||state?.scienceGapActiveRetention)){
+      speak("Read the question and choices silently. Choose your answer, then select Submit. Take the time you need. This button reads directions only during this controlled check.");return;
+    }
+    if(document.getElementById("teachAccess")&&current)return readTeach();
+    if(document.getElementById("itemAccessCondition")&&current)return current.session.mode==="REVIEW"?readReviewQuestion():readQuestion();
+    if(currentTrackA){
+      if(document.getElementById("trackAAccess"))return readTrackAQuestion();
+      if(document.getElementById("trackARepairTeachAccess"))return readTrackARepairTeach();
+      if(document.getElementById("repairAccess"))return readTrackARepairQuestion();
+      if(document.getElementById("verifyAccess"))return readTrackAVerificationQuestion();
+      if(document.getElementById("masteryAccess"))return readTrackAMasteryQuestion();
+    }
+    const page=document.getElementById("learningPage");
+    speak(page?.innerText||"Open a lesson or page to hear its directions.");
   }
 
   function shell(body){
@@ -522,13 +560,14 @@
         <div class="brand"><h1>Michael Level-Up Lab</h1><p>Permanent system foundation · Track B live first</p></div>
         <div class="badges"><button class="btn" onclick="window.MLUL.manualSave()">Save</button><span id="saveStatus" class="badge"></span><span class="badge warn">Track B = PRIOR_INSTRUCTION</span></div>
       </div>
+      ${pageReadingControls()}
       <div class="notice"><strong>Evidence rule:</strong> Track B teaches Michael now. Every taught skill is permanently labeled <strong>PRIOR_INSTRUCTION</strong>. Raw responses and support conditions are stored separately from interpretation. Track A controlled diagnostics will never treat these skills as a clean cold baseline.</div>
       ${studentRuntimeAllowed()?`<div class="notice" style="border-color:#15803d;background:#052e16;color:#bbf7d0"><strong>AUDITED PILOT READY.</strong> Student sessions are enabled in this installed Home Screen environment with persistent storage.</div>`:`<div class="notice" style="border-color:#b91c1c;background:#450a0a;color:#fecaca"><strong>PILOT ENVIRONMENT LOCK.</strong> ${escapeHTML(runtimeBlockMessage())}</div>`}
       ${recoveryNotice()}
       ${state?.backup?.pendingAfterLesson?`<div class="notice" style="border-color:#b45309;background:#451a03;color:#fde68a"><strong>Portable backup still pending.</strong> A lesson completed and the browser cannot confirm that an exported file was actually saved. ${state.backup.lastExportAttemptedAt?`An export was attempted ${fmt(state.backup.lastExportAttemptedAt)}, but the browser cannot confirm the file was actually saved.`:`No export attempt is recorded for this lesson yet.`}</div>`:""}
       <div class="nav">
         ${navBtn("dashboard","Dashboard")}${navBtn("science-homework","Daily Tasks")}${navBtn("track-b-coding","Coding")}${navBtn("school-plan","School Plan")}${navBtn("psat-bridge","PSAT + Skills")}${navBtn("track-b","Track B")}${navBtn("track-b-math","Math")}${navBtn("track-b-ela","ELA")}${navBtn("science-gap","Science Gap")}${navBtn("parent","Parent View")}${navBtn("evidence","Evidence")}${navBtn("reviews","Review Queue")}${navBtn("track-a","Track A")}${navBtn("backup","Backup")}
-      </div>${body}<footer>Michael Level-Up Lab · v1 foundation</footer></div>`
+      </div><main id="learningPage">${body}</main><footer>Michael Level-Up Lab · v1 foundation</footer></div>`
   }
   function navBtn(route,label){return `<button class="${getRoute()===route?"active":""}" onclick="location.hash='${route}'">${label}</button>`}
 
@@ -888,8 +927,27 @@
     const teaching=blocks.map((t,i)=>'<div class="teacher"><strong>'+escapeHTML(staged?t[0]:'Teach '+(i+1))+'</strong>'+(staged?'<p>'+escapeHTML(t[1])+'</p>':'<p>'+escapeHTML(t[0])+'</p><p class="small muted">'+escapeHTML(t[1])+'</p>')+'</div>').join("");
     const response=last?'<p><strong>Say it back:</strong> Explain the idea in your own words. A parent can type your exact words. This is teaching evidence.</p><label class="small" for="sayBack">Your explanation (optional)</label><textarea id="sayBack" rows="3" placeholder="Use your own words."></textarea>':'';
     const next=last?'<button class="btn primary" onclick="window.MLUL.beginChecks()">Continue to supported practice</button>':'<button class="btn primary" onclick="window.MLUL.advanceScienceTeach()">Next teaching block</button>';
-    document.getElementById("app").innerHTML=shell('<div class="card"><span class="pill purple">'+escapeHTML(lesson.schoolTag)+'</span><h2>'+escapeHTML(lesson.title)+'</h2><p class="muted">'+heading+' · Track B teaching</p><div class="row"><button class="btn" onclick="window.MLUL.readTeach()">🔊 Read lesson</button><button class="btn" onclick="speechSynthesis.pause()">Pause</button><button class="btn" onclick="speechSynthesis.resume()">Resume</button><button class="btn" onclick="speechSynthesis.cancel()">Stop</button></div>'+(staged&&index===1?((lesson.motionDiagram?window.LEVEL_UP_MOTION?.diagram(lesson.motionDiagram):lesson.academicDiagram?window.LEVEL_UP_SCHOOL_ACADEMICS?.diagram(lesson.academicDiagram):window.LEVEL_UP_SCHOOL_SCIENCE?.diagram(lesson.diagram))||""):"")+teaching+'<label class="small">How was this block accessed?</label><select id="teachAccess" onchange="window.MLUL.markAccessObserved(this)">'+accessOptions(session.teach_access_condition)+'</select>'+response+'<div class="spacer"></div><div class="row">'+next+'<button class="btn" onclick="window.MLUL.manualSave()">Save</button><button class="btn" onclick="window.MLUL.saveAndExit()">Save & Exit</button></div></div>');
+    document.getElementById("app").innerHTML=shell('<div class="card"><span class="pill purple">'+escapeHTML(lesson.schoolTag)+'</span><h2>'+escapeHTML(lesson.title)+'</h2><p class="muted">'+heading+' · Track B teaching</p><div class="row"><button class="btn" onclick="window.MLUL.readTeach()">🔊 Read lesson</button><button class="btn" onclick="speechSynthesis.pause()">Pause</button><button class="btn" onclick="speechSynthesis.resume()">Resume</button><button class="btn" onclick="speechSynthesis.cancel()">Stop</button></div>'+(VISUAL_TEACHING?.supported(lesson)?VISUAL_TEACHING.render(lesson,session):(staged&&index===1?((lesson.motionDiagram?window.LEVEL_UP_MOTION?.diagram(lesson.motionDiagram):lesson.academicDiagram?window.LEVEL_UP_SCHOOL_ACADEMICS?.diagram(lesson.academicDiagram):window.LEVEL_UP_SCHOOL_SCIENCE?.diagram(lesson.diagram))||""):""))+(VISUAL_TEACHING?.supported(lesson)?"":teaching)+'<label class="small">How was this block accessed?</label><select id="teachAccess" onchange="window.MLUL.markAccessObserved(this)">'+accessOptions(session.teach_access_condition)+'</select>'+response+'<div class="spacer"></div><div class="row">'+next+'<button class="btn" onclick="window.MLUL.manualSave()">Save</button><button class="btn" onclick="window.MLUL.saveAndExit()">Save & Exit</button></div></div>');
     renderSaveStatus();restoreDraftToUI();bindDraftAutosave();window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  async function changeTeachingModel(action,value){
+    if(!current||current.session.phase!=="TEACH"||!VISUAL_TEACHING?.supported(current.lesson))return false;
+    if(!saveHealthy||!evidenceSessionAllowed())return false;
+    clearTimeout(draftSaveTimer);captureDraftFromUI();
+    const {lesson,session}=current,index=session.teachIndex||0;
+    let next;try{next=VISUAL_TEACHING.reduce(lesson,index,VISUAL_TEACHING.modelFor(lesson,session),action,value);}catch(error){alert("That model change could not be applied: "+error.message);return false;}
+    const previous=session.teachingLab?JSON.parse(JSON.stringify(session.teachingLab)):null;
+    if(!session.teachingLab)session.teachingLab={version:1,steps:{},actions:[]};
+    session.teachingLab.steps[index]=next;
+    session.teachingLab.actions=[...session.teachingLab.actions.slice(-99),{at:now(),step:index,action,interaction_purpose:"PRACTICE",masteryEvidence:false}];
+    if(action==="webCode"||action==="reset"){if(session.draft)delete session.draft.teachingCode;}
+    state.activeSession=session;upsertSessionRecord(session);
+    if(!await save("visual teaching model change")){
+      if(current?.session){if(previous)current.session.teachingLab=previous;else delete current.session.teachingLab;upsertSessionRecord(current.session);}
+      alert("That change was not saved. Your last saved model is preserved.");return false;
+    }
+    const scroll=window.scrollY||0;renderLessonTeach();window.scrollTo({top:scroll,behavior:"instant"});return true;
   }
 
   async function advanceScienceTeach(){
@@ -900,6 +958,11 @@
     captureDraftFromUI();
     current.session.teach_access_condition=current.session.draft?.access_condition||current.session.teach_access_condition;
     current.session.teach_access_condition_source=current.session.draft?.access_condition_source||current.session.teach_access_condition_source;
+    if(VISUAL_TEACHING?.supported(current.lesson)){
+      if(!current.session.teachingPageAccess)current.session.teachingPageAccess={};
+      current.session.teachingPageAccess[previousIndex]={...(current.session.teachingPageAccess[previousIndex]||{}),access_condition:current.session.teach_access_condition,access_condition_source:current.session.teach_access_condition_source};
+      current.session.teach_access_condition=null;current.session.teach_access_condition_source="UNRECORDED";
+    }
     current.session.teachIndex=Math.min((current.session.teachIndex||0)+1,current.lesson.teach.length-1);
     current.session.instructionDelivered=true;
     current.session.draft=null;state.activeSession=current.session;upsertSessionRecord(current.session);
@@ -910,10 +973,15 @@
   }
 
   function readTeach(){
+    if(!("speechSynthesis" in window)){alert("Read-aloud is not supported in this browser.");return;}
     const blocks=current.lesson.stagedTeach?[current.lesson.teach[current.session.teachIndex||0]]:current.lesson.teach;
-    const t=blocks.map(x=>x.join(" ")).join(" ");
+    const t=VISUAL_TEACHING?.supported(current.lesson)?VISUAL_TEACHING.readText(current.lesson,current.session.teachIndex||0,VISUAL_TEACHING.modelFor(current.lesson,current.session)):blocks.map(x=>x.join(" ")).join(" ");
     current.session.teach_access_condition="SYSTEM_READ_ALOUD";
     current.session.teach_access_condition_source="OBSERVED";
+    if(VISUAL_TEACHING?.supported(current.lesson)){
+      if(!current.session.teachingPageAccess)current.session.teachingPageAccess={};
+      current.session.teachingPageAccess[current.session.teachIndex||0]={access_condition:"SYSTEM_READ_ALOUD",access_condition_source:"OBSERVED",lastReadAt:now()};
+    }
     const selector=document.getElementById("teachAccess");if(selector){selector.value="SYSTEM_READ_ALOUD";markAccessObserved(selector)}
     speak(t);clearTimeout(draftSaveTimer);captureDraftFromUI();void save("teach read-aloud access");
   }
@@ -2002,12 +2070,12 @@
   }
 
   function firstRunView(){
-    return `<div class="shell"><div class="card"><h2>No valid learner record is loaded</h2><p class="muted">This can be a true first run or total same-origin storage loss. Level-Up will not silently create a replacement record.</p><div class="callout warn"><strong>Choose deliberately.</strong> Restore an external JSON backup if one exists, or explicitly start a new learner record.</div><input type="file" id="importFile" accept="application/json,.json"><div class="spacer"></div><div class="row"><button class="btn primary" onclick="window.MLUL.importBackup()">Restore JSON backup</button><button class="btn" onclick="window.MLUL.createNewLearnerRecord()">Start a new learner record</button></div></div></div>`;
+    return `<div class="shell">${pageReadingControls()}<main id="learningPage"><div class="card"><h2>No valid learner record is loaded</h2><p class="muted">This can be a true first run or total same-origin storage loss. Level-Up will not silently create a replacement record.</p><div class="callout warn"><strong>Choose deliberately.</strong> Restore an external JSON backup if one exists, or explicitly start a new learner record.</div><input type="file" id="importFile" accept="application/json,.json"><div class="spacer"></div><div class="row"><button class="btn primary" onclick="window.MLUL.importBackup()">Restore JSON backup</button><button class="btn" onclick="window.MLUL.createNewLearnerRecord()">Start a new learner record</button></div></div></main></div>`;
   }
 
   function mirrorAheadView(){
     const issue=storageRecoveryIssue;
-    return `<div class="shell"><div class="card"><h2>Storage integrity decision required</h2><p class="muted">The localStorage mirror has a higher revision than authoritative IndexedDB. Level-Up will not guess which history to keep.</p><div class="callout warn"><strong>Primary revision:</strong> ${escapeHTML(STATE_INTEGRITY.revisionOf(issue?.rawPrimary)??"pre-revision")} · <strong>Mirror revision:</strong> ${escapeHTML(STATE_INTEGRITY.revisionOf(issue?.rawMirror)??"pre-revision")}</div><div class="row"><button class="btn primary" onclick="window.MLUL.resolveMirrorAhead('MIRROR')">Use newer mirror</button><button class="btn" onclick="window.MLUL.resolveMirrorAhead('PRIMARY')">Keep primary record</button></div></div></div>`;
+    return `<div class="shell">${pageReadingControls()}<main id="learningPage"><div class="card"><h2>Storage integrity decision required</h2><p class="muted">The localStorage mirror has a higher revision than authoritative IndexedDB. Level-Up will not guess which history to keep.</p><div class="callout warn"><strong>Primary revision:</strong> ${escapeHTML(STATE_INTEGRITY.revisionOf(issue?.rawPrimary)??"pre-revision")} · <strong>Mirror revision:</strong> ${escapeHTML(STATE_INTEGRITY.revisionOf(issue?.rawMirror)??"pre-revision")}</div><div class="row"><button class="btn primary" onclick="window.MLUL.resolveMirrorAhead('MIRROR')">Use newer mirror</button><button class="btn" onclick="window.MLUL.resolveMirrorAhead('PRIMARY')">Keep primary record</button></div></div></main></div>`;
   }
 
   function primaryMissingView(){
@@ -2015,7 +2083,7 @@
     const learner=issue?.mirror?.student||issue?.rawMirror?.student||{};
     const revision=STATE_INTEGRITY.revisionOf(issue?.rawMirror||issue?.mirror);
     const updatedAt=issue?.mirror?.updatedAt||issue?.rawMirror?.updatedAt||null;
-    return `<div class="shell"><div class="card"><h2>Primary learner record unavailable</h2><p class="muted">IndexedDB, the authoritative learner record, is unavailable. A same-origin localStorage mirror is available, but Level-Up will not promote it without your decision.</p><div class="callout"><strong>Learner:</strong> ${escapeHTML(learner.name||learner.id||"Unknown learner")} ${learner.grade?`· Grade ${escapeHTML(learner.grade)}`:""}${learner.school?` · ${escapeHTML(learner.school)}`:""}<br><strong>Mirror revision:</strong> ${escapeHTML(revision??"pre-revision")}<br><strong>Mirror updatedAt:</strong> ${escapeHTML(updatedAt?fmt(updatedAt):"not recorded")} <span class="tiny muted">(informational metadata only)</span></div><div class="callout warn"><strong>Recovery warning:</strong> Restoring this mirror may return the learner to an earlier saved state if the missing primary contained newer changes.</div><input type="file" id="importFile" accept="application/json,.json"><div class="spacer"></div><div class="row"><button class="btn primary" onclick="window.MLUL.restoreMirrorAsAuthoritative()">Restore this backup</button><button class="btn" onclick="window.MLUL.importBackup()">Import a JSON backup instead</button></div></div></div>`;
+    return `<div class="shell">${pageReadingControls()}<main id="learningPage"><div class="card"><h2>Primary learner record unavailable</h2><p class="muted">IndexedDB, the authoritative learner record, is unavailable. A same-origin localStorage mirror is available, but Level-Up will not promote it without your decision.</p><div class="callout"><strong>Learner:</strong> ${escapeHTML(learner.name||learner.id||"Unknown learner")} ${learner.grade?`· Grade ${escapeHTML(learner.grade)}`:""}${learner.school?` · ${escapeHTML(learner.school)}`:""}<br><strong>Mirror revision:</strong> ${escapeHTML(revision??"pre-revision")}<br><strong>Mirror updatedAt:</strong> ${escapeHTML(updatedAt?fmt(updatedAt):"not recorded")} <span class="tiny muted">(informational metadata only)</span></div><div class="callout warn"><strong>Recovery warning:</strong> Restoring this mirror may return the learner to an earlier saved state if the missing primary contained newer changes.</div><input type="file" id="importFile" accept="application/json,.json"><div class="spacer"></div><div class="row"><button class="btn primary" onclick="window.MLUL.restoreMirrorAsAuthoritative()">Restore this backup</button><button class="btn" onclick="window.MLUL.importBackup()">Import a JSON backup instead</button></div></div></main></div>`;
   }
 
   async function createNewLearnerRecord(){
@@ -2222,7 +2290,7 @@
     render();
   }
 
-  const appApi={saveDailyTasks,saveHomeworkResource,addHomeworkTask,saveHomeworkTask,playHomeworkGame,homeworkGameHint,advanceScienceTeach,refreshPSATBridge,startScienceGap,submitScienceGapCold,submitScienceGapProbe,beginScienceGapTransfer,submitScienceGapTransfer,startNextScienceGapRetention,submitScienceGapRetention,exportScienceGapCSV,readSchoolPlan,refreshSchoolPlan,schoolQuestAccess,getSchoolQuestProgress,schoolQuestStudyContext,saveSchoolQuestProgress,beginSchoolQuestItems,recordSchoolQuestAttempt,recordSchoolQuestAccess,endSchoolQuestStudySession,startLesson,readTeach,beginChecks,readQuestion,submitAnswer,nextQuestion,startReview,readReviewQuestion,submitReviewAnswer,startTrackADiagnostic,readTrackAQuestion,submitTrackAAnswer,startTrackARepair,readTrackARepairTeach,beginTrackARepairChecks,readTrackARepairQuestion,submitTrackARepairAnswer,nextTrackARepairCheck,startTrackAVerification,readTrackAVerificationQuestion,submitTrackAVerificationAnswer,initializeTrackAMastery,startTrackAMasteryTask,readTrackAMasteryQuestion,submitTrackAMasteryAnswer,replaceTrackAMasteryTask,finalizeTrackAMastery,resumeTrackAPath,resumeTrackADiagnostic,saveAndExitTrackA,endTrackAPath,endTrackADiagnostic,manualSave,saveAndExit,resumeInterruptedSession,endPreservedSession,exportBackup,importBackup,checkPersistenceUI,requestPersistentStorage,connectLocalDurableFile,reconnectLocalDurableFile,syncLocalDurableFile,checkLocalDurableFileUI,checkSharedPersistenceUI,acknowledgeRedundancyOverride,createNewLearnerRecord,resolveMirrorAhead,restoreMirrorAsAuthoritative,markAccessObserved,__audit:{RUNTIME_ENABLED,STATE_KEY,PROBE_KEY,ASSISTANCE_LEVELS,ACCESS_CONDITIONS,isValidLearnerState,assistanceLevelForSession,validAccessCondition,accessSourceFor,recoverableSession,captureDraftFromUI,upsertSessionRecord,answersMatch,memoryStrengthForReview,reviewOutcomeFromScore,trackAPriorInstruction,trackAPromptIsFresh,trackAActiveRecoverable,trackARouteForSkill,ensureTrackAMasterySchedule,masteryRouteInfo,maybeFinalizeTrackAMastery,sameOriginRedundancyDegraded,runtimeGateStatus,studentRuntimeAllowed,runtimeBlockMessage,sharedPersistenceStatus:()=>sharedPersistenceStatus,localDurableStatus:()=>localDurableStatus}};
+  const appApi={readCurrentPage,speechControl,changeTeachingModel,saveDailyTasks,saveHomeworkResource,addHomeworkTask,saveHomeworkTask,playHomeworkGame,homeworkGameHint,advanceScienceTeach,refreshPSATBridge,startScienceGap,submitScienceGapCold,submitScienceGapProbe,beginScienceGapTransfer,submitScienceGapTransfer,startNextScienceGapRetention,submitScienceGapRetention,exportScienceGapCSV,readSchoolPlan,refreshSchoolPlan,schoolQuestAccess,getSchoolQuestProgress,schoolQuestStudyContext,saveSchoolQuestProgress,beginSchoolQuestItems,recordSchoolQuestAttempt,recordSchoolQuestAccess,endSchoolQuestStudySession,startLesson,readTeach,beginChecks,readQuestion,submitAnswer,nextQuestion,startReview,readReviewQuestion,submitReviewAnswer,startTrackADiagnostic,readTrackAQuestion,submitTrackAAnswer,startTrackARepair,readTrackARepairTeach,beginTrackARepairChecks,readTrackARepairQuestion,submitTrackARepairAnswer,nextTrackARepairCheck,startTrackAVerification,readTrackAVerificationQuestion,submitTrackAVerificationAnswer,initializeTrackAMastery,startTrackAMasteryTask,readTrackAMasteryQuestion,submitTrackAMasteryAnswer,replaceTrackAMasteryTask,finalizeTrackAMastery,resumeTrackAPath,resumeTrackADiagnostic,saveAndExitTrackA,endTrackAPath,endTrackADiagnostic,manualSave,saveAndExit,resumeInterruptedSession,endPreservedSession,exportBackup,importBackup,checkPersistenceUI,requestPersistentStorage,connectLocalDurableFile,reconnectLocalDurableFile,syncLocalDurableFile,checkLocalDurableFileUI,checkSharedPersistenceUI,acknowledgeRedundancyOverride,createNewLearnerRecord,resolveMirrorAhead,restoreMirrorAsAuthoritative,markAccessObserved,__audit:{RUNTIME_ENABLED,STATE_KEY,PROBE_KEY,ASSISTANCE_LEVELS,ACCESS_CONDITIONS,isValidLearnerState,assistanceLevelForSession,validAccessCondition,accessSourceFor,recoverableSession,captureDraftFromUI,upsertSessionRecord,answersMatch,memoryStrengthForReview,reviewOutcomeFromScore,trackAPriorInstruction,trackAPromptIsFresh,trackAActiveRecoverable,trackARouteForSkill,ensureTrackAMasterySchedule,masteryRouteInfo,maybeFinalizeTrackAMastery,sameOriginRedundancyDegraded,runtimeGateStatus,studentRuntimeAllowed,runtimeBlockMessage,sharedPersistenceStatus:()=>sharedPersistenceStatus,localDurableStatus:()=>localDurableStatus}};
   window.LEVEL_UP_APP=appApi;
   window.MLUL=appApi; // compatibility alias for the current Michael pilot UI
   init();
