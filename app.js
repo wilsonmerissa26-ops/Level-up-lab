@@ -940,8 +940,10 @@
     const model=VISUAL_TEACHING?.supported(lesson)?VISUAL_TEACHING.render(lesson,session):(diagram||'')+teaching;
     const access=window.LEVEL_UP_REPAIR?'':`<label>How was this block accessed?</label><select id="teachAccess" onchange="window.MLUL.markAccessObserved(this)">${accessOptions(session.teach_access_condition)}</select>`;
     const response=last?'<label for="sayBack">Your explanation (optional)</label><p>Explain the idea in your own words. A parent can type your exact words.</p><textarea id="sayBack" rows="3"></textarea>':'';
-    const next=last?'<button class="btn primary" onclick="window.MLUL.beginChecks()">Continue to supported practice</button>':`<button class="btn primary" onclick="window.MLUL.advanceScienceTeach()">${['Follow the example','Try the model','Explain what changed'][index]||'Continue'}</button>`;
-    document.getElementById('app').innerHTML=shell(`<div id="studentLesson" class="card"><span class="pill purple">${escapeHTML(lesson.schoolTag)}</span><h2>${escapeHTML(lesson.title)}</h2><p>${staged?'Step '+(index+1)+' of '+lesson.teach.length:'Teaching'} · Work at your pace.</p>${model}${window.LEVEL_UP_REPAIR?.exercise(lesson,session)||''}${access}${response}<div class="row">${next}<button class="btn" onclick="window.MLUL.manualSave()">Save</button><button class="btn" onclick="window.MLUL.saveAndExit()">Save & Exit</button></div></div>`);
+    const activity=window.LEVEL_UP_PROGRESSION?.activity(lesson,session);
+    const participation=activity?.applies?`<p class="model-result" role="status">${escapeHTML(activity.message)}</p>`:'';
+    const next=last?'<button class="btn primary" onclick="window.MLUL.beginChecks()">Continue to supported practice</button>':`<button class="btn primary" ${activity?.applies&&!activity.ready?'disabled':''} onclick="window.MLUL.advanceScienceTeach()">${['Follow the example','Try the model','Explain what changed'][index]||'Continue'}</button>`;
+    document.getElementById('app').innerHTML=shell(`<div id="studentLesson" class="card"><span class="pill purple">${escapeHTML(lesson.schoolTag)}</span><h2>${escapeHTML(lesson.title)}</h2><p>${staged?'Step '+(index+1)+' of '+lesson.teach.length:'Teaching'} · Work at your pace.</p>${model}${window.LEVEL_UP_REPAIR?.exercise(lesson,session)||''}${access}${response}${participation}<div class="row">${next}<button class="btn" onclick="window.MLUL.manualSave()">Save</button><button class="btn" onclick="window.MLUL.saveAndExit()">Save & Exit</button></div></div>`);
     renderSaveStatus();restoreDraftToUI();bindDraftAutosave();window.scrollTo({top:0,behavior:'smooth'});
   }
 
@@ -965,11 +967,12 @@
     if(!saveHealthy||!evidenceSessionAllowed())return false;
     clearTimeout(draftSaveTimer);captureDraftFromUI();
     const {lesson,session}=current,index=session.teachIndex||0;
-    let next;try{next=VISUAL_TEACHING.reduce(lesson,index,VISUAL_TEACHING.modelFor(lesson,session),action,value);}catch(error){alert("That model change could not be applied: "+error.message);return false;}
+    const beforeModel=VISUAL_TEACHING.modelFor(lesson,session);
+    let next;try{next=VISUAL_TEACHING.reduce(lesson,index,beforeModel,action,value);}catch(error){alert("That model change could not be applied: "+error.message);return false;}
     const previous=session.teachingLab?JSON.parse(JSON.stringify(session.teachingLab)):null;
     if(!session.teachingLab)session.teachingLab={version:1,steps:{},actions:[]};
     session.teachingLab.steps[index]=next;
-    session.teachingLab.actions=[...session.teachingLab.actions.slice(-99),{at:now(),step:index,action,interaction_purpose:"PRACTICE",masteryEvidence:false}];
+    session.teachingLab.actions=[...session.teachingLab.actions.slice(-99),{at:now(),step:index,action,changed:JSON.stringify(beforeModel)!==JSON.stringify(next),interaction_purpose:"PRACTICE",masteryEvidence:false}];
     if(action==="webCode"||action==="reset"){if(session.draft)delete session.draft.teachingCode;}
     state.activeSession=session;upsertSessionRecord(session);
     if(!await save("visual teaching model change")){
@@ -983,6 +986,8 @@
     if(!current?.lesson.stagedTeach||current.session.phase!=="TEACH")return;
     if(!saveHealthy){alert("Saving must be repaired before continuing.");return;}
     if(!evidenceSessionAllowed())return;
+    const gate=window.LEVEL_UP_PROGRESSION?.activity(current.lesson,current.session);
+    if(gate?.applies&&!gate.ready){alert(gate.message);return false;}
     const previousIndex=current.session.teachIndex||0;
     captureDraftFromUI();
     current.session.teach_access_condition=current.session.draft?.access_condition||current.session.teach_access_condition;

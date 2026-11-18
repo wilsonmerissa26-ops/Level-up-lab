@@ -122,3 +122,9 @@ jobs:
 
       - name: Learner audit repair and evidence provenance
         run: node tests/learner-repair.test.mjs
+
+      - name: Question snapshots and explicit content versions
+        run: node tests/question-content-versioning.test.mjs
+
+      - name: We Try participation without mastery or next-lesson changes
+        run: node tests/learner-progression.test.mjs
