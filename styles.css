@@ -661,3 +661,14 @@ footer{margin:22px 0;color:#8496ad;font-size:12px;text-align:center}
 .academic-figure{margin:18px auto;max-width:540px}
 .academic-figure svg{display:block;width:100%;height:auto;background:#0f172a;border-radius:12px;color:#e2e8f0}
 .academic-figure figcaption{font-size:.9rem;line-height:1.5;margin-top:10px}
+
+/* Homework and motion models reuse the existing accessible teaching layout. */
+.homework-check{display:flex;gap:.65rem;align-items:flex-start;margin:1rem 0;line-height:1.5}
+.homework-check input{width:auto;margin-top:.3rem;flex-shrink:0}
+.motion-figure{max-width:540px;margin:1rem auto;padding:1rem;border:1px solid #475569;border-radius:12px}
+.motion-figure svg{display:block;width:100%;height:auto}
+.motion-figure figcaption{font-size:.9rem;line-height:1.5}
+.cart-track{overflow:hidden;border-bottom:2px solid #64748b;padding:1rem 100px}
+#scienceCart{display:inline-block;font-size:2.2rem;transition:transform 1.2s ease}
+@media(prefers-reduced-motion:reduce){#scienceCart{transition:none}}
+#newSchoolTask{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin-bottom:1.5rem}
