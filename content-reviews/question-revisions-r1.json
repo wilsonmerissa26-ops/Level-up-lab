@@ -1,0 +1,345 @@
+[
+  {
+    "lessonId": "SCI.MOTION.DISTANCE",
+    "previous": {
+      "id": "DISTANCE-0",
+      "q": "A toy travels 18 m in 6 s. Use speed = distance / time. Find average speed.",
+      "choices": [
+        "108 m/s",
+        "12 m/s",
+        "3 m/s"
+      ],
+      "answer": 2,
+      "why": "18/6 = 3 m/s.",
+      "stage": "GUIDED_PRACTICE",
+      "performanceMode": "CONCEPT",
+      "support": "18/6 = 3 m/s."
+    },
+    "current": {
+      "id": "DISTANCE-0.v20261118r1",
+      "q": "A toy travels 18 m in 6 s. Use speed = distance / time. Find average speed.",
+      "choices": [
+        "0.33 m/s",
+        "12 m/s",
+        "3 m/s"
+      ],
+      "answer": 2,
+      "why": "18/6 = 3 m/s.",
+      "stage": "GUIDED_PRACTICE",
+      "performanceMode": "CONCEPT",
+      "support": "18/6 = 3 m/s.",
+      "previousItemId": "DISTANCE-0",
+      "contentVersion": "2026-11-18-r1"
+    }
+  },
+  {
+    "lessonId": "SCI.MOTION.LAB",
+    "previous": {
+      "id": "LAB-3",
+      "q": "Which evidence best supports a claim about an interval\u2019s acceleration?",
+      "choices": [
+        "Only the object\u2019s color",
+        "Its initial/final velocities and elapsed time",
+        "Only the graph title"
+      ],
+      "answer": 1,
+      "why": "a = change in velocity / elapsed time.",
+      "stage": "INDEPENDENT_CHECK",
+      "performanceMode": "CONCEPT",
+      "support": null
+    },
+    "current": {
+      "id": "LAB-3.v20261118r1",
+      "q": "Which evidence best supports a claim about an interval\u2019s acceleration?",
+      "choices": [
+        "Only the object\u2019s speed",
+        "Its initial/final velocities and elapsed time",
+        "Only the graph title"
+      ],
+      "answer": 1,
+      "why": "a = change in velocity / elapsed time.",
+      "stage": "INDEPENDENT_CHECK",
+      "performanceMode": "CONCEPT",
+      "support": null,
+      "previousItemId": "LAB-3",
+      "contentVersion": "2026-11-18-r1"
+    }
+  },
+  {
+    "lessonId": "SCI.MOTION.MAGNETS",
+    "previous": {
+      "id": "MAGNETS-0",
+      "q": "Two north poles approach. Like poles\u2026",
+      "choices": [
+        "Repel",
+        "Attract",
+        "Lose all magnetic field"
+      ],
+      "answer": 0,
+      "why": "Like poles repel.",
+      "stage": "GUIDED_PRACTICE",
+      "performanceMode": "CONCEPT",
+      "support": "Like poles repel."
+    },
+    "current": {
+      "id": "MAGNETS-0.v20261118r1",
+      "q": "Two north poles approach. Like poles\u2026",
+      "choices": [
+        "Repel",
+        "Attract",
+        "Reverse the field direction"
+      ],
+      "answer": 0,
+      "why": "Like poles repel.",
+      "stage": "GUIDED_PRACTICE",
+      "performanceMode": "CONCEPT",
+      "support": "Like poles repel.",
+      "previousItemId": "MAGNETS-0",
+      "contentVersion": "2026-11-18-r1"
+    }
+  },
+  {
+    "lessonId": "SCI.CIRCUITS.PATH",
+    "previous": {
+      "id": "path-g",
+      "q": "A wire has a gap. Use this clue: a steady current needs a complete path. What happens to the bulb?",
+      "choices": [
+        "It changes color",
+        "It goes out",
+        "It becomes brighter"
+      ],
+      "answer": 1,
+      "why": "The gap opens the only path.",
+      "stage": "GUIDED_PRACTICE",
+      "performanceMode": "MODEL",
+      "support": "Trace the path from one battery terminal through the bulb to the other terminal."
+    },
+    "current": {
+      "id": "path-g.v20261118r1",
+      "q": "A wire has a gap. Use this clue: a steady current needs a complete path. What happens to the bulb?",
+      "choices": [
+        "It stays on because one wire still touches the battery",
+        "It goes out",
+        "It becomes brighter"
+      ],
+      "answer": 1,
+      "why": "The gap opens the only path.",
+      "stage": "GUIDED_PRACTICE",
+      "performanceMode": "MODEL",
+      "support": "Trace the path from one battery terminal through the bulb to the other terminal.",
+      "previousItemId": "path-g",
+      "contentVersion": "2026-11-18-r1"
+    }
+  },
+  {
+    "lessonId": "SCI.CIRCUITS.OHM_I",
+    "previous": {
+      "id": "oi-f",
+      "q": "A 12 V source is across 60 \u03a9. Choose current.",
+      "choices": [
+        "0.20 A",
+        "720 A",
+        "5 A"
+      ],
+      "answer": 0,
+      "why": "12 \u00f7 60 = 0.20 A.",
+      "stage": "FADE_HELP",
+      "performanceMode": "CALCULATION_APPLICATION",
+      "support": "Identify the unknown and divide voltage by resistance."
+    },
+    "current": {
+      "id": "oi-f.v20261118r1",
+      "q": "A 12 V source is across 60 \u03a9. Choose current.",
+      "choices": [
+        "0.20 A",
+        "2.0 A",
+        "5 A"
+      ],
+      "answer": 0,
+      "why": "12 \u00f7 60 = 0.20 A.",
+      "stage": "FADE_HELP",
+      "performanceMode": "CALCULATION_APPLICATION",
+      "support": "Identify the unknown and divide voltage by resistance.",
+      "previousItemId": "oi-f",
+      "contentVersion": "2026-11-18-r1"
+    }
+  },
+  {
+    "lessonId": "SCI.CIRCUITS.OHM_I",
+    "previous": {
+      "id": "oi-i",
+      "q": "An ideal 18 V source is across 30 \u03a9. Calculate current.",
+      "choices": [
+        "540 A",
+        "0.60 A",
+        "0.06 A"
+      ],
+      "answer": 1,
+      "why": "I = 18/30 = 0.60 A.",
+      "stage": "INDEPENDENT_CHECK",
+      "performanceMode": "CALCULATION_APPLICATION",
+      "support": null
+    },
+    "current": {
+      "id": "oi-i.v20261118r1",
+      "q": "An ideal 18 V source is across 30 \u03a9. Calculate current.",
+      "choices": [
+        "1.67 A",
+        "0.60 A",
+        "0.06 A"
+      ],
+      "answer": 1,
+      "why": "I = 18/30 = 0.60 A.",
+      "stage": "INDEPENDENT_CHECK",
+      "performanceMode": "CALCULATION_APPLICATION",
+      "support": null,
+      "previousItemId": "oi-i",
+      "contentVersion": "2026-11-18-r1"
+    }
+  },
+  {
+    "lessonId": "SCI.CIRCUITS.MOTOR",
+    "previous": {
+      "id": "mt-g",
+      "q": "A battery-powered fan spins. Which useful transformation occurs in the motor?",
+      "choices": [
+        "Electrical to mechanical",
+        "Mechanical to nuclear",
+        "Sound to chemical"
+      ],
+      "answer": 0,
+      "why": "The motor produces motion.",
+      "stage": "GUIDED_PRACTICE",
+      "performanceMode": "CONCEPT",
+      "support": "Ask which energy enters and which useful output is produced."
+    },
+    "current": {
+      "id": "mt-g.v20261118r1",
+      "q": "A battery-powered fan spins. Which useful transformation occurs in the motor?",
+      "choices": [
+        "Electrical to mechanical",
+        "Mechanical to electrical",
+        "Electrical to chemical"
+      ],
+      "answer": 0,
+      "why": "The motor produces motion.",
+      "stage": "GUIDED_PRACTICE",
+      "performanceMode": "CONCEPT",
+      "support": "Ask which energy enters and which useful output is produced.",
+      "previousItemId": "mt-g",
+      "contentVersion": "2026-11-18-r1"
+    }
+  },
+  {
+    "lessonId": "SCI.WAVES.DOPPLER",
+    "previous": {
+      "id": "waves-doppler-2",
+      "q": "A source moves away. Observed wavelength?",
+      "choices": [
+        "Longer",
+        "Shorter",
+        "Zero"
+      ],
+      "answer": 0,
+      "why": "Wave fronts are farther apart.",
+      "transfer": false
+    },
+    "current": {
+      "id": "waves-doppler-2.v20261118r1",
+      "q": "A source moves away. Observed wavelength?",
+      "choices": [
+        "Longer",
+        "Shorter",
+        "Unchanged"
+      ],
+      "answer": 0,
+      "why": "Wave fronts are farther apart.",
+      "transfer": false,
+      "previousItemId": "waves-doppler-2",
+      "contentVersion": "2026-11-18-r1"
+    }
+  },
+  {
+    "lessonId": "SCI.WAVES.DOPPLER",
+    "previous": {
+      "id": "waves-doppler-3",
+      "q": "Light from a receding source shifts toward\u2026",
+      "choices": [
+        "Blue",
+        "No possible shift",
+        "Red"
+      ],
+      "answer": 2,
+      "why": "Recession lengthens observed wavelength.",
+      "transfer": true
+    },
+    "current": {
+      "id": "waves-doppler-3.v20261118r1",
+      "q": "Light from a receding source shifts toward\u2026",
+      "choices": [
+        "Blue",
+        "No shift when the emitted frequency stays constant",
+        "Red"
+      ],
+      "answer": 2,
+      "why": "Recession lengthens observed wavelength.",
+      "transfer": true,
+      "previousItemId": "waves-doppler-3",
+      "contentVersion": "2026-11-18-r1"
+    }
+  },
+  {
+    "lessonId": "SCI.SPS7B.MECHANICAL",
+    "previous": {
+      "id": "m2",
+      "q": "As the coaster rolls downhill and speeds up, kinetic energy generally\u2026",
+      "choices": [
+        "Increases",
+        "Disappears",
+        "Becomes nuclear"
+      ],
+      "answer": 0,
+      "why": "More speed means more kinetic energy."
+    },
+    "current": {
+      "id": "m2.v20261118r1",
+      "q": "As the coaster rolls downhill and speeds up, kinetic energy generally\u2026",
+      "choices": [
+        "Increases",
+        "Decreases",
+        "Stays unchanged"
+      ],
+      "answer": 0,
+      "why": "More speed means more kinetic energy.",
+      "previousItemId": "m2",
+      "contentVersion": "2026-11-18-r1"
+    }
+  },
+  {
+    "lessonId": "SCI.SPS7D.PARTICLE_MOTION",
+    "previous": {
+      "id": "p1",
+      "q": "A substance heats up. What usually happens to average particle motion?",
+      "choices": [
+        "It stops",
+        "It becomes electrical",
+        "It speeds up"
+      ],
+      "answer": 2,
+      "why": "Higher temperature means greater average particle kinetic energy."
+    },
+    "current": {
+      "id": "p1.v20261118r1",
+      "q": "A substance heats up. What usually happens to average particle motion?",
+      "choices": [
+        "It stays unchanged",
+        "It decreases",
+        "It speeds up"
+      ],
+      "answer": 2,
+      "why": "Higher temperature means greater average particle kinetic energy.",
+      "previousItemId": "p1",
+      "contentVersion": "2026-11-18-r1"
+    }
+  }
+]
