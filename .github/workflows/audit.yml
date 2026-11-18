@@ -113,3 +113,6 @@ jobs:
         run: node tests/school-academics.test.mjs
       - name: Run instructional integrity audit regression
         run: node tests/instructional-integrity.test.mjs
+
+      - name: School recovery content and homework persistence
+        run: node tests/school-recovery.test.mjs

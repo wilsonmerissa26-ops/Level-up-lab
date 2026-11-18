@@ -1,6 +1,8 @@
 (() => {
   const SKILL_IDS = Object.freeze([
     ...(window.LEVEL_UP_SCHOOL_SCIENCE?.lessons||[]).map(l=>l.id),
+    ...(window.LEVEL_UP_MOTION?.lessons||[]).map(l=>l.id),
+    ...(window.LEVEL_UP_CODING?.lessons||[]).map(l=>l.id),
     ...(window.LEVEL_UP_SCHOOL_ACADEMICS?.lessons||[]).map(l=>l.id),
     "SCI.SPS7A.ENERGY_FORMS",
     "SCI.SPS7A.TRANSFER_TRANSFORMATION",
@@ -224,6 +226,10 @@
 
   for(const lesson of (window.LEVEL_UP_SCHOOL_ACADEMICS?.lessons||[])){
     generators[lesson.id]=(r,w)=>window.LEVEL_UP_SCHOOL_ACADEMICS.delayedChecks(lesson,w,r).map(q=>q.choices?choice(q.q,q.choices[q.answer],q.choices.filter((_,n)=>n!==q.answer),r,{why:q.why,transfer:q.transfer===true}):free(q.q,q.free,q.why,{transfer:q.transfer===true}));
+  }
+
+  for(const module of [window.LEVEL_UP_MOTION,window.LEVEL_UP_CODING])for(const lesson of module?.lessons||[]){
+    generators[lesson.id]=(r,w)=>module.delayedChecks(lesson,w).map(q=>choice(q.q,q.choices[q.answer],q.choices.filter((_,i)=>i!==q.answer),r,{why:q.why,transfer:q.transfer===true}));
   }
 
   function generateReview(skillId,windowLabel,reviewId){
