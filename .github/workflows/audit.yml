@@ -119,3 +119,6 @@ jobs:
 
       - name: Visual teaching models and universal read-aloud
         run: node tests/visual-teaching.test.mjs
+
+      - name: Learner audit repair and evidence provenance
+        run: node tests/learner-repair.test.mjs

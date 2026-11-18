@@ -351,6 +351,7 @@
       const selected=document.querySelector("input[name=answer]:checked");
       const confidence=document.querySelector("input[name=confidence]:checked");
       const access=document.getElementById("itemAccessCondition");
+      draft.selfReportNoHelp=document.getElementById("selfReportNoHelp")?.checked===true;
       draft.freeAnswer=free?.value??"";
       draft.choiceValue=selected?.value??null;
       draft.confidence=confidence?.value??null;
@@ -374,6 +375,7 @@
       const code=document.getElementById("teachingCode");if(code&&d.teachIndex===(current.session.teachIndex||0)&&typeof d.teachingCode==="string")code.value=d.teachingCode;
       const access=document.getElementById("teachAccess");if(access){access.value=d.access_condition??"";access.dataset.accessConditionSource=d.access_condition_source||"UNRECORDED"}
     }else{
+      const self=document.getElementById("selfReportNoHelp");if(self)self.checked=d.selfReportNoHelp===true;
       const free=document.getElementById("freeAnswer");if(free)free.value=d.freeAnswer??"";
       if(d.choiceValue!=null){const radio=document.querySelector(`input[name=answer][value="${d.choiceValue}"]`);if(radio)radio.checked=true}
       if(d.confidence){const confidence=document.querySelector(`input[name=confidence][value="${d.confidence}"]`);if(confidence)confidence.checked=true}
@@ -384,7 +386,7 @@
 
   function bindDraftAutosave(){
     if(!current)return;
-    const selectors=["#teachingCode","#sayBack","#teachAccess","#freeAnswer","#itemAccessCondition","#itemAssistanceLevel","input[name=answer]","input[name=confidence]"];
+    const selectors=["#selfReportNoHelp","#teachingCode","#sayBack","#teachAccess","#freeAnswer","#itemAccessCondition","#itemAssistanceLevel","input[name=answer]","input[name=confidence]"];
     document.querySelectorAll(selectors.join(",")).forEach(el=>{
       const isTyping=el.tagName==="INPUT" && el.type==="text" || el.tagName==="TEXTAREA";
       const event=isTyping?"input":"change";
@@ -428,7 +430,8 @@
     if(!studentRuntimeAllowed()){blockStudentRuntime();return}
     const session=state.activeSession;
     if(!recoverableSession()){alert("There is no preserved session to resume.");return}
-    const lesson=lessonById(session.lessonId);
+    const baseLesson=lessonById(session.lessonId);
+    const lesson=baseLesson?{...baseLesson,checks:session.questionSnapshot||window.LEVEL_UP_REPAIR?.legacyChecks?.[baseLesson.id]||baseLesson.checks}:baseLesson;
     session.status="ACTIVE";
     session.resumedAt=now();
     state.activeSession=session;
@@ -520,12 +523,14 @@
     if(status)status.textContent={pause:"Reading paused",resume:"Reading resumed",cancel:"Reading stopped"}[action]||"";
     return true;
   }
+  let narrationRate=.9;
+  function setNarrationRate(value){const n=Number(value);if([.7,.9,1,1.15].includes(n)){narrationRate=n;speechControl("cancel");}}
   function speak(text){
     if(!speechControl("cancel"))return;
     const plain=String(text).replaceAll("ΔT","delta T").replaceAll("×"," times ").replaceAll("÷"," divided by ").replaceAll("="," equals ").replaceAll("Ω"," ohms ").replaceAll("²"," squared ");
-    const chunks=plain.match(/[^.!?]{1,230}(?:[.!?]|$)|.{1,230}/g)||[];
+    const chunks=window.LEVEL_UP_REPAIR?.speechChunks(plain)||[plain];
     chunks.forEach((chunk,i)=>{
-      const u=new SpeechSynthesisUtterance(chunk);u.rate=.9;u.lang="en-US";
+      const u=new SpeechSynthesisUtterance(chunk);u.rate=narrationRate;u.lang="en-US";
       if(i===chunks.length-1)u.onend=()=>{const status=document.getElementById("pageAudioStatus");if(status)status.textContent="Finished reading";};
       speechSynthesis.speak(u);
     });
@@ -533,7 +538,7 @@
   }
   function pageReadingControls(){
     const instructionsOnly=getRoute()==="science-gap"&&(state?.scienceGapActiveSession?.status==="ACTIVE"||state?.scienceGapActiveRetention);
-    return `<div class="page-reading" role="region" aria-label="Read aloud controls"><button class="btn primary" onclick="window.MLUL.readCurrentPage()">🔊 ${instructionsOnly?"Read instructions":"Read this page"}</button><button class="btn" onclick="window.MLUL.speechControl('pause')">Pause</button><button class="btn" onclick="window.MLUL.speechControl('resume')">Resume</button><button class="btn" onclick="window.MLUL.speechControl('cancel')">Stop</button><span id="pageAudioStatus" class="small" role="status" aria-live="polite"></span>${instructionsOnly?'<p class="small">This controlled check uses silent question reading. Audio reads directions only.</p>':''}</div>`;
+    return `<div class="page-reading" role="region" aria-label="Read aloud controls"><button class="btn primary" onclick="window.MLUL.readCurrentPage()">🔊 ${instructionsOnly?"Read instructions":"Read this page"}</button><button class="btn" onclick="window.MLUL.speechControl('pause')">Pause</button><button class="btn" onclick="window.MLUL.speechControl('resume')">Resume</button><button class="btn" onclick="window.MLUL.speechControl('cancel')">Stop</button><label class="audio-speed">Speed <select aria-label="Reading speed" onchange="window.MLUL.setNarrationRate(this.value)">${[[.7,"Slower"],[.9,"Steady"],[1,"Normal"],[1.15,"Faster"]].map(([v,t])=>`<option value="${v}" ${v===narrationRate?"selected":""}>${t}</option>`).join("")}</select></label><span id="pageAudioStatus" class="small" role="status" aria-live="polite"></span>${instructionsOnly?'<p class="small">This controlled check uses silent question reading. Audio reads directions only.</p>':''}</div>`;
   }
   function readCurrentPage(){
     if(!("speechSynthesis" in window)){alert("Read-aloud is not supported in this browser. Try Microsoft Edge or Chrome.");return;}
@@ -555,6 +560,10 @@
   }
 
   function shell(body){
+    if(window.LEVEL_UP_REPAIR?.studentRoute(getRoute())){
+      const blocked=!studentRuntimeAllowed()||!saveHealthy;
+      return `<div class="shell student-shell"><header class="student-brand">LEVEL-UP LAB</header><nav class="nav student-nav">${navBtn("dashboard","Today")}${navBtn("track-b","Science")}${navBtn("track-b-math","Math")}${navBtn("track-b-ela","ELA")}${navBtn("track-b-coding","Coding")}${navBtn("student-help","Help")}</nav>${pageReadingControls()}${blocked?'<p class="student-stop" role="alert">Your progress cannot be saved safely yet. Ask an adult to open Help before starting.</p>':""}${recoverableSession()&&!current?'<div class="resume-mission"><button class="btn primary" onclick="window.MLUL.resumeInterruptedSession()">Continue my saved mission</button><button class="btn" onclick="window.MLUL.endPreservedSession()">End this attempt; keep my work</button><button class="btn" onclick="location.hash=\'student-help\'">Get help</button></div>':""}<main id="learningPage">${body}</main><footer>One idea. One step. Your pace.</footer></div>`;
+    }
     return `<div class="shell">
       <div class="top">
         <div class="brand"><h1>Michael Level-Up Lab</h1><p>Permanent system foundation · Track B live first</p></div>
@@ -572,6 +581,7 @@
   function navBtn(route,label){return `<button class="${getRoute()===route?"active":""}" onclick="location.hash='${route}'">${label}</button>`}
 
   function dashboard(){
+    if(window.LEVEL_UP_REPAIR)return shell(window.LEVEL_UP_REPAIR.today(state));
     const completed=allLessons().filter(l=>lessonStatus(l.id).status==="COMPLETED").length;
     const total=allLessons().length;
     const pct=Math.round(completed/total*100);
@@ -874,9 +884,10 @@
     return '<div class="card subject-switch" aria-label="Choose a subject">'+[['science','track-b','Science'],['math','track-b-math','Math'],['ela','track-b-ela','ELA'],['coding','track-b-coding','Coding']].map(([id,route,label])=>'<button class="btn '+(id===selected?'primary':'')+'" aria-pressed="'+(id===selected)+'" onclick="location.hash=\''+route+'\'">'+label+'</button>').join("")+'</div>';
   }
 
-  function codingView(){return shell(schoolSubjectLinks('coding')+(HOMEWORK?.codingView()||'')+'<section class="card"><h3>Learn and practice coding</h3><div class="science-lesson-grid">'+(CONTENT.coding||[]).map(l=>lessonCard(l,'coding')).join('')+'</div></section>');}
+  function codingView(){if(window.LEVEL_UP_REPAIR)return shell(window.LEVEL_UP_REPAIR.subject(state,'coding',studentRuntimeAllowed()));return shell(schoolSubjectLinks('coding')+(HOMEWORK?.codingView()||'')+'<section class="card"><h3>Learn and practice coding</h3><div class="science-lesson-grid">'+(CONTENT.coding||[]).map(l=>lessonCard(l,'coding')).join('')+'</div></section>');}
 
   function academicTrackB(subject){
+    if(window.LEVEL_UP_REPAIR)return shell(window.LEVEL_UP_REPAIR.subject(state,subject,studentRuntimeAllowed()));
     const plan=CONTENT.academicLearningPlans?.[subject];
     if(!plan)return shell(schoolSubjectLinks(subject)+'<section class="card"><h2>Learning plan unavailable</h2><p>Refresh the app to load the current teaching content.</p></section>');
     const label=subject==='math'?'Math':'ELA';
@@ -887,6 +898,7 @@
   }
 
   function trackB(subject="science"){
+    if(window.LEVEL_UP_REPAIR)return shell(window.LEVEL_UP_REPAIR.subject(state,subject,studentRuntimeAllowed()));
     if(subject!=='science')return academicTrackB(subject);
     const plan=CONTENT.scienceLearningPlan;
     const groups=plan?.groups||[{title:"Physical Science",note:"",ids:CONTENT.science.map(l=>l.id)}];
@@ -912,6 +924,7 @@
     const ok=await persistenceHealthCheck();renderSaveStatus();
     if(!ok){alert("The app cannot verify persistence, so the lesson will not start.");return}
     const session={id:`sess_${Date.now()}`,mode:"LESSON",track:"B",subject,lessonId:id,startedAt:now(),phase:"TEACH",instructionDelivered:lesson.stagedTeach===true,teachIndex:0,targetIds:[...(lesson.targetIds||[])],itemIndex:0,responses:[],access_policy:{allowed_access_conditions:[...ACCESS_CONDITIONS],extra_processing_available:true,parent_verbatim_available:true},teach_access_condition:null,teach_access_condition_source:"UNRECORDED",status:"ACTIVE"};
+    session.questionSnapshot=JSON.parse(JSON.stringify(lesson.checks));session.questionBankVersion="2026-11-18-review-r1";
     state.activeSession=session;upsertSessionRecord(session);
     if(!await save("start lesson"))return;
     current={lesson,session};renderLessonTeach();
@@ -923,14 +936,25 @@
     const index=Math.min(session.teachIndex||0,lesson.teach.length-1);
     const blocks=staged?[lesson.teach[index]]:lesson.teach;
     const last=!staged||index===lesson.teach.length-1;
-    const heading=staged?'Teaching block '+(index+1)+' of '+lesson.teach.length:'Teaching';
+    const heading=staged?'Step '+(index+1)+' of '+lesson.teach.length:'Teaching';
     const teaching=blocks.map((t,i)=>'<div class="teacher"><strong>'+escapeHTML(staged?t[0]:'Teach '+(i+1))+'</strong>'+(staged?'<p>'+escapeHTML(t[1])+'</p>':'<p>'+escapeHTML(t[0])+'</p><p class="small muted">'+escapeHTML(t[1])+'</p>')+'</div>').join("");
-    const response=last?'<p><strong>Say it back:</strong> Explain the idea in your own words. A parent can type your exact words. This is teaching evidence.</p><label class="small" for="sayBack">Your explanation (optional)</label><textarea id="sayBack" rows="3" placeholder="Use your own words."></textarea>':'';
-    const next=last?'<button class="btn primary" onclick="window.MLUL.beginChecks()">Continue to supported practice</button>':'<button class="btn primary" onclick="window.MLUL.advanceScienceTeach()">Next teaching block</button>';
-    document.getElementById("app").innerHTML=shell('<div class="card"><span class="pill purple">'+escapeHTML(lesson.schoolTag)+'</span><h2>'+escapeHTML(lesson.title)+'</h2><p class="muted">'+heading+' · Track B teaching</p><div class="row"><button class="btn" onclick="window.MLUL.readTeach()">🔊 Read lesson</button><button class="btn" onclick="speechSynthesis.pause()">Pause</button><button class="btn" onclick="speechSynthesis.resume()">Resume</button><button class="btn" onclick="speechSynthesis.cancel()">Stop</button></div>'+(VISUAL_TEACHING?.supported(lesson)?VISUAL_TEACHING.render(lesson,session):(staged&&index===1?((lesson.motionDiagram?window.LEVEL_UP_MOTION?.diagram(lesson.motionDiagram):lesson.academicDiagram?window.LEVEL_UP_SCHOOL_ACADEMICS?.diagram(lesson.academicDiagram):window.LEVEL_UP_SCHOOL_SCIENCE?.diagram(lesson.diagram))||""):""))+(VISUAL_TEACHING?.supported(lesson)?"":teaching)+'<label class="small">How was this block accessed?</label><select id="teachAccess" onchange="window.MLUL.markAccessObserved(this)">'+accessOptions(session.teach_access_condition)+'</select>'+response+'<div class="spacer"></div><div class="row">'+next+'<button class="btn" onclick="window.MLUL.manualSave()">Save</button><button class="btn" onclick="window.MLUL.saveAndExit()">Save & Exit</button></div></div>');
+    const response=last?'<p><strong>Say it back:</strong> Explain the idea in your own words. A parent can type your exact words. Say what changed and why.</p><label class="small" for="sayBack">Your explanation (optional)</label><textarea id="sayBack" rows="3" placeholder="Use your own words."></textarea>':'';
+    const next=last?'<button class="btn primary" onclick="window.MLUL.beginChecks()">Continue to supported practice</button>':'<button class="btn primary" onclick="window.MLUL.advanceScienceTeach()">'+(['Follow the example','Try the model','Explain what changed'][index]||'Continue')+'</button>';
+    document.getElementById("app").innerHTML=shell('<div class="card"><span class="pill purple">'+escapeHTML(lesson.schoolTag)+'</span><h2>'+escapeHTML(lesson.title)+'</h2><p class="muted">'+heading+' · About '+Math.max(2,(4-index)*3)+' minutes of teaching left. Take longer if you need.</p>'+(VISUAL_TEACHING?.supported(lesson)?VISUAL_TEACHING.render(lesson,session):(staged&&index===1?((lesson.motionDiagram?window.LEVEL_UP_MOTION?.diagram(lesson.motionDiagram):lesson.academicDiagram?window.LEVEL_UP_SCHOOL_ACADEMICS?.diagram(lesson.academicDiagram):window.LEVEL_UP_SCHOOL_SCIENCE?.diagram(lesson.diagram))||""):""))+(VISUAL_TEACHING?.supported(lesson)?"":teaching)+(window.LEVEL_UP_REPAIR?.exercise(lesson,session)||"")+'<details class="adult-observations"><summary>Adult support record</summary><label class="small">How was this block accessed?</label><select id="teachAccess" onchange="window.MLUL.markAccessObserved(this)">'+accessOptions(session.teach_access_condition)+'</select></details>'+response+'<div class="spacer"></div><div class="row">'+next+'<button class="btn" onclick="window.MLUL.manualSave()">Save</button><button class="btn" onclick="window.MLUL.saveAndExit()">Save & Exit</button></div></div>');
     renderSaveStatus();restoreDraftToUI();bindDraftAutosave();window.scrollTo({top:0,behavior:"smooth"});
   }
 
+  async function changeStudentExercise(action,value){
+    if(!current||current.session.phase!=="TEACH"||!saveHealthy||!evidenceSessionAllowed())return false;
+    if(!["value","selection"].includes(action)||!Number.isInteger(value)||value < -4||value > 100)return false;
+    if(action==="value"&&value>4||action==="selection"&&value<0)return false;
+    clearTimeout(draftSaveTimer);captureDraftFromUI();const session=current.session,index=session.teachIndex||0;
+    const old=session.studentExercise?JSON.parse(JSON.stringify(session.studentExercise)):null;
+    session.studentExercise={...(session.studentExercise||{}),[index]:{...(session.studentExercise?.[index]||{}),[action]:value,interaction_purpose:"PRACTICE",masteryEvidence:false}};
+    state.activeSession=session;upsertSessionRecord(session);
+    if(!await save("worked example interaction")){if(current?.session){if(old)current.session.studentExercise=old;else delete current.session.studentExercise;}return false;}
+    const y=window.scrollY||0;renderLessonTeach();window.scrollTo({top:y,behavior:"instant"});return true;
+  }
   async function changeTeachingModel(action,value){
     if(!current||current.session.phase!=="TEACH"||!VISUAL_TEACHING?.supported(current.lesson))return false;
     if(!saveHealthy||!evidenceSessionAllowed())return false;
@@ -1008,8 +1032,8 @@
     const labels={GUIDED_PRACTICE:"Try with support",FADE_HELP:"Try with less help",INDEPENDENT_CHECK:"Try independently",MIX_OLD_AND_NEW:"Connect old and new",GENERALIZE:"Explain in a new situation"};
     const stage=labels[q.stage]||"Practice";
     const support=q.support?'<p class="teacher"><strong>Support:</strong> '+escapeHTML(q.support)+'</p>':'';
-    const assistance=q.stage?'<label class="small">Any additional help on this item?</label><select id="itemAssistanceLevel">'+assistanceOptions(current.session.draft?.assistance_level||"INDEPENDENT")+'</select>':'';
-    document.getElementById("app").innerHTML=shell('<div class="card"><span class="pill purple">'+escapeHTML(current.lesson.schoolTag)+'</span><h2>'+stage+' · '+(current.session.itemIndex+1)+' of '+current.lesson.checks.length+'</h2><p class="small muted">This follows teaching. It is not a cold diagnostic or a mastery decision.</p><div class="row"><button class="btn" onclick="window.MLUL.readQuestion()">🔊 Read to me</button><button class="btn" onclick="speechSynthesis.cancel()">Stop</button></div><div class="question">'+escapeHTML(q.q)+'</div>'+support+'<div class="choices">'+input+'</div><label class="small">How was this question accessed?</label><select id="itemAccessCondition" onchange="window.MLUL.markAccessObserved(this)">'+accessOptions(null)+'</select>'+assistance+'<div class="spacer"></div><div class="row"><label class="small"><input type="radio" name="confidence" value="sure"> Sure</label><label class="small"><input type="radio" name="confidence" value="kinda"> Kinda sure</label><label class="small"><input type="radio" name="confidence" value="guess"> Guessing</label></div><div class="spacer"></div><div class="row"><button class="btn primary" onclick="window.MLUL.submitAnswer()">Submit answer</button><button class="btn" onclick="window.MLUL.manualSave()">Save</button><button class="btn" onclick="window.MLUL.saveAndExit()">Save & Exit</button></div><div id="feedback"></div></div>');
+    const assistance=q.stage?'<details class="adult-observations"><summary>Adult support record</summary><label class="small">Any additional help on this item?</label><select id="itemAssistanceLevel">'+assistanceOptions(current.session.draft?.assistance_level||null)+'</select></details>':'';
+    document.getElementById("app").innerHTML=shell('<div class="card"><span class="pill purple">'+escapeHTML(current.lesson.schoolTag)+'</span><h2>'+stage+' · '+(current.session.itemIndex+1)+' of '+current.lesson.checks.length+'</h2><p class="small muted">This follows teaching. It is not a cold diagnostic or a mastery decision.</p><div class="question">'+escapeHTML(q.q)+'</div>'+support+'<div class="choices">'+input+'</div><details class="adult-observations"><summary>Adult reading record</summary><label class="small">How was this question accessed?</label><select id="itemAccessCondition" onchange="window.MLUL.markAccessObserved(this)">'+accessOptions(null)+'</select></details>'+assistance+'<label class="homework-check"><input type="checkbox" id="selfReportNoHelp"> I did this without help (my own report).</label><div class="spacer"></div><div class="row"><label class="small"><input type="radio" name="confidence" value="sure"> Sure</label><label class="small"><input type="radio" name="confidence" value="kinda"> Kinda sure</label><label class="small"><input type="radio" name="confidence" value="guess"> Guessing</label></div><div class="spacer"></div><div class="row"><button class="btn primary" onclick="window.MLUL.submitAnswer()">Submit answer</button><button class="btn" onclick="window.MLUL.manualSave()">Save</button><button class="btn" onclick="window.MLUL.saveAndExit()">Save & Exit</button></div><div id="feedback"></div></div>');
     renderSaveStatus();restoreDraftToUI();const assistanceEl=document.getElementById("itemAssistanceLevel");if(assistanceEl&&current.session.draft?.assistance_level)assistanceEl.value=current.session.draft.assistance_level;bindDraftAutosave();
   }
 
@@ -1021,19 +1045,22 @@
 
   async function submitAnswer(){
     const q=current.lesson.checks[current.session.itemIndex];let raw="",correct=false;
-    if(q.choices){const chosen=document.querySelector("input[name=answer]:checked");if(!chosen){alert("Choose Michael's answer first.");return}const idx=Number(chosen.value);raw=q.choices[idx];correct=idx===q.answer}
-    else{const el=document.getElementById("freeAnswer");raw=el.value.trim();if(!raw){alert("Type Michael's answer exactly. 'I don't know' is a valid answer.");return}correct=q.rubric?null:answersMatch(raw,q.free)}
+    if(q.choices){const chosen=document.querySelector("input[name=answer]:checked");if(!chosen){alert("Choose your answer first.");return}const idx=Number(chosen.value);raw=q.choices[idx];correct=idx===q.answer}
+    else{const el=document.getElementById("freeAnswer");raw=el.value.trim();if(!raw){alert("Type your answer. 'I don't know' is allowed.");return}correct=q.rubric?null:answersMatch(raw,q.free)}
+    const selfReportNoHelp=document.getElementById("selfReportNoHelp")?.checked===true;
     const confidence=document.querySelector("input[name=confidence]:checked")?.value||"not_recorded";
     const accessSelector=document.getElementById("itemAccessCondition");
     const accessCondition=validAccessCondition(accessSelector?.value);
     const accessConditionSource=accessSourceFor(accessSelector,accessCondition);
     const selectedAssistance=document.getElementById("itemAssistanceLevel")?.value;
-    const assistanceLevel=q.stage?((ASSISTANCE_LEVELS.includes(selectedAssistance)&&selectedAssistance!=="INDEPENDENT")?selectedAssistance:q.stage==="GUIDED_PRACTICE"?"GUIDED":q.stage==="FADE_HELP"?"HINTED":"INDEPENDENT"):assistanceLevelForSession(current.session);
-    const ev={id:`ev_${current.session.id}_${current.session.itemIndex}`,createdAt:now(),studentId:"michael",track:"B",evidence_class:"INFORMAL_TRACK_B",instruction_exposure_status:"PRIOR_INSTRUCTION",subject:current.session.subject,skillId:current.lesson.id,itemId:q.id,prompt:q.q,rawResponse:raw,isCorrect:correct,confidence,teaching_stage:q.stage||"CHECK_AFTER_TEACH",performance_mode:q.performanceMode||null,requires_review:!!q.rubric,review_rubric:q.rubric||null,assistance_level:assistanceLevel,access_condition:accessCondition,access_condition_source:accessConditionSource,access_observation:{access_condition:accessCondition,access_condition_source:accessConditionSource,extra_processing_available:true,parent_verbatim_available:true},interpretation:q.rubric?"Explanation saved; parent or teacher review required":correct?"immediate taught-response correct":"immediate taught-response needs more support"};
+    const additionalHelp=ASSISTANCE_LEVELS.includes(selectedAssistance)?selectedAssistance:null;
+    const assistanceLevel=q.stage==="GUIDED_PRACTICE"?(["TAUGHT","PARENT_ASSISTED"].includes(additionalHelp)?additionalHelp:"GUIDED"):q.stage==="FADE_HELP"?(["GUIDED","TAUGHT","PARENT_ASSISTED"].includes(additionalHelp)?additionalHelp:"HINTED"):q.stage?additionalHelp:"TAUGHT";
+    const ev={id:`ev_${current.session.id}_${current.session.itemIndex}`,createdAt:now(),studentId:"michael",track:"B",evidence_class:"INFORMAL_TRACK_B",instruction_exposure_status:"PRIOR_INSTRUCTION",subject:current.session.subject,skillId:current.lesson.id,itemId:q.id,prompt:q.q,rawResponse:raw,isCorrect:correct,confidence,self_report_no_help:selfReportNoHelp,self_report_source:selfReportNoHelp?"STUDENT_SELF_REPORT":null,additional_help_level:additionalHelp,assistance_condition_source:ASSISTANCE_LEVELS.includes(selectedAssistance)?"ADULT_RECORDED":"UNRECORDED",question_content_version:q.contentVersion||null,question_choices:q.choices?[...q.choices]:null,teaching_stage:q.stage||"CHECK_AFTER_TEACH",performance_mode:q.performanceMode||null,requires_review:!!q.rubric,review_rubric:q.rubric||null,assistance_level:assistanceLevel,access_condition:accessCondition,access_condition_source:accessConditionSource,access_observation:{access_condition:accessCondition,access_condition_source:accessConditionSource,extra_processing_available:true,parent_verbatim_available:true},interpretation:q.rubric?"Explanation saved; parent or teacher review required":correct?"immediate taught-response correct":"immediate taught-response needs more support"};
     pushEvidenceOnce(ev);pushSessionResponseOnce(current.session,ev);current.session.draft=null;state.activeSession=current.session;upsertSessionRecord(current.session);
     if(!await save("answer"))return;
-    document.querySelectorAll("input,textarea,select").forEach(x=>x.disabled=true);
-    const fb=document.getElementById("feedback");fb.className="feedback "+(correct?"good":"warn");fb.innerHTML=`<strong>${q.rubric?"Explanation saved for review":correct?"Yes — that's it.":"Not yet."}</strong><div class="small" style="margin-top:6px">${escapeHTML(q.why)}</div><div class="small muted" style="margin-top:6px">Because this is Track B, teaching feedback is allowed after Michael answers.</div><button class="btn ${correct?"good":"warn"}" style="margin-top:10px" onclick="window.MLUL.nextQuestion()">${current.session.itemIndex===current.lesson.checks.length-1?"Finish lesson":"Next"}</button>`;
+    document.querySelectorAll("#learningPage input,#learningPage textarea,#learningPage select").forEach(x=>x.disabled=true);
+    const submitButton=document.querySelector('button[onclick="window.MLUL.submitAnswer()"]');if(submitButton)submitButton.hidden=true;
+    const fb=document.getElementById("feedback");fb.className="feedback "+(correct?"good":"warn");fb.innerHTML=`<strong>${q.rubric?"Explanation saved for review":correct?"That fits the idea.":"Check this part:"}</strong><div class="small" style="margin-top:6px">${escapeHTML(q.why)}</div><div class="small muted" style="margin-top:6px">Read the explanation. Compare it with your answer.</div><button class="btn primary" style="margin-top:10px" onclick="window.MLUL.nextQuestion()">${current.session.itemIndex===current.lesson.checks.length-1?"Finish lesson":"Next"}</button>`;
   }
 
   async function nextQuestion(){
@@ -1042,15 +1069,21 @@
     await finishLesson();
   }
 
+  async function reteachLesson(id,subject){if(current)return;return startLesson(id,subject);}
+
   async function finishLesson(){
     const r=current.session.responses;const scored=r.filter(x=>typeof x.isCorrect==="boolean");const pending=r.filter(x=>x.requires_review).length;const correct=scored.filter(x=>x.isCorrect).length;const total=scored.length;const score=total?Math.round(correct/total*100):null;
     const indep=scored.filter(x=>x.assistance_level==="INDEPENDENT"&&["INDEPENDENT_CHECK","MIX_OLD_AND_NEW"].includes(x.teaching_stage)),indepCorrect=indep.filter(x=>x.isCorrect).length;
-    const old=lessonStatus(current.lesson.id);state.lessonState[current.lesson.id]={status:"COMPLETED",score,scoredCount:total,independentCorrect:indepCorrect,independentCount:indep.length,pendingExplanationCount:pending,attempts:(old.attempts||0)+1,completedAt:now(),trackBProgress:trackBProgressFromScore(score),memoryStrength:"FRAGILE",instruction_exposure_status:"PRIOR_INSTRUCTION"};
+    const old=lessonStatus(current.lesson.id);state.lessonState[current.lesson.id]={status:"COMPLETED",score,scoredCount:total,independentCorrect:indepCorrect,independentCount:indep.length,selfReportedNoHelpCount:scored.filter(x=>x.self_report_no_help===true).length,pendingExplanationCount:pending,attempts:(old.attempts||0)+1,completedAt:now(),trackBProgress:trackBProgressFromScore(score),memoryStrength:"FRAGILE",instruction_exposure_status:"PRIOR_INSTRUCTION"};
     current.session.status="COMPLETED";current.session.completedAt=now();current.session.draft=null;upsertSessionRecord(current.session);state.activeSession=null;
     scheduleReviews(current.lesson.id,current.session.subject);
     if(!state.backup)state.backup={lastExportAttemptedAt:null,pendingAfterLesson:false};
     state.backup.pendingAfterLesson=true;
     if(!await save("finish lesson"))return;
+    if(window.LEVEL_UP_REPAIR){
+      const lesson=current.lesson,subject=current.session.subject;
+      document.getElementById("app").innerHTML=shell(`<div class="card"><h2>${score!==null&&score<67?"Let's go back over this":"Your practice is saved"}</h2><p>${correct} of ${total} scored questions correct.</p><p>${score!==null&&score<67?"Open the example again. Change one thing in the model and explain what happens.":"Explain one idea in your own words. Use it again later to see what sticks."}</p><p>${pending?"Your explanation is saved for an adult to review.":""}</p><button class="btn primary" onclick="window.MLUL.reteachLesson('${escapeHTML(lesson.id)}','${escapeHTML(subject)}')">Go back over this</button><button class="btn" onclick="location.hash='dashboard'">Go to Today</button></div>`);renderSaveStatus();current=null;return;
+    }
     document.getElementById("app").innerHTML=shell(`<div class="card center"><span class="pill good">Lesson complete</span><h2 style="margin-top:12px">${current.lesson.title}</h2><div class="big">${correct}/${total}</div><p class="muted">Immediate Track B check</p><p class="small">Independent items: <strong>${indep.length?indepCorrect+"/"+indep.length:"none"}</strong> · Supported items (guided or less help) are included in the total above but are not independent evidence.</p><p class="small">${pending?pending+" explanation saved for parent or teacher review; excluded from this score.":""}</p><div class="callout"><strong>This is not mastery and does not write a canonical lifecycle state.</strong> Track B immediate-check result: ${trackBProgressFromScore(score)}. Memory remains FRAGILE until delayed retrieval shows it sticks.</div><div class="callout warn" style="margin-top:14px"><strong>Portable backup due now.</strong> Download the learner backup before ending this local-only pilot session.</div><div class="row" style="justify-content:center"><button class="btn primary" onclick="window.MLUL.exportBackup()">Download backup now</button><button class="btn" onclick="location.hash='track-b'">Back to Track B</button></div></div>`);renderSaveStatus();current=null;
   }
 
@@ -1072,9 +1105,9 @@
     if(windowLabel==="Day 21")return transferCorrect?"FLEXIBLE":"STABLE";
     return"BUILDING";
   }
-  function assistanceOptions(selected="INDEPENDENT"){
+  function assistanceOptions(selected=null){
     const labels={INDEPENDENT:"Independent",CLARIFIED:"Directions clarified",HINTED:"Hinted",GUIDED:"Guided",TAUGHT:"Taught during item",PARENT_ASSISTED:"Parent assisted"};
-    return ASSISTANCE_LEVELS.map(v=>`<option value="${v}" ${v===selected?"selected":""}>${labels[v]}</option>`).join("");
+    return `<option value="" ${selected?"":"selected"}>Not recorded</option>`+ASSISTANCE_LEVELS.map(v=>`<option value="${v}" ${v===selected?"selected":""}>${labels[v]}</option>`).join("");
   }
 
   // A review item whose prompt Michael has already seen for this skill (in the lesson or an earlier review, before this review
@@ -1108,11 +1141,11 @@
   function renderReviewQuestion(){
     const q=current.reviewItems[current.session.itemIndex];
     const input=q.choices?q.choices.map((x,i)=>`<label class="choice"><input type="radio" name="answer" value="${i}"><span>${escapeHTML(x)}</span></label>`).join(""):`<input type="text" id="freeAnswer" placeholder="Type Michael's answer exactly. 'I don't know' is allowed.">`;
-    document.getElementById("app").innerHTML=shell(`<div class="card"><div class="row between"><div><span class="pill info">${current.review.window}</span><h2 style="margin-top:10px">Delayed retrieval ${current.session.itemIndex+1} of ${current.reviewItems.length}</h2><p class="muted">Fresh questions · no teaching feedback until the review is finished</p></div><span class="badge">${current.lesson.schoolTag}</span></div>
-      <div class="row"><button class="btn" onclick="window.MLUL.readReviewQuestion()">🔊 Read to me</button><button class="btn" onclick="speechSynthesis.cancel()">■ Stop</button></div>
+    document.getElementById("app").innerHTML=shell(`<div class="card"><div class="row between"><div><span class="pill info">${current.review.window}</span><h2 style="margin-top:10px">${window.LEVEL_UP_REPAIR?"Try what you remember":"Delayed retrieval"} ${current.session.itemIndex+1} of ${current.reviewItems.length}</h2><p class="muted">Try without notes. You will see explanations after the last question.</p></div><span class="badge">${current.lesson.schoolTag}</span></div>
+
       <div class="question">${escapeHTML(q.q)}</div><div class="choices">${input}</div>
-      <label class="small">How was this question accessed?</label><select id="itemAccessCondition" onchange="window.MLUL.markAccessObserved(this)">${accessOptions(null)}</select>
-      <div class="spacer"></div><label class="small">Assistance on this item</label><select id="itemAssistanceLevel">${assistanceOptions(current.session.draft?.assistance_level||"INDEPENDENT")}</select>
+      <details class="adult-observations"><summary>Adult reading record</summary><label class="small">How was this question accessed?</label><select id="itemAccessCondition" onchange="window.MLUL.markAccessObserved(this)">${accessOptions(null)}</select></details>
+      <details class="adult-observations"><summary>Adult support record</summary><label class="small">Assistance on this item</label><select id="itemAssistanceLevel">${assistanceOptions(current.session.draft?.assistance_level||null)}</select></details><label class="homework-check"><input type="checkbox" id="selfReportNoHelp">I did this without help (my own report).</label>
       <div class="spacer"></div><div class="row"><label class="small"><input type="radio" name="confidence" value="sure"> Sure</label><label class="small"><input type="radio" name="confidence" value="kinda"> Kinda sure</label><label class="small"><input type="radio" name="confidence" value="guess"> Guessing</label></div>
       <div class="spacer"></div><div class="row"><button class="btn primary" onclick="window.MLUL.submitReviewAnswer()">Submit answer</button><button class="btn" onclick="window.MLUL.manualSave()">Save</button><button class="btn" onclick="window.MLUL.saveAndExit()">Save & Exit</button></div>
     </div>`);renderSaveStatus();restoreDraftToUI();const assist=document.getElementById("itemAssistanceLevel");if(assist&&current.session.draft?.assistance_level)assist.value=current.session.draft.assistance_level;bindDraftAutosave();
@@ -1125,12 +1158,12 @@
 
   async function submitReviewAnswer(){
     const q=current.reviewItems[current.session.itemIndex];let raw="",correct=false;
-    if(q.choices){const chosen=document.querySelector("input[name=answer]:checked");if(!chosen){alert("Choose Michael's answer first.");return}const idx=Number(chosen.value);raw=q.choices[idx];correct=idx===q.answer}
-    else{const el=document.getElementById("freeAnswer");raw=el.value.trim();if(!raw){alert("Type Michael's answer exactly. 'I don't know' is a valid answer.");return}correct=answersMatch(raw,q.free)}
+    if(q.choices){const chosen=document.querySelector("input[name=answer]:checked");if(!chosen){alert("Choose your answer first.");return}const idx=Number(chosen.value);raw=q.choices[idx];correct=idx===q.answer}
+    else{const el=document.getElementById("freeAnswer");raw=el.value.trim();if(!raw){alert("Type your answer. 'I don't know' is allowed.");return}correct=answersMatch(raw,q.free)}
     const confidence=document.querySelector("input[name=confidence]:checked")?.value||"not_recorded";
     const accessSelector=document.getElementById("itemAccessCondition");const accessCondition=validAccessCondition(accessSelector?.value);const accessConditionSource=accessSourceFor(accessSelector,accessCondition);
-    const assistanceSelector=document.getElementById("itemAssistanceLevel");const assistance=ASSISTANCE_LEVELS.includes(assistanceSelector?.value)?assistanceSelector.value:"INDEPENDENT";
-    const ev={id:`review_ev_${current.session.id}_${current.session.itemIndex}`,createdAt:now(),studentId:"michael",track:"B",evidence_class:"INFORMAL_TRACK_B",instruction_exposure_status:"PRIOR_INSTRUCTION",evidenceType:"DELAYED_RETRIEVAL",subject:current.session.subject,skillId:current.review.skillId,itemId:q.id,prompt:q.q,rawResponse:raw,isCorrect:correct,confidence,review_window:current.review.window,transfer:q.transfer===true,previously_seen:q.previouslySeen===true,evidence_role:(q.previouslySeen===true||assistance!=="INDEPENDENT")?"PRACTICE":"RETENTION",assistance_level:assistance,access_condition:accessCondition,access_condition_source:accessConditionSource,access_observation:{access_condition:accessCondition,access_condition_source:accessConditionSource,extra_processing_available:true,parent_verbatim_available:true},interpretation:correct?"delayed retrieval correct":"delayed retrieval miss"};
+    const assistanceSelector=document.getElementById("itemAssistanceLevel");const assistance=ASSISTANCE_LEVELS.includes(assistanceSelector?.value)?assistanceSelector.value:null;
+    const ev={id:`review_ev_${current.session.id}_${current.session.itemIndex}`,createdAt:now(),studentId:"michael",track:"B",evidence_class:"INFORMAL_TRACK_B",instruction_exposure_status:"PRIOR_INSTRUCTION",evidenceType:"DELAYED_RETRIEVAL",subject:current.session.subject,skillId:current.review.skillId,itemId:q.id,prompt:q.q,rawResponse:raw,isCorrect:correct,confidence,self_report_no_help:document.getElementById("selfReportNoHelp")?.checked===true,self_report_source:document.getElementById("selfReportNoHelp")?.checked===true?"STUDENT_SELF_REPORT":null,assistance_condition_source:assistance?"USER_RECORDED":"UNRECORDED",review_window:current.review.window,transfer:q.transfer===true,previously_seen:q.previouslySeen===true,evidence_role:(q.previouslySeen===true||assistance!=="INDEPENDENT")?"PRACTICE":"RETENTION",assistance_level:assistance,access_condition:accessCondition,access_condition_source:accessConditionSource,access_observation:{access_condition:accessCondition,access_condition_source:accessConditionSource,extra_processing_available:true,parent_verbatim_available:true},interpretation:correct?"delayed retrieval correct":"delayed retrieval miss"};
     pushEvidenceOnce(ev);pushSessionResponseOnce(current.session,ev);current.session.draft=null;state.activeSession=current.session;upsertSessionRecord(current.session);if(!await save("review answer"))return;
     current.session.itemIndex++;
     if(current.session.itemIndex<current.reviewItems.length){state.activeSession=current.session;upsertSessionRecord(current.session);if(!await save("review next question"))return;renderReviewQuestion();return}
@@ -1151,6 +1184,7 @@
     if(eligible.length){lessonState.memoryStrength=memoryStrengthForReview(review.window,score,transferCorrect)}else{review.outcome="PRACTICE_ONLY";lessonState.memoryStrength=lessonState.memoryStrength||"FRAGILE"}lessonState.lastReviewAt=review.completedAt;lessonState.lastReviewWindow=review.window;lessonState.trackBReviewOutcome=review.outcome;state.lessonState[current.review.skillId]=lessonState;
     current.session.status="COMPLETED";current.session.completedAt=now();current.session.draft=null;upsertSessionRecord(current.session);state.activeSession=null;if(!await save("finish review"))return;
     const corrections=current.reviewItems.map((q,i)=>{const r=responses[i];const expected=q.choices?q.choices[q.answer]:q.free;return `<div class="teacher"><strong>${r?.isCorrect?"✓":"Review"} ${escapeHTML(q.q)}</strong><p class="small">Michael: ${escapeHTML(r?.rawResponse||"")}</p><p class="small muted">Answer: ${escapeHTML(expected)}${q.why?` · ${escapeHTML(q.why)}`:""}</p></div>`}).join("");
+    if(window.LEVEL_UP_REPAIR){document.getElementById("app").innerHTML=shell(`<div class="card"><h2>Your review is saved</h2><p>${correct} of ${total} scored questions correct.</p><p>Read the explanations below. Try the idea again another day.</p>${corrections.replaceAll("Michael:","Your answer:")}<button class="btn primary" onclick="location.hash='dashboard'">Go to Today</button></div>`);renderSaveStatus();current=null;return;}
     document.getElementById("app").innerHTML=shell(`<div class="card"><span class="pill good">${review.window} retrieval complete</span><h2 style="margin-top:12px">${current.lesson.title}</h2><div class="big">${correct}/${total}</div><p class="muted">${review.outcome} · Memory: ${lessonState.memoryStrength}</p>${review.practiceOnlyCount?`<p class="small muted">${review.practiceOnlyCount} answer${review.practiceOnlyCount===1?" was":"s were"} practice only (seen before or answered with help), so ${review.practiceOnlyCount===1?"it does":"they do"} not count toward memory strength.</p>`:""}<div class="callout"><strong>Still not a mastery declaration.</strong> Delayed retrieval updates memory evidence only. Track A owns canonical mastery transitions.</div><div class="spacer"></div>${corrections}<div class="row"><button class="btn primary" onclick="location.hash='reviews'">Back to Review Queue</button></div></div>`);renderSaveStatus();current=null;
   }
 
@@ -1457,6 +1491,7 @@
     const trackARows=TRACK_A_DIAGNOSTIC?TRACK_A_DIAGNOSTIC.SKILLS.map(s=>{const r=trackASkillRecord(s.id);const last=r.lastMaintenance?.result||r.lastMasteryCheck?.result||r.lastVerification?.result||r.lastRepair?.result||r.lastDiagnostic?.result||"—";return `<tr><td>${escapeHTML(s.title)}<div class="tiny muted">${escapeHTML(s.id)}</div></td><td>${escapeHTML(r.canonicalState||"UNKNOWN")}</td><td>${escapeHTML(r.memoryStrength||"FRAGILE")}</td><td>${escapeHTML(last)}</td><td>${trackAPriorInstruction(s.id)?"PRIOR_INSTRUCTION / not cold":"—"}</td></tr>`}).join(""):"";
     const formalCount=state.evidence.filter(e=>e.evidence_class==="FORMAL_CONTROLLED").length;const informalCount=state.evidence.filter(e=>e.evidence_class==="INFORMAL_TRACK_B").length;
     return shell(`<div class="grid"><div class="card c8"><h2>Parent View</h2><p class="muted">Michael's learning record separates school facts, teaching evidence, controlled evidence, lifecycle state, and memory strength. No one score gets to masquerade as the whole story.</p></div><div class="card c4"><div class="kpi"><div class="t">Track B evidence</div><div class="n">${informalCount}</div></div><div class="spacer"></div><div class="kpi"><div class="t">Track A evidence</div><div class="n">${formalCount}</div></div></div>
+      ${window.LEVEL_UP_REPAIR?`<section class="card c12"><h3>Student reports of no help</h3><p>These are student reports, not adult-observed independence.</p><ul>${state.evidence.filter(e=>e.self_report_no_help===true).map(e=>`<li>${escapeHTML(e.skillId)} · ${escapeHTML(e.itemId)} · self-reported, not adult-confirmed</li>`).join("")||"<li>No student reports recorded.</li>"}</ul></section>`:""}
       ${evidenceIntegritySection()}
       ${studyResultsSection()}
       ${scienceGapParentSection()}
@@ -1477,6 +1512,7 @@
   }
 
   function reviewsView(){
+    if(window.LEVEL_UP_REPAIR)return shell(window.LEVEL_UP_REPAIR.reviews(state,studentRuntimeAllowed()));
     const rows=state.reviewSchedule.slice().sort((a,b)=>a.dueAt.localeCompare(b.dueAt)).map(r=>{
       const l=lessonById(r.skillId);const due=new Date(r.dueAt);const dueNow=due<=new Date();const status=r.completed?`Completed · ${r.score}%`:dueNow?"Due now":"Scheduled";
       const action=r.completed?"—":dueNow?`<button class="btn ${studentRuntimeAllowed()?"primary":""}" ${studentRuntimeAllowed()?"":"disabled"} onclick="window.MLUL.startReview('${r.id}')">${studentRuntimeAllowed()?"Start fresh review":"Pilot gate"}</button>`:"Not due yet";
@@ -1647,7 +1683,7 @@
 
   async function submitTrackAAnswer(){
     if(!currentTrackA||currentTrackA.halted)return;const {session}=currentTrackA;const q=session.items[session.itemIndex];let raw="",choiceIndex=null;
-    if(q.choices){const chosen=document.querySelector("input[name=trackAAnswer]:checked");if(!chosen){alert("Choose Michael's answer first.");return}choiceIndex=Number(chosen.value);raw=q.choices[choiceIndex]}
+    if(q.choices){const chosen=document.querySelector("input[name=trackAAnswer]:checked");if(!chosen){alert("Choose your answer first.");return}choiceIndex=Number(chosen.value);raw=q.choices[choiceIndex]}
     else{const el=document.getElementById("trackAFreeAnswer");raw=el?.value.trim()||"";if(!raw){alert("Type Michael's answer exactly. 'I don't know' is a valid response.");return}}
     const assistance=document.getElementById("trackAAssistance")?.value;if(!ASSISTANCE_LEVELS.includes(assistance)){alert("Record the assistance level before locking this formal probe.");return}
     const accessSelector=document.getElementById("trackAAccess");const accessCondition=validAccessCondition(accessSelector?.value);const accessSource=accessSourceFor(accessSelector,accessCondition);const confidence=document.querySelector("input[name=trackAConfidence]:checked")?.value||"not_recorded";
@@ -1729,7 +1765,7 @@
   function readTrackARepairQuestion(){const q=currentTrackA.session.items[currentTrackA.session.itemIndex];const selector=document.getElementById("repairAccess");if(selector){selector.value="SYSTEM_READ_ALOUD";markAccessObserved(selector)}speak(q.q+(q.choices?" Choices. "+q.choices.join('. '):""))}
 
   async function submitTrackARepairAnswer(){
-    if(!currentTrackA||currentTrackA.halted)return;const {session}=currentTrackA;const q=session.items[session.itemIndex];let raw="",choiceIndex=null;if(q.choices){const chosen=document.querySelector("input[name=repairAnswer]:checked");if(!chosen){alert("Choose Michael's answer first.");return}choiceIndex=Number(chosen.value);raw=q.choices[choiceIndex]}else{raw=document.getElementById("repairFreeAnswer")?.value.trim()||"";if(!raw){alert("Type Michael's answer exactly. 'I don't know' is valid.");return}}
+    if(!currentTrackA||currentTrackA.halted)return;const {session}=currentTrackA;const q=session.items[session.itemIndex];let raw="",choiceIndex=null;if(q.choices){const chosen=document.querySelector("input[name=repairAnswer]:checked");if(!chosen){alert("Choose your answer first.");return}choiceIndex=Number(chosen.value);raw=q.choices[choiceIndex]}else{raw=document.getElementById("repairFreeAnswer")?.value.trim()||"";if(!raw){alert("Type Michael's answer exactly. 'I don't know' is valid.");return}}
     const assistance=document.getElementById("repairAssistance")?.value;if(!ASSISTANCE_LEVELS.includes(assistance)){alert("Record the assistance level before locking this repair check.");return}const accessSelector=document.getElementById("repairAccess");const access=validAccessCondition(accessSelector?.value);const accessSource=accessSourceFor(accessSelector,access);const confidence=document.querySelector("input[name=repairConfidence]:checked")?.value||"not_recorded";const correct=TRACK_A_DIAGNOSTIC.checkAnswer(q,raw,choiceIndex);
     const ev={id:`ta_repair_ev_${session.id}_${q.id}`,createdAt:now(),studentId:"michael",track:"B",evidence_class:"INFORMAL_TRACK_B",interaction_purpose:"PRACTICE",instruction_exposure_status:"PRIOR_INSTRUCTION",subject:"Math",skillId:session.skillId,itemId:q.id,prompt:q.q,rawResponse:raw,selectedChoiceIndex:choiceIndex,isCorrect:correct,confidence,assistance_level:assistance,access_condition:access,access_condition_source:accessSource,fresh:true,reliable:q.validated===true,generator:{template_id:q.template_id,template_version:q.template_version,validated:q.validated===true},interpretation:correct?"targeted component check correct":"targeted component check needs more instruction"};pushEvidenceOnce(ev);pushSessionResponseOnce(session,ev);state.trackAActiveSession=session;const submit=document.getElementById("repairSubmit");if(submit)submit.disabled=true;if(!await save("targeted repair component answer")){currentTrackA.halted=true;return}const expected=q.choices?q.choices[q.answer]:q.free;const fb=document.getElementById("repairFeedback");fb.className=`feedback ${correct?"good":"warn"}`;fb.innerHTML=`<strong>${correct?"Yes — that's it.":"Not yet."}</strong><div class="small" style="margin-top:6px">Answer: ${escapeHTML(expected)}</div><button class="btn ${correct?"good":"warn"}" style="margin-top:10px" onclick="window.MLUL.nextTrackARepairCheck()">${session.itemIndex===session.items.length-1?"Finish repair":"Next"}</button>`;
   }
@@ -1760,7 +1796,7 @@
   function readTrackAVerificationQuestion(){const q=currentTrackA.session.items[currentTrackA.session.itemIndex];const selector=document.getElementById("verifyAccess");if(selector){selector.value="SYSTEM_READ_ALOUD";markAccessObserved(selector)}speak(q.q+(q.choices?" Choices. "+q.choices.join('. '):""))}
 
   async function submitTrackAVerificationAnswer(){
-    if(!currentTrackA||currentTrackA.halted)return;const {session}=currentTrackA;const q=session.items[session.itemIndex];let raw="",choiceIndex=null;if(q.choices){const chosen=document.querySelector("input[name=verifyAnswer]:checked");if(!chosen){alert("Choose Michael's answer first.");return}choiceIndex=Number(chosen.value);raw=q.choices[choiceIndex]}else{raw=document.getElementById("verifyFreeAnswer")?.value.trim()||"";if(!raw){alert("Type Michael's answer exactly. 'I don't know' is valid.");return}}const assistance=document.getElementById("verifyAssistance")?.value;if(!ASSISTANCE_LEVELS.includes(assistance)){alert("Record the assistance level before locking this formal verification probe.");return}const accessSelector=document.getElementById("verifyAccess");const access=validAccessCondition(accessSelector?.value);const accessSource=accessSourceFor(accessSelector,access);const confidence=document.querySelector("input[name=verifyConfidence]:checked")?.value||"not_recorded";const prior=trackAPriorInstruction(session.skillId);const fresh=trackAPromptIsFresh(session.skillId,q);const reliable=q.validated===true;const correct=TRACK_A_DIAGNOSTIC.checkAnswer(q,raw,choiceIndex);const fp=TRACK_A_DIAGNOSTIC.fingerprint(q);
+    if(!currentTrackA||currentTrackA.halted)return;const {session}=currentTrackA;const q=session.items[session.itemIndex];let raw="",choiceIndex=null;if(q.choices){const chosen=document.querySelector("input[name=verifyAnswer]:checked");if(!chosen){alert("Choose your answer first.");return}choiceIndex=Number(chosen.value);raw=q.choices[choiceIndex]}else{raw=document.getElementById("verifyFreeAnswer")?.value.trim()||"";if(!raw){alert("Type Michael's answer exactly. 'I don't know' is valid.");return}}const assistance=document.getElementById("verifyAssistance")?.value;if(!ASSISTANCE_LEVELS.includes(assistance)){alert("Record the assistance level before locking this formal verification probe.");return}const accessSelector=document.getElementById("verifyAccess");const access=validAccessCondition(accessSelector?.value);const accessSource=accessSourceFor(accessSelector,access);const confidence=document.querySelector("input[name=verifyConfidence]:checked")?.value||"not_recorded";const prior=trackAPriorInstruction(session.skillId);const fresh=trackAPromptIsFresh(session.skillId,q);const reliable=q.validated===true;const correct=TRACK_A_DIAGNOSTIC.checkAnswer(q,raw,choiceIndex);const fp=TRACK_A_DIAGNOSTIC.fingerprint(q);
     const ev={id:`ta_verify_ev_${session.id}_${q.id}`,createdAt:now(),studentId:"michael",track:"A",evidence_class:"FORMAL_CONTROLLED",interaction_purpose:"MASTERY_CHECK",instruction_exposure_status:prior?"PRIOR_INSTRUCTION":null,cold_baseline_eligible:!prior,subject:"Math",skillId:session.skillId,itemId:q.id,prompt:q.q,prompt_fingerprint:fp,rawResponse:raw,selectedChoiceIndex:choiceIndex,isCorrect:correct,confidence,assistance_level:assistance,access_condition:access,access_condition_source:accessSource,fresh,reliable,generator:{template_id:q.template_id,template_version:q.template_version,validated:q.validated===true},interpretation:null};pushEvidenceOnce(ev);pushSessionResponseOnce(session,ev);session.itemIndex++;state.trackAActiveSession=session;const submit=document.getElementById("verifySubmit");if(submit)submit.disabled=true;if(!await save("Track A verification probe")){currentTrackA.halted=true;const h=document.getElementById("verifyHalt");if(h)h.innerHTML=`<div class="callout warn"><strong>Verification halted.</strong> Required evidence did not save cleanly.</div>`;return}if(session.itemIndex<session.items.length){renderTrackAVerificationQuestion();return}await finishTrackAVerification();
   }
 
@@ -1804,7 +1840,7 @@
   function readTrackAMasteryQuestion(){const q=currentTrackA.session.items[currentTrackA.session.itemIndex];const selector=document.getElementById("masteryAccess");if(selector){selector.value="SYSTEM_READ_ALOUD";markAccessObserved(selector)}speak(q.q+(q.choices?" Choices. "+q.choices.join('. '):""))}
 
   async function submitTrackAMasteryAnswer(){
-    if(!currentTrackA||currentTrackA.halted)return;const {session}=currentTrackA;const task=currentTrackA.task||TRACK_A_MASTERY_STATE.taskById(state.trackAMasterySchedule,session.taskId);const q=session.items[session.itemIndex];let raw="",choiceIndex=null;if(q.choices){const chosen=document.querySelector("input[name=masteryAnswer]:checked");if(!chosen){alert("Choose Michael's answer first.");return}choiceIndex=Number(chosen.value);raw=q.choices[choiceIndex]}else{raw=document.getElementById("masteryFreeAnswer")?.value.trim()||"";if(!raw){alert("Type Michael's answer exactly. 'I don't know' is valid.");return}}const assistance=document.getElementById("masteryAssistance")?.value;if(!ASSISTANCE_LEVELS.includes(assistance)){alert("Record the assistance level before locking this formal probe.");return}const accessSelector=document.getElementById("masteryAccess");const access=validAccessCondition(accessSelector?.value);const accessSource=accessSourceFor(accessSelector,access);const confidence=document.querySelector("input[name=masteryConfidence]:checked")?.value||"not_recorded";const prior=trackAPriorInstruction(session.skillId);const fresh=trackAPromptIsFresh(session.skillId,q);const reliable=q.validated===true;const correct=TRACK_A_DIAGNOSTIC.checkAnswer(q,raw,choiceIndex);const fp=TRACK_A_DIAGNOSTIC.fingerprint(q);const evidenceType=task.type==="TRANSFER"?"FORMAL_TRANSFER":task.type==="MAINTENANCE"?"FORMAL_MAINTENANCE":"FORMAL_DELAYED_RETRIEVAL";
+    if(!currentTrackA||currentTrackA.halted)return;const {session}=currentTrackA;const task=currentTrackA.task||TRACK_A_MASTERY_STATE.taskById(state.trackAMasterySchedule,session.taskId);const q=session.items[session.itemIndex];let raw="",choiceIndex=null;if(q.choices){const chosen=document.querySelector("input[name=masteryAnswer]:checked");if(!chosen){alert("Choose your answer first.");return}choiceIndex=Number(chosen.value);raw=q.choices[choiceIndex]}else{raw=document.getElementById("masteryFreeAnswer")?.value.trim()||"";if(!raw){alert("Type Michael's answer exactly. 'I don't know' is valid.");return}}const assistance=document.getElementById("masteryAssistance")?.value;if(!ASSISTANCE_LEVELS.includes(assistance)){alert("Record the assistance level before locking this formal probe.");return}const accessSelector=document.getElementById("masteryAccess");const access=validAccessCondition(accessSelector?.value);const accessSource=accessSourceFor(accessSelector,access);const confidence=document.querySelector("input[name=masteryConfidence]:checked")?.value||"not_recorded";const prior=trackAPriorInstruction(session.skillId);const fresh=trackAPromptIsFresh(session.skillId,q);const reliable=q.validated===true;const correct=TRACK_A_DIAGNOSTIC.checkAnswer(q,raw,choiceIndex);const fp=TRACK_A_DIAGNOSTIC.fingerprint(q);const evidenceType=task.type==="TRANSFER"?"FORMAL_TRANSFER":task.type==="MAINTENANCE"?"FORMAL_MAINTENANCE":"FORMAL_DELAYED_RETRIEVAL";
     const ev={id:`ta_mastery_ev_${session.id}_${q.id}`,createdAt:now(),studentId:"michael",track:"A",evidence_class:"FORMAL_CONTROLLED",interaction_purpose:"MASTERY_CHECK",evidenceType,instruction_exposure_status:prior?"PRIOR_INSTRUCTION":null,cold_baseline_eligible:!prior,subject:"Math",skillId:session.skillId,itemId:q.id,prompt:q.q,prompt_fingerprint:fp,rawResponse:raw,selectedChoiceIndex:choiceIndex,isCorrect:correct,confidence,assistance_level:assistance,access_condition:access,access_condition_source:accessSource,fresh,reliable,checkpoint:task.checkpoint,transfer:task.type==="TRANSFER"||q.transfer===true,schedule_task_id:task.id,generator:{template_id:q.template_id,template_version:q.template_version,validated:q.validated===true},interpretation:null};pushEvidenceOnce(ev);pushSessionResponseOnce(session,ev);session.itemIndex++;state.trackAActiveSession=session;const submit=document.getElementById("masterySubmit");if(submit)submit.disabled=true;if(!await save("Track A formal mastery probe")){currentTrackA.halted=true;const h=document.getElementById("masteryHalt");if(h)h.innerHTML=`<div class="callout warn"><strong>Formal check halted.</strong> Required evidence did not save cleanly.</div>`;return}if(session.itemIndex<session.items.length){renderTrackAMasteryQuestion();return}await finishTrackAMasteryTask();
   }
 
@@ -2213,7 +2249,7 @@
       won=setup==='reset'&&action==='add'&&end==='keep';details={setup,action,end,trace,finalScore:score};result=(won?'Program goal complete! ':'Debug and try again. ')+`Score trace: ${trace.join(' → ')}. Final score: ${score}. `+(won?'Explain which event changes score.':'Check initialization, addition, and the end action.');
     }else return;
     const helped=!!state.schoolHomework?.gameHints?.[kind];
-    const ok=await writeHomework('save learning game attempt',h=>{h.games.push({id:'game_'+Date.now()+'_'+(h.games.length+1),kind,details,won,assistance_level:helped?'HINTED':'INDEPENDENT',evidence_class:'INFORMAL_TRACK_B',instruction_exposure_status:'PRIOR_INSTRUCTION',masteryEvidence:false,createdAt:now()});homeworkExposure(kind==='cart'?'SCI.MOTION.FORCES':'CODING.SCHOOL.EVENTS','HOMEWORK_GAME');});
+    const ok=await writeHomework('save learning game attempt',h=>{h.games.push({id:'game_'+Date.now()+'_'+(h.games.length+1),kind,details,won,assistance_level:helped?'HINTED':null,evidence_class:'INFORMAL_TRACK_B',instruction_exposure_status:'PRIOR_INSTRUCTION',masteryEvidence:false,createdAt:now()});homeworkExposure(kind==='cart'?'SCI.MOTION.FORCES':'CODING.SCHOOL.EVENTS','HOMEWORK_GAME');});
     if(!ok)return;
     document.getElementById(kind==='cart'?'cartResult':'codeResult').textContent=result+(helped?' Hint used; supported practice.':'');
     const cart=document.getElementById('scienceCart');if(kind==='cart'&&cart){cart.style.transform='translateX('+Math.max(-90,Math.min(200,details.acceleration*45))+'px)';}
@@ -2224,7 +2260,7 @@
     if(firstRunDecisionRequired){document.getElementById("app").innerHTML=firstRunView();return}
     if(storageRecoveryIssue?.type==="MIRROR_AHEAD"){document.getElementById("app").innerHTML=mirrorAheadView();return}
     if(storageRecoveryIssue?.type==="PRIMARY_MISSING_MIRROR_PRESENT"){document.getElementById("app").innerHTML=primaryMissingView();return}
-    const route=getRoute();const view={dashboard,"science-homework":()=>shell(HOMEWORK?.render(state)||"<p>Refresh to load homework.</p>"),"track-b-coding":codingView,"psat-bridge":()=>shell(PSAT_BRIDGE?.render?.()||"<p>PSAT bridge unavailable.</p>"),"school-plan":schoolPlanView,"track-b":trackB,"track-b-math":()=>trackB("math"),"track-b-ela":()=>trackB("ela"),"science-gap":scienceGapView,parent:parentView,evidence:evidenceView,reviews:reviewsView,"track-a":trackA,backup:backupView}[route]||dashboard;
+    const route=getRoute();const view={dashboard,"student-help":()=>shell(window.LEVEL_UP_REPAIR?.help()||"<p>Ask an adult for help.</p>"),"science-homework":()=>shell(window.LEVEL_UP_REPAIR?window.LEVEL_UP_REPAIR.today(state):HOMEWORK?.render(state)||"<p>Refresh to load homework.</p>"),"track-b-coding":codingView,"psat-bridge":()=>shell(PSAT_BRIDGE?.render?.()||"<p>PSAT bridge unavailable.</p>"),"school-plan":schoolPlanView,"track-b":trackB,"track-b-math":()=>trackB("math"),"track-b-ela":()=>trackB("ela"),"science-gap":scienceGapView,parent:parentView,evidence:evidenceView,reviews:reviewsView,"track-a":trackA,backup:backupView}[route]||dashboard;
     document.getElementById("app").innerHTML=view();renderSaveStatus();if(route==="backup")checkPersistenceUI();if(route==="school-plan")SCHOOL_PLAN?.bindLiveTimer?.();
   }
 
@@ -2290,7 +2326,7 @@
     render();
   }
 
-  const appApi={readCurrentPage,speechControl,changeTeachingModel,saveDailyTasks,saveHomeworkResource,addHomeworkTask,saveHomeworkTask,playHomeworkGame,homeworkGameHint,advanceScienceTeach,refreshPSATBridge,startScienceGap,submitScienceGapCold,submitScienceGapProbe,beginScienceGapTransfer,submitScienceGapTransfer,startNextScienceGapRetention,submitScienceGapRetention,exportScienceGapCSV,readSchoolPlan,refreshSchoolPlan,schoolQuestAccess,getSchoolQuestProgress,schoolQuestStudyContext,saveSchoolQuestProgress,beginSchoolQuestItems,recordSchoolQuestAttempt,recordSchoolQuestAccess,endSchoolQuestStudySession,startLesson,readTeach,beginChecks,readQuestion,submitAnswer,nextQuestion,startReview,readReviewQuestion,submitReviewAnswer,startTrackADiagnostic,readTrackAQuestion,submitTrackAAnswer,startTrackARepair,readTrackARepairTeach,beginTrackARepairChecks,readTrackARepairQuestion,submitTrackARepairAnswer,nextTrackARepairCheck,startTrackAVerification,readTrackAVerificationQuestion,submitTrackAVerificationAnswer,initializeTrackAMastery,startTrackAMasteryTask,readTrackAMasteryQuestion,submitTrackAMasteryAnswer,replaceTrackAMasteryTask,finalizeTrackAMastery,resumeTrackAPath,resumeTrackADiagnostic,saveAndExitTrackA,endTrackAPath,endTrackADiagnostic,manualSave,saveAndExit,resumeInterruptedSession,endPreservedSession,exportBackup,importBackup,checkPersistenceUI,requestPersistentStorage,connectLocalDurableFile,reconnectLocalDurableFile,syncLocalDurableFile,checkLocalDurableFileUI,checkSharedPersistenceUI,acknowledgeRedundancyOverride,createNewLearnerRecord,resolveMirrorAhead,restoreMirrorAsAuthoritative,markAccessObserved,__audit:{RUNTIME_ENABLED,STATE_KEY,PROBE_KEY,ASSISTANCE_LEVELS,ACCESS_CONDITIONS,isValidLearnerState,assistanceLevelForSession,validAccessCondition,accessSourceFor,recoverableSession,captureDraftFromUI,upsertSessionRecord,answersMatch,memoryStrengthForReview,reviewOutcomeFromScore,trackAPriorInstruction,trackAPromptIsFresh,trackAActiveRecoverable,trackARouteForSkill,ensureTrackAMasterySchedule,masteryRouteInfo,maybeFinalizeTrackAMastery,sameOriginRedundancyDegraded,runtimeGateStatus,studentRuntimeAllowed,runtimeBlockMessage,sharedPersistenceStatus:()=>sharedPersistenceStatus,localDurableStatus:()=>localDurableStatus}};
+  const appApi={changeStudentExercise,setNarrationRate,reteachLesson,readCurrentPage,speechControl,changeTeachingModel,saveDailyTasks,saveHomeworkResource,addHomeworkTask,saveHomeworkTask,playHomeworkGame,homeworkGameHint,advanceScienceTeach,refreshPSATBridge,startScienceGap,submitScienceGapCold,submitScienceGapProbe,beginScienceGapTransfer,submitScienceGapTransfer,startNextScienceGapRetention,submitScienceGapRetention,exportScienceGapCSV,readSchoolPlan,refreshSchoolPlan,schoolQuestAccess,getSchoolQuestProgress,schoolQuestStudyContext,saveSchoolQuestProgress,beginSchoolQuestItems,recordSchoolQuestAttempt,recordSchoolQuestAccess,endSchoolQuestStudySession,startLesson,readTeach,beginChecks,readQuestion,submitAnswer,nextQuestion,startReview,readReviewQuestion,submitReviewAnswer,startTrackADiagnostic,readTrackAQuestion,submitTrackAAnswer,startTrackARepair,readTrackARepairTeach,beginTrackARepairChecks,readTrackARepairQuestion,submitTrackARepairAnswer,nextTrackARepairCheck,startTrackAVerification,readTrackAVerificationQuestion,submitTrackAVerificationAnswer,initializeTrackAMastery,startTrackAMasteryTask,readTrackAMasteryQuestion,submitTrackAMasteryAnswer,replaceTrackAMasteryTask,finalizeTrackAMastery,resumeTrackAPath,resumeTrackADiagnostic,saveAndExitTrackA,endTrackAPath,endTrackADiagnostic,manualSave,saveAndExit,resumeInterruptedSession,endPreservedSession,exportBackup,importBackup,checkPersistenceUI,requestPersistentStorage,connectLocalDurableFile,reconnectLocalDurableFile,syncLocalDurableFile,checkLocalDurableFileUI,checkSharedPersistenceUI,acknowledgeRedundancyOverride,createNewLearnerRecord,resolveMirrorAhead,restoreMirrorAsAuthoritative,markAccessObserved,__audit:{RUNTIME_ENABLED,STATE_KEY,PROBE_KEY,ASSISTANCE_LEVELS,ACCESS_CONDITIONS,isValidLearnerState,assistanceLevelForSession,validAccessCondition,accessSourceFor,recoverableSession,captureDraftFromUI,upsertSessionRecord,answersMatch,memoryStrengthForReview,reviewOutcomeFromScore,trackAPriorInstruction,trackAPromptIsFresh,trackAActiveRecoverable,trackARouteForSkill,ensureTrackAMasterySchedule,masteryRouteInfo,maybeFinalizeTrackAMastery,sameOriginRedundancyDegraded,runtimeGateStatus,studentRuntimeAllowed,runtimeBlockMessage,sharedPersistenceStatus:()=>sharedPersistenceStatus,localDurableStatus:()=>localDurableStatus}};
   window.LEVEL_UP_APP=appApi;
   window.MLUL=appApi; // compatibility alias for the current Michael pilot UI
   init();

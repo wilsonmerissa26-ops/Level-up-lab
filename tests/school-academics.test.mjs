@@ -71,7 +71,7 @@ vm.runInNewContext(app,ctx,{filename:'app.js'});
 const T=ctx.testAcademics;
 for(const subject of ['math','ela']){
  let session=T.reset(A[subject][0].id);
- T.renderLessonTeach();assert.match(elements.get('app').innerHTML,/Teaching block 1 of 4/);
+ T.renderLessonTeach();assert.match(elements.get('app').innerHTML,/Step 1 of 4/);
  assert(!elements.get('app').innerHTML.includes('Circuit model'),'Academic teaching must not show unrelated circuit diagrams');
  await ctx.MLUL.advanceScienceTeach();assert.equal(session.teachIndex,1);
  T.interrupt();await ctx.MLUL.resumeInterruptedSession();session=T.state().activeSession;
@@ -81,7 +81,7 @@ for(const subject of ['math','ela']){
  session.phase='CHECK_AFTER_TEACH';session.itemIndex=2;
  const lesson=T.current().lesson;choice={value:String(lesson.checks[2].answer)};
  await ctx.MLUL.submitAnswer();
- assert.equal(T.state().evidence.at(-1).subject,subject);assert.equal(T.state().evidence.at(-1).assistance_level,'INDEPENDENT');
+ assert.equal(T.state().evidence.at(-1).subject,subject);assert.equal(T.state().evidence.at(-1).assistance_level,null,'Unrecorded help is not evidence of independence');
  assert.equal(T.state().evidence.at(-1).instruction_exposure_status,'PRIOR_INSTRUCTION');
  session.itemIndex=4;choice=null;elements.set('freeAnswer',{value:'My own explanation with evidence.'});await ctx.MLUL.submitAnswer();
  const written=T.state().evidence.at(-1);assert.equal(written.isCorrect,null);assert(written.requires_review);assert.equal(written.rawResponse,'My own explanation with evidence.');
