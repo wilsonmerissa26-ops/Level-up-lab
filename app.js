@@ -1,5 +1,6 @@
 (() => {
   const CONTENT = window.LEVEL_UP_CONTENT;
+  const HOMEWORK = window.LEVEL_UP_HOMEWORK;
   const REVIEW_ENGINE = window.LEVEL_UP_REVIEW_ENGINE;
   const TRACK_A_ENGINE = window.LEVEL_UP_TRACK_A_ENGINE;
   const TRACK_A_DIAGNOSTIC = window.LEVEL_UP_TRACK_A_DIAGNOSTIC;
@@ -69,6 +70,7 @@
     studyQuests:{},
     studySessions:[],
     schoolExposures:[],
+    schoolHomework:HOMEWORK?.empty()||{resources:{},tasks:[],days:{},games:[],codeDraft:""},
     schoolFacts:[
       {id:"grade.science",subject:"Physical Science",value:"47",status:"CONFIRMED",source:"parent gradebook report"},
       {id:"grade.math",subject:"Math",value:"80",status:"CONFIRMED",source:"parent gradebook report"}
@@ -291,6 +293,7 @@
     if(!Object.prototype.hasOwnProperty.call(value,"scienceGapActiveRetention")) value.scienceGapActiveRetention=null;
     if(!Array.isArray(value.scienceGapRetention)) value.scienceGapRetention=[];
     if(!value.settings || typeof value.settings!=="object") value.settings={readAloud:true,extraProcessing:true,parentTypesVerbatim:true};
+    HOMEWORK?.normalize(value);
     return value;
   }
 
@@ -498,7 +501,7 @@
     const raw=String(CONTENT?.student?.name||CONTENT?.student?.id||"Learner").trim()||"Learner";
     return raw.replace(/[^a-z0-9_-]+/gi,"-").replace(/^-+|-+$/g,"")||"Learner";
   }
-  function allLessons(){return [...CONTENT.science,...CONTENT.math,...(CONTENT.ela||[])]}
+  function allLessons(){return [...CONTENT.science,...CONTENT.math,...(CONTENT.ela||[]),...(CONTENT.coding||[]),...(CONTENT.practice||[])]}
   function lessonById(id){return allLessons().find(x=>x.id===id)}
   function lessonStatus(id){return state.lessonState[id]||{status:"NOT_STARTED",score:null,attempts:0}}
   function isReady(lesson){return !lesson.prereq || lessonStatus(lesson.prereq).status==="COMPLETED"}
@@ -524,7 +527,7 @@
       ${recoveryNotice()}
       ${state?.backup?.pendingAfterLesson?`<div class="notice" style="border-color:#b45309;background:#451a03;color:#fde68a"><strong>Portable backup still pending.</strong> A lesson completed and the browser cannot confirm that an exported file was actually saved. ${state.backup.lastExportAttemptedAt?`An export was attempted ${fmt(state.backup.lastExportAttemptedAt)}, but the browser cannot confirm the file was actually saved.`:`No export attempt is recorded for this lesson yet.`}</div>`:""}
       <div class="nav">
-        ${navBtn("dashboard","Dashboard")}${navBtn("school-plan","School Plan")}${navBtn("psat-bridge","PSAT + Skills")}${navBtn("track-b","Track B")}${navBtn("track-b-math","Math")}${navBtn("track-b-ela","ELA")}${navBtn("science-gap","Science Gap")}${navBtn("parent","Parent View")}${navBtn("evidence","Evidence")}${navBtn("reviews","Review Queue")}${navBtn("track-a","Track A")}${navBtn("backup","Backup")}
+        ${navBtn("dashboard","Dashboard")}${navBtn("science-homework","Daily Tasks")}${navBtn("track-b-coding","Coding")}${navBtn("school-plan","School Plan")}${navBtn("psat-bridge","PSAT + Skills")}${navBtn("track-b","Track B")}${navBtn("track-b-math","Math")}${navBtn("track-b-ela","ELA")}${navBtn("science-gap","Science Gap")}${navBtn("parent","Parent View")}${navBtn("evidence","Evidence")}${navBtn("reviews","Review Queue")}${navBtn("track-a","Track A")}${navBtn("backup","Backup")}
       </div>${body}<footer>Michael Level-Up Lab · v1 foundation</footer></div>`
   }
   function navBtn(route,label){return `<button class="${getRoute()===route?"active":""}" onclick="location.hash='${route}'">${label}</button>`}
@@ -535,12 +538,12 @@
     const pct=Math.round(completed/total*100);
     const due=state.reviewSchedule.filter(r=>!r.completed && new Date(r.dueAt)<=new Date()).length;
     return shell(`<div class="grid">
-      <div class="card c8"><h2>Michael's Level-Up Home</h2><p class="muted">Your school learning plans are ready: circuits in Science, linear functions in Math, and reading and writing for The Wanderings of Odysseus in ELA. Choose a subject and start with one teaching block.</p><div class="progress"><div style="width:${pct}%"></div></div><p class="small muted">${completed} of ${total} current Track B lessons completed.</p><div class="row"><button class="btn primary" onclick="location.hash='track-b'">Science</button><button class="btn" onclick="location.hash='track-b-math'">Math</button><button class="btn" onclick="location.hash='track-b-ela'">ELA</button><button class="btn" onclick="location.hash='parent'">Open Parent View</button></div></div>
+      <div class="card c8"><h2>Michael's Level-Up Home</h2><p class="muted">Your school learning plans are ready: motion and forces in Science, MakeCode in Coding, linear functions in Math, and reading and writing for The Wanderings of Odysseus in ELA. Choose a subject and start with one teaching block.</p><div class="progress"><div style="width:${pct}%"></div></div><p class="small muted">${completed} of ${total} current Track B lessons completed.</p><div class="row"><button class="btn primary" onclick="location.hash='track-b'">Science</button><button class="btn" onclick="location.hash='track-b-math'">Math</button><button class="btn" onclick="location.hash='track-b-ela'">ELA</button><button class="btn" onclick="location.hash='parent'">Open Parent View</button></div></div>
       <div class="card c4"><div class="kpi"><div class="t">Evidence records</div><div class="n">${state.evidence.length}</div></div><div class="spacer"></div><div class="kpi"><div class="t">Reviews due</div><div class="n">${due}</div></div></div>
       <div class="card c6"><h3>Track B · build under audit</h3><p><strong>Immediate teaching + school recovery</strong></p><p class="small muted">Science, Math, and ELA use the same saved teaching cycle. Read-aloud, short blocks, verbal explanation, and automatic evidence capture are built in.</p><button class="btn primary" onclick="location.hash='track-b'">Open Track B</button></div>
       <div class="card c6"><h3>Track A · protected baseline</h3><p><strong>Controlled diagnostics + mastery engine</strong></p><p class="small muted">Track A remains separate. Any Track B-taught skill enters formal evidence with PRIOR_INSTRUCTION attached.</p><button class="btn" onclick="location.hash='track-a'">See Track A rules</button></div>
       <div class="card c12"><h3>ELA · The Wanderings of Odysseus</h3><p>Learn the vocabulary, annotate with purpose, explain character choices and xenia, and write with real textual evidence.</p><button class="btn primary" onclick="location.hash='track-b-ela'">Open ELA learning plan</button><p class="small muted">Earlier Where the Mountain Meets the Moon practice remains in School Plan.</p></div>
-      <div class="card c12"><h3>School Success focus</h3><div class="row"><span class="pill info">Science · Circuits</span><span class="pill info">Math · Linear functions</span><span class="pill info">ELA · Odysseus</span></div><p class="small muted" style="margin-bottom:0">School Success and Core Growth remain separate lanes inside the same learner record.</p></div>
+      <div class="card c12"><h3>School Success focus</h3><div class="row"><span class="pill info">Science · Motion & Forces</span><span class="pill info">Math · Linear functions</span><span class="pill info">ELA · Odysseus</span></div><p class="small muted" style="margin-bottom:0">School Success and Core Growth remain separate lanes inside the same learner record.</p></div>
     </div>`)
   }
 
@@ -829,8 +832,10 @@
   }
 
   function schoolSubjectLinks(selected=""){
-    return '<div class="card subject-switch" aria-label="Choose a subject">'+[['science','track-b','Science'],['math','track-b-math','Math'],['ela','track-b-ela','ELA']].map(([id,route,label])=>'<button class="btn '+(id===selected?'primary':'')+'" aria-pressed="'+(id===selected)+'" onclick="location.hash=\''+route+'\'">'+label+'</button>').join("")+'</div>';
+    return '<div class="card subject-switch" aria-label="Choose a subject">'+[['science','track-b','Science'],['math','track-b-math','Math'],['ela','track-b-ela','ELA'],['coding','track-b-coding','Coding']].map(([id,route,label])=>'<button class="btn '+(id===selected?'primary':'')+'" aria-pressed="'+(id===selected)+'" onclick="location.hash=\''+route+'\'">'+label+'</button>').join("")+'</div>';
   }
+
+  function codingView(){return shell(schoolSubjectLinks('coding')+(HOMEWORK?.codingView()||'')+'<section class="card"><h3>Learn and practice coding</h3><div class="science-lesson-grid">'+(CONTENT.coding||[]).map(l=>lessonCard(l,'coding')).join('')+'</div></section>');}
 
   function academicTrackB(subject){
     const plan=CONTENT.academicLearningPlans?.[subject];
@@ -848,8 +853,8 @@
     const groups=plan?.groups||[{title:"Physical Science",note:"",ids:CONTENT.science.map(l=>l.id)}];
     const cards=groups.map(g=>'<section class="card c12"><h3>'+escapeHTML(g.title)+'</h3><p class="small muted">'+escapeHTML(g.note)+'</p><div class="science-lesson-grid">'+g.ids.map(id=>lessonById(id)).filter(Boolean).map(l=>lessonCard(l,"science")).join("")+'</div></section>').join("");
     const first=plan?.firstLessonId;
-    const start=first?'<button class="btn primary" '+(studentRuntimeAllowed()?'':'disabled')+' onclick="window.MLUL.startLesson(\''+first+'\',\'science\')">Start with circuit foundations</button>':'';
-    return shell(schoolSubjectLinks('science')+'<div class="grid"><section class="card c12"><span class="pill info">Science learning plan · updated October 21</span><h2>Learn the science. Then use it.</h2><p>Current priority: electricity and circuits. Start with a complete path, build the quantities and calculations, then explain the lab with evidence.</p><p class="small muted">One teaching block at a time → worked model → guided practice → less help → independent check → mixed review → delayed retrieval and transfer.</p>'+start+'<p class="small muted">'+"Use the current circuits sequence first. Waves and Energy remain available for review."+'</p></section>'+cards+(window.LEVEL_UP_SCHOOL_SCIENCE?.renderExplorer()||"")+'<section class="card c8"><h3>Prepare for the circuits lab</h3><ol>'+(plan?.labSteps||[]).map(s=>'<li>'+escapeHTML(s)+'</li>').join("")+'</ol><a class="btn" href="'+escapeHTML(plan?.simulatorUrl||"https://phet.colorado.edu")+'" target="_blank" rel="noopener noreferrer">Open the school circuit simulator</a><p class="small muted">Examples inside these lessons are practice values. Your lab explanation must use your actual observations.</p></section><section class="card c4"><h3>Math Bridge when needed</h3><p class="small muted">Use this when number operations or formula rearrangement blocks the science. It does not need to delay the first circuit lesson.</p><div class="stack">'+CONTENT.math.filter(l=>!l.unit).map(l=>lessonCard(l,"math")).join("")+'</div><h3>Later curriculum</h3><p class="small muted">Matter and Force/Motion remain in the full curriculum map. They are not labeled as current school assignments without teacher confirmation.</p></section></div>');
+    const start=first?'<button class="btn primary" '+(studentRuntimeAllowed()?'':'disabled')+' onclick="window.MLUL.startLesson(\''+first+'\',\'science\')">Start motion foundations</button>':'';
+    return shell(schoolSubjectLinks('science')+'<div class="grid"><section class="card c12"><span class="pill info">Science learning plan · updated November 18</span><h2>Learn the science. Then use it.</h2><p>Current priority: Motion & Forces. Learn speed, velocity, acceleration, graphs, force diagrams, mass, weight, and gravity. Use the Daily Tasks page to connect teaching with schoolwork.</p><p class="small muted">One teaching block at a time → worked model → guided practice → less help → independent check → mixed review → delayed retrieval and transfer.</p>'+start+'<button class="btn" onclick="location.hash=\'science-homework\'">Homework, quizzes & games</button><p class="small muted">'+"Use the current motion sequence first. Circuits, Waves, and Energy remain available for semester review."+'</p></section>'+cards+(window.LEVEL_UP_SCHOOL_SCIENCE?.renderExplorer()||"")+'<section class="card c8"><h3>Prepare your motion and gravity lab work</h3><ol>'+(plan?.labSteps||[]).map(s=>'<li>'+escapeHTML(s)+'</li>').join("")+'</ol><a class="btn" href="'+escapeHTML(plan?.simulatorUrl||"https://phet.colorado.edu")+'" target="_blank" rel="noopener noreferrer">Open the current science simulator</a><p class="small muted">Examples inside these lessons are practice values. Your lab explanation must use your actual observations.</p></section><section class="card c4"><h3>Math Bridge when needed</h3><p class="small muted">Use this when number operations or formula rearrangement blocks the science. Use it alongside the current science lesson.</p><div class="stack">'+CONTENT.math.filter(l=>!l.unit).map(l=>lessonCard(l,"math")).join("")+'</div><h3>Later curriculum</h3><p class="small muted">Force/Motion is now the current teaching focus. Matter remains in the full curriculum map; confirm its place in the final-exam scope with the teacher.</p></section></div>');
   }
 
   function lessonCard(l,subject){
@@ -883,7 +888,7 @@
     const teaching=blocks.map((t,i)=>'<div class="teacher"><strong>'+escapeHTML(staged?t[0]:'Teach '+(i+1))+'</strong>'+(staged?'<p>'+escapeHTML(t[1])+'</p>':'<p>'+escapeHTML(t[0])+'</p><p class="small muted">'+escapeHTML(t[1])+'</p>')+'</div>').join("");
     const response=last?'<p><strong>Say it back:</strong> Explain the idea in your own words. A parent can type your exact words. This is teaching evidence.</p><label class="small" for="sayBack">Your explanation (optional)</label><textarea id="sayBack" rows="3" placeholder="Use your own words."></textarea>':'';
     const next=last?'<button class="btn primary" onclick="window.MLUL.beginChecks()">Continue to supported practice</button>':'<button class="btn primary" onclick="window.MLUL.advanceScienceTeach()">Next teaching block</button>';
-    document.getElementById("app").innerHTML=shell('<div class="card"><span class="pill purple">'+escapeHTML(lesson.schoolTag)+'</span><h2>'+escapeHTML(lesson.title)+'</h2><p class="muted">'+heading+' · Track B teaching</p><div class="row"><button class="btn" onclick="window.MLUL.readTeach()">🔊 Read lesson</button><button class="btn" onclick="speechSynthesis.pause()">Pause</button><button class="btn" onclick="speechSynthesis.resume()">Resume</button><button class="btn" onclick="speechSynthesis.cancel()">Stop</button></div>'+(staged&&index===1?((lesson.academicDiagram?window.LEVEL_UP_SCHOOL_ACADEMICS?.diagram(lesson.academicDiagram):window.LEVEL_UP_SCHOOL_SCIENCE?.diagram(lesson.diagram))||""):"")+teaching+'<label class="small">How was this block accessed?</label><select id="teachAccess" onchange="window.MLUL.markAccessObserved(this)">'+accessOptions(session.teach_access_condition)+'</select>'+response+'<div class="spacer"></div><div class="row">'+next+'<button class="btn" onclick="window.MLUL.manualSave()">Save</button><button class="btn" onclick="window.MLUL.saveAndExit()">Save & Exit</button></div></div>');
+    document.getElementById("app").innerHTML=shell('<div class="card"><span class="pill purple">'+escapeHTML(lesson.schoolTag)+'</span><h2>'+escapeHTML(lesson.title)+'</h2><p class="muted">'+heading+' · Track B teaching</p><div class="row"><button class="btn" onclick="window.MLUL.readTeach()">🔊 Read lesson</button><button class="btn" onclick="speechSynthesis.pause()">Pause</button><button class="btn" onclick="speechSynthesis.resume()">Resume</button><button class="btn" onclick="speechSynthesis.cancel()">Stop</button></div>'+(staged&&index===1?((lesson.motionDiagram?window.LEVEL_UP_MOTION?.diagram(lesson.motionDiagram):lesson.academicDiagram?window.LEVEL_UP_SCHOOL_ACADEMICS?.diagram(lesson.academicDiagram):window.LEVEL_UP_SCHOOL_SCIENCE?.diagram(lesson.diagram))||""):"")+teaching+'<label class="small">How was this block accessed?</label><select id="teachAccess" onchange="window.MLUL.markAccessObserved(this)">'+accessOptions(session.teach_access_condition)+'</select>'+response+'<div class="spacer"></div><div class="row">'+next+'<button class="btn" onclick="window.MLUL.manualSave()">Save</button><button class="btn" onclick="window.MLUL.saveAndExit()">Save & Exit</button></div></div>');
     renderSaveStatus();restoreDraftToUI();bindDraftAutosave();window.scrollTo({top:0,behavior:"smooth"});
   }
 
@@ -982,6 +987,7 @@
   }
 
   function scheduleReviews(skillId,subject){
+    if(lessonById(skillId)?.practiceOnly)return;
     const existing=state.reviewSchedule.filter(x=>x.skillId===skillId);if(existing.length)return;
     [2,7,21].forEach(days=>{const d=new Date();d.setDate(d.getDate()+days);state.reviewSchedule.push({id:`rev_${Date.now()}_${days}`,skillId,subject,dueAt:d.toISOString(),window:`Day ${days}`,completed:false,sourceTrack:"B",evidence_class:"INFORMAL_TRACK_B",instruction_exposure_status:"PRIOR_INSTRUCTION"})});
   }
@@ -1008,7 +1014,7 @@
   function reviewSeenPrompts(skillId,beforeIso){
     const before=new Date(beforeIso||now()).getTime();const key=t=>String(t??"").trim().toLowerCase().replace(/\s+/g," ");
     const seen=new Set((lessonById(skillId)?.checks||[]).map(q=>key(q.q)));
-    for(const e of state.evidence||[])if(e.skillId===skillId&&e.prompt&&new Date(e.createdAt).getTime()<before)seen.add(key(e.prompt));
+    for(const e of state.evidence||[])if(e.prompt&&new Date(e.createdAt).getTime()<before)seen.add(key(e.prompt));
     return {has:t=>seen.has(key(t))};
   }
   function buildReviewItems(review,session){
@@ -1183,9 +1189,9 @@
   }
 
   function scienceGapPriorInstruction(item){
-    const lessons=CONTENT.science.filter(l=>(l.targetIds||SCIENCE_CURRICULUM?.legacyAlignment?.[l.id]||[]).includes(item.targetId));
+    const lessons=allLessons().filter(l=>(l.targetIds||SCIENCE_CURRICULUM?.legacyAlignment?.[l.id]||[]).includes(item.targetId));
     const ids=new Set([item.targetId,...lessons.map(l=>l.id)]);
-    return state.evidence.some(e=>ids.has(e.skillId)&&e.instruction_exposure_status==="PRIOR_INSTRUCTION")||(state.sessions||[]).some(s=>ids.has(s.lessonId)&&s.instructionDelivered);
+    return (state.schoolExposures||[]).some(e=>e.targetId===item.targetId&&e.instruction_exposure_status==="PRIOR_INSTRUCTION")||state.evidence.some(e=>ids.has(e.skillId)&&e.instruction_exposure_status==="PRIOR_INSTRUCTION")||(state.sessions||[]).some(s=>ids.has(s.lessonId)&&s.instructionDelivered);
   }
   function scienceGapEligibleItems(){return SCIENCE_GAP.coldEligible().filter(item=>!scienceGapPriorInstruction(item));}
 
@@ -1418,7 +1424,7 @@
   function trackAPriorInstruction(skillId){
     const taughtIds=new Set(allLessons().filter(l=>(l.priorSkillIds||[]).includes(skillId)).map(l=>l.id));
     const relevant=id=>id===skillId||taughtIds.has(id);
-    return state.evidence.some(e=>relevant(e.skillId) && e.instruction_exposure_status==="PRIOR_INSTRUCTION") ||
+    return (state.schoolExposures||[]).some(e=>e.targetId===skillId&&e.instruction_exposure_status==="PRIOR_INSTRUCTION")||state.evidence.some(e=>relevant(e.skillId) && e.instruction_exposure_status==="PRIOR_INSTRUCTION") ||
       (state.sessions||[]).some(s=>s.track==="B"&&s.instructionDelivered===true&&relevant(s.lessonId));
   }
 
@@ -2076,12 +2082,81 @@
 
   async function checkPersistenceUI(){const ok=await persistenceHealthCheck();renderSaveStatus();const el=document.getElementById("healthText");if(el)el.innerHTML=ok?"<span style='color:#9af0b8'>PASS: primary IndexedDB response persistence is working.</span>":"<span style='color:#ff9baa'>FAIL: do not run a lesson until primary storage is working.</span>"}
 
+  let homeworkBusy=false;
+
+  async function writeHomework(reason,change){
+    if(homeworkBusy)return false;
+    if(!evidenceSessionAllowed())return false;
+    if(!studentRuntimeAllowed()){blockStudentRuntime();return false;}
+    if(!saveHealthy){alert("Repair saving before updating homework.");return false;}
+    homeworkBusy=true;
+    try{
+      if(!await persistenceHealthCheck()){alert("Saving could not be verified.");return false;}
+      HOMEWORK.normalize(state);change(state.schoolHomework);
+      const ok=await save(reason);if(!ok)alert("This update was not saved. Keep your notes on this page and repair saving before leaving.");
+      renderSaveStatus();return ok;
+    }finally{homeworkBusy=false;}
+  }
+  function homeworkExposure(lessonId,source){
+    for(const targetId of [...(lessonById(lessonId)?.targetIds||[]),...(lessonById(lessonId)?.priorSkillIds||[])])if(!(state.schoolExposures||[]).some(e=>e.targetId===targetId&&e.source===source))state.schoolExposures.push({targetId,source,instruction_exposure_status:"PRIOR_INSTRUCTION",diagnosticEvidence:false,evidenceClass:null,createdAt:now()});
+  }
+  function homeworkTeachingAllowed(){if(state.scienceGapActiveSession?.status==="ACTIVE"||state.scienceGapActiveRetention?.status==="ACTIVE"){alert("Finish the active Science Gap check before adding new instruction or games.");return false;}return true;}
+  async function saveDailyTasks(){
+    const form=document.getElementById("dailyTasks");if(!form)return;
+    const d={note:document.getElementById("dayNote")?.value||"",updatedAt:now(),reportType:"SELF_REPORT"};
+    for(const k of ['school','science','apply','coding','review'])d[k]=!!form.querySelector('[name="'+k+'"]')?.checked;
+    if(await writeHomework("save daily checklist",h=>{h.days[HOMEWORK.dateKey()]=d;}))render();
+  }
+  async function saveHomeworkResource(id){
+    const r=HOMEWORK.resources.find(r=>r.id===id);if(!r)return;
+    const viewed=!!document.getElementById('seen-'+id)?.checked,note=document.getElementById('note-'+id)?.value||"";
+    if((viewed||note.trim())&&!homeworkTeachingAllowed())return;
+    if(await writeHomework("save resource report",h=>{h.resources[id]={viewed,note,reportType:"SELF_REPORT",updatedAt:now()};if(viewed||note.trim())homeworkExposure(r.lessonId,'HOMEWORK_RESOURCE_SELF_REPORT');}))render();
+  }
+  async function addHomeworkTask(){
+    const title=document.getElementById('taskTitle')?.value.trim(),raw=document.getElementById('taskLink')?.value.trim()||'',url=raw?HOMEWORK.safeUrl(raw):'';
+    if(!title){alert('Enter the assignment title.');return;}if(raw&&!url){alert('Use a valid https school link.');return;}
+    const task={id:'hw_'+Date.now(),title:title.slice(0,160),subject:document.getElementById('taskSubject')?.value||'Physical Science',url,due:document.getElementById('taskDue')?.value||'',status:'TO_VERIFY',note:'',createdAt:now()};
+    if(await writeHomework('add school assignment',h=>{h.tasks.push(task);}))render();
+  }
+  async function saveHomeworkTask(i){
+    const status=document.getElementById('taskStatus-'+i)?.value,note=document.getElementById('taskNote-'+i)?.value||'';
+    if(!['TO_VERIFY','WORKING','READY_TO_SUBMIT','SUBMITTED_SELF_REPORT','TEACHER_CONFIRMED'].includes(status))return;
+    if(await writeHomework('save school assignment',h=>{if(h.tasks[i])Object.assign(h.tasks[i],{status,note,updatedAt:now()});}))render();
+  }
+  async function homeworkGameHint(kind){
+    if(!["cart","code"].includes(kind)||!homeworkTeachingAllowed())return;
+    const el=document.getElementById(kind==='cart'?'cartResult':'codeResult');if(!el)return;
+    if(!await writeHomework("save game hint",h=>{if(!h.gameHints)h.gameHints={};h.gameHints[kind]=true;homeworkExposure(kind==='cart'?'SCI.MOTION.FORCES':'CODING.SCHOOL.EVENTS','HOMEWORK_GAME_HINT');}))return;
+    el.textContent=kind==='cart'?'Hint: net force = right push − left push; acceleration = net force / mass. Aim for +2 m/s².':'Hint: initialize once with set score to 0. Each collection should add one point; ending should preserve that score.';
+  }
+  async function playHomeworkGame(kind){
+    if(!homeworkTeachingAllowed())return;
+    const input=id=>Number(document.getElementById(id)?.value);
+    let details,result,won;
+    if(kind==='cart'){
+      const m=input('cartMass'),right=input('cartRight'),left=input('cartLeft'),raw=document.getElementById('cartPrediction')?.value;
+      if(!raw||![m,right,left,Number(raw)].every(Number.isFinite)||m<=0||right<0||left<0||right>30||left>30){alert('Choose valid forces (0–30 N), mass, and a predicted acceleration.');return;}
+      const acceleration=(right-left)/m,prediction=Number(raw);won=Math.abs(acceleration-2)<1e-9&&Math.abs(prediction-acceleration)<1e-9;details={mass:m,right,left,prediction,acceleration};
+      result=(won?'Rescue complete! ':'Try another launch. ')+`Net force = ${right-left} N; acceleration = ${acceleration.toFixed(2)} m/s². `+(Math.abs(prediction-acceleration)<1e-9?'Prediction matched.':'Check your prediction.')+' Goal: +2 m/s². This is game practice.';
+    }else if(kind==='code'){
+      const setup=document.getElementById('codeSetup')?.value,action=document.getElementById('codeAction')?.value,end=document.getElementById('codeEnd')?.value;
+      let score=setup==='reset'?0:7;const trace=[score];for(let n=0;n<3;n++){score=action==='add'?score+1:1;trace.push(score);}if(end==='reset')score=0;
+      won=setup==='reset'&&action==='add'&&end==='keep';details={setup,action,end,trace,finalScore:score};result=(won?'Program goal complete! ':'Debug and try again. ')+`Score trace: ${trace.join(' → ')}. Final score: ${score}. `+(won?'Explain which event changes score.':'Check initialization, addition, and the end action.');
+    }else return;
+    const helped=!!state.schoolHomework?.gameHints?.[kind];
+    const ok=await writeHomework('save learning game attempt',h=>{h.games.push({id:'game_'+Date.now()+'_'+(h.games.length+1),kind,details,won,assistance_level:helped?'HINTED':'INDEPENDENT',evidence_class:'INFORMAL_TRACK_B',instruction_exposure_status:'PRIOR_INSTRUCTION',masteryEvidence:false,createdAt:now()});homeworkExposure(kind==='cart'?'SCI.MOTION.FORCES':'CODING.SCHOOL.EVENTS','HOMEWORK_GAME');});
+    if(!ok)return;
+    document.getElementById(kind==='cart'?'cartResult':'codeResult').textContent=result+(helped?' Hint used; supported practice.':'');
+    const cart=document.getElementById('scienceCart');if(kind==='cart'&&cart){cart.style.transform='translateX('+Math.max(-90,Math.min(200,details.acceleration*45))+'px)';}
+  }
+
   function render(){
     if(current)return;
     if(firstRunDecisionRequired){document.getElementById("app").innerHTML=firstRunView();return}
     if(storageRecoveryIssue?.type==="MIRROR_AHEAD"){document.getElementById("app").innerHTML=mirrorAheadView();return}
     if(storageRecoveryIssue?.type==="PRIMARY_MISSING_MIRROR_PRESENT"){document.getElementById("app").innerHTML=primaryMissingView();return}
-    const route=getRoute();const view={dashboard,"psat-bridge":()=>shell(PSAT_BRIDGE?.render?.()||"<p>PSAT bridge unavailable.</p>"),"school-plan":schoolPlanView,"track-b":trackB,"track-b-math":()=>trackB("math"),"track-b-ela":()=>trackB("ela"),"science-gap":scienceGapView,parent:parentView,evidence:evidenceView,reviews:reviewsView,"track-a":trackA,backup:backupView}[route]||dashboard;
+    const route=getRoute();const view={dashboard,"science-homework":()=>shell(HOMEWORK?.render(state)||"<p>Refresh to load homework.</p>"),"track-b-coding":codingView,"psat-bridge":()=>shell(PSAT_BRIDGE?.render?.()||"<p>PSAT bridge unavailable.</p>"),"school-plan":schoolPlanView,"track-b":trackB,"track-b-math":()=>trackB("math"),"track-b-ela":()=>trackB("ela"),"science-gap":scienceGapView,parent:parentView,evidence:evidenceView,reviews:reviewsView,"track-a":trackA,backup:backupView}[route]||dashboard;
     document.getElementById("app").innerHTML=view();renderSaveStatus();if(route==="backup")checkPersistenceUI();if(route==="school-plan")SCHOOL_PLAN?.bindLiveTimer?.();
   }
 
@@ -2147,7 +2222,7 @@
     render();
   }
 
-  const appApi={advanceScienceTeach,refreshPSATBridge,startScienceGap,submitScienceGapCold,submitScienceGapProbe,beginScienceGapTransfer,submitScienceGapTransfer,startNextScienceGapRetention,submitScienceGapRetention,exportScienceGapCSV,readSchoolPlan,refreshSchoolPlan,schoolQuestAccess,getSchoolQuestProgress,schoolQuestStudyContext,saveSchoolQuestProgress,beginSchoolQuestItems,recordSchoolQuestAttempt,recordSchoolQuestAccess,endSchoolQuestStudySession,startLesson,readTeach,beginChecks,readQuestion,submitAnswer,nextQuestion,startReview,readReviewQuestion,submitReviewAnswer,startTrackADiagnostic,readTrackAQuestion,submitTrackAAnswer,startTrackARepair,readTrackARepairTeach,beginTrackARepairChecks,readTrackARepairQuestion,submitTrackARepairAnswer,nextTrackARepairCheck,startTrackAVerification,readTrackAVerificationQuestion,submitTrackAVerificationAnswer,initializeTrackAMastery,startTrackAMasteryTask,readTrackAMasteryQuestion,submitTrackAMasteryAnswer,replaceTrackAMasteryTask,finalizeTrackAMastery,resumeTrackAPath,resumeTrackADiagnostic,saveAndExitTrackA,endTrackAPath,endTrackADiagnostic,manualSave,saveAndExit,resumeInterruptedSession,endPreservedSession,exportBackup,importBackup,checkPersistenceUI,requestPersistentStorage,connectLocalDurableFile,reconnectLocalDurableFile,syncLocalDurableFile,checkLocalDurableFileUI,checkSharedPersistenceUI,acknowledgeRedundancyOverride,createNewLearnerRecord,resolveMirrorAhead,restoreMirrorAsAuthoritative,markAccessObserved,__audit:{RUNTIME_ENABLED,STATE_KEY,PROBE_KEY,ASSISTANCE_LEVELS,ACCESS_CONDITIONS,isValidLearnerState,assistanceLevelForSession,validAccessCondition,accessSourceFor,recoverableSession,captureDraftFromUI,upsertSessionRecord,answersMatch,memoryStrengthForReview,reviewOutcomeFromScore,trackAPriorInstruction,trackAPromptIsFresh,trackAActiveRecoverable,trackARouteForSkill,ensureTrackAMasterySchedule,masteryRouteInfo,maybeFinalizeTrackAMastery,sameOriginRedundancyDegraded,runtimeGateStatus,studentRuntimeAllowed,runtimeBlockMessage,sharedPersistenceStatus:()=>sharedPersistenceStatus,localDurableStatus:()=>localDurableStatus}};
+  const appApi={saveDailyTasks,saveHomeworkResource,addHomeworkTask,saveHomeworkTask,playHomeworkGame,homeworkGameHint,advanceScienceTeach,refreshPSATBridge,startScienceGap,submitScienceGapCold,submitScienceGapProbe,beginScienceGapTransfer,submitScienceGapTransfer,startNextScienceGapRetention,submitScienceGapRetention,exportScienceGapCSV,readSchoolPlan,refreshSchoolPlan,schoolQuestAccess,getSchoolQuestProgress,schoolQuestStudyContext,saveSchoolQuestProgress,beginSchoolQuestItems,recordSchoolQuestAttempt,recordSchoolQuestAccess,endSchoolQuestStudySession,startLesson,readTeach,beginChecks,readQuestion,submitAnswer,nextQuestion,startReview,readReviewQuestion,submitReviewAnswer,startTrackADiagnostic,readTrackAQuestion,submitTrackAAnswer,startTrackARepair,readTrackARepairTeach,beginTrackARepairChecks,readTrackARepairQuestion,submitTrackARepairAnswer,nextTrackARepairCheck,startTrackAVerification,readTrackAVerificationQuestion,submitTrackAVerificationAnswer,initializeTrackAMastery,startTrackAMasteryTask,readTrackAMasteryQuestion,submitTrackAMasteryAnswer,replaceTrackAMasteryTask,finalizeTrackAMastery,resumeTrackAPath,resumeTrackADiagnostic,saveAndExitTrackA,endTrackAPath,endTrackADiagnostic,manualSave,saveAndExit,resumeInterruptedSession,endPreservedSession,exportBackup,importBackup,checkPersistenceUI,requestPersistentStorage,connectLocalDurableFile,reconnectLocalDurableFile,syncLocalDurableFile,checkLocalDurableFileUI,checkSharedPersistenceUI,acknowledgeRedundancyOverride,createNewLearnerRecord,resolveMirrorAhead,restoreMirrorAsAuthoritative,markAccessObserved,__audit:{RUNTIME_ENABLED,STATE_KEY,PROBE_KEY,ASSISTANCE_LEVELS,ACCESS_CONDITIONS,isValidLearnerState,assistanceLevelForSession,validAccessCondition,accessSourceFor,recoverableSession,captureDraftFromUI,upsertSessionRecord,answersMatch,memoryStrengthForReview,reviewOutcomeFromScore,trackAPriorInstruction,trackAPromptIsFresh,trackAActiveRecoverable,trackARouteForSkill,ensureTrackAMasterySchedule,masteryRouteInfo,maybeFinalizeTrackAMastery,sameOriginRedundancyDegraded,runtimeGateStatus,studentRuntimeAllowed,runtimeBlockMessage,sharedPersistenceStatus:()=>sharedPersistenceStatus,localDurableStatus:()=>localDurableStatus}};
   window.LEVEL_UP_APP=appApi;
   window.MLUL=appApi; // compatibility alias for the current Michael pilot UI
   init();
