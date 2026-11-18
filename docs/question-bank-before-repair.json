@@ -1,0 +1,3984 @@
+{
+  "sourceCommit": "df85abd8733273ff0e15c4f5e45b27c6c53d32d2",
+  "lessons": {
+    "SCI.MOTION.DISTANCE": [
+      {
+        "id": "DISTANCE-0",
+        "q": "A toy travels 18 m in 6 s. Use speed = distance / time. Find average speed.",
+        "choices": [
+          "108 m/s",
+          "12 m/s",
+          "3 m/s"
+        ],
+        "answer": 2,
+        "why": "18/6 = 3 m/s.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CONCEPT",
+        "support": "18/6 = 3 m/s."
+      },
+      {
+        "id": "DISTANCE-1",
+        "q": "A walker goes 7 m east, then 7 m west. What is displacement?",
+        "choices": [
+          "7 m west",
+          "0 m",
+          "14 m east"
+        ],
+        "answer": 1,
+        "why": "The ending and starting positions are the same.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "DISTANCE-2",
+        "q": "A runner covers 36 m in 9 s. What is average speed?",
+        "choices": [
+          "4 m/s",
+          "27 m/s",
+          "324 m/s"
+        ],
+        "answer": 0,
+        "why": "36/9 = 4 m/s.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "DISTANCE-3",
+        "q": "A cart moves 15 m west in 3 s. What is average velocity?",
+        "choices": [
+          "5 m/s with no direction",
+          "45 m/s west",
+          "5 m/s west"
+        ],
+        "answer": 2,
+        "why": "Velocity includes displacement per time and direction.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "DISTANCE-explain",
+        "q": "A robot goes 9 m north and 3 m south in 6 s. Show distance, displacement, average speed, and average velocity.",
+        "rubric": [
+          "Distance 12 m; displacement 6 m north.",
+          "Average speed 2 m/s; average velocity 1 m/s north."
+        ],
+        "why": "Distance 12 m; displacement 6 m north. Average speed 2 m/s; average velocity 1 m/s north.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION"
+      }
+    ],
+    "SCI.MOTION.ACCELERATION": [
+      {
+        "id": "ACCELERATION-0",
+        "q": "Velocity changes from 0 to +12 m/s in 4 s. Use change in velocity / time.",
+        "choices": [
+          "+8 m/s\u00b2",
+          "+3 m/s\u00b2",
+          "+48 m/s\u00b2"
+        ],
+        "answer": 1,
+        "why": "(12 \u2212 0)/4 = 3.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CONCEPT",
+        "support": "(12 \u2212 0)/4 = 3."
+      },
+      {
+        "id": "ACCELERATION-1",
+        "q": "Velocity changes from +8 to +2 m/s in 2 s. Find acceleration.",
+        "choices": [
+          "\u22123 m/s\u00b2",
+          "+3 m/s\u00b2",
+          "+5 m/s\u00b2"
+        ],
+        "answer": 0,
+        "why": "(2 \u2212 8)/2 = \u22123.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "ACCELERATION-2",
+        "q": "Velocity is +3 m/s at 5 s and +15 m/s at 9 s. Find average acceleration.",
+        "choices": [
+          "+1.33 m/s\u00b2",
+          "+12 m/s\u00b2",
+          "+3 m/s\u00b2"
+        ],
+        "answer": 2,
+        "why": "Elapsed time is 4 s, so (15 \u2212 3)/4 = 3.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "ACCELERATION-3",
+        "q": "Velocity is negative and acceleration is negative. What happens to speed?",
+        "choices": [
+          "It must stay zero",
+          "It increases",
+          "It must decrease"
+        ],
+        "answer": 1,
+        "why": "Velocity becomes more negative, so its magnitude grows.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "ACCELERATION-explain",
+        "q": "A cart moves west at 6 m/s, then west at 10 m/s after 2 s. Choose east as positive. Calculate acceleration and explain its speed change.",
+        "rubric": [
+          "Initial \u22126, final \u221210 m/s; acceleration \u22122 m/s\u00b2.",
+          "Speed increases because velocity and acceleration both point west."
+        ],
+        "why": "Initial \u22126, final \u221210 m/s; acceleration \u22122 m/s\u00b2. Speed increases because velocity and acceleration both point west.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION"
+      }
+    ],
+    "SCI.MOTION.POSITION_GRAPH": [
+      {
+        "id": "POSITION_GRAPH-0",
+        "q": "A position-time line passes through (0 s, 0 m) and (4 s, 8 m). Use rise/run. Find velocity.",
+        "choices": [
+          "+8 m/s",
+          "+32 m/s",
+          "+2 m/s"
+        ],
+        "answer": 2,
+        "why": "8/4 = 2 m/s.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CONCEPT",
+        "support": "8/4 = 2 m/s."
+      },
+      {
+        "id": "POSITION_GRAPH-1",
+        "q": "A straight-route position-time segment is horizontal. What does it show?",
+        "choices": [
+          "A downhill road",
+          "Stopped",
+          "Constant positive acceleration"
+        ],
+        "answer": 1,
+        "why": "Position is unchanged while time passes.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "POSITION_GRAPH-2",
+        "q": "Position changes from +18 m at 2 s to +6 m at 6 s along a straight line. Find velocity.",
+        "choices": [
+          "\u22123 m/s",
+          "+3 m/s",
+          "\u221212 m/s"
+        ],
+        "answer": 0,
+        "why": "(6 \u2212 18)/(6 \u2212 2) = \u22123 m/s.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "POSITION_GRAPH-3",
+        "q": "Which vertical-axis quantity cannot decrease as a trip continues?",
+        "choices": [
+          "Position on a straight route",
+          "Distance from home",
+          "Cumulative distance traveled"
+        ],
+        "answer": 2,
+        "why": "Total path length adds up; it never subtracts the return trip.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "POSITION_GRAPH-explain",
+        "q": "Draw and label a position-time graph for moving forward at constant velocity, stopping, then returning at constant velocity. Explain each slope.",
+        "rubric": [
+          "Time (s) horizontal; position (m) vertical; title and scale.",
+          "Rising straight line, horizontal line, falling straight line.",
+          "Returning is negative velocity; a straight return segment does not mean slowing down."
+        ],
+        "why": "Time (s) horizontal; position (m) vertical; title and scale. Rising straight line, horizontal line, falling straight line. Returning is negative velocity; a straight return segment does not mean slowing down.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION"
+      }
+    ],
+    "SCI.MOTION.VELOCITY_GRAPH": [
+      {
+        "id": "VELOCITY_GRAPH-0",
+        "q": "A velocity-time line rises from 0 to +8 m/s over 4 s. Its slope is\u2026",
+        "choices": [
+          "+8 m/s",
+          "+32 m",
+          "+2 m/s\u00b2"
+        ],
+        "answer": 2,
+        "why": "Change in velocity divided by time is acceleration.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CONCEPT",
+        "support": "Change in velocity divided by time is acceleration."
+      },
+      {
+        "id": "VELOCITY_GRAPH-1",
+        "q": "Velocity-time is horizontal at +5 m/s. Which statement fits?",
+        "choices": [
+          "Acceleration is +5 m/s\u00b2",
+          "Constant velocity, zero acceleration",
+          "Stopped at 5 m"
+        ],
+        "answer": 1,
+        "why": "Height is velocity; slope is acceleration.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "VELOCITY_GRAPH-2",
+        "q": "Velocity is +6 m/s for 3 s. What displacement is shown by the rectangular area?",
+        "choices": [
+          "+18 m",
+          "+2 m",
+          "+9 m"
+        ],
+        "answer": 0,
+        "why": "6 m/s \u00d7 3 s = 18 m.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "VELOCITY_GRAPH-3",
+        "q": "Velocity becomes more negative on a downward-sloping segment below zero. What happens?",
+        "choices": [
+          "Speed must decrease",
+          "Distance traveled becomes negative",
+          "Speed increases in the negative direction"
+        ],
+        "answer": 2,
+        "why": "Speed is the magnitude of velocity.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "VELOCITY_GRAPH-explain",
+        "q": "Using your actual toy data, show acceleration between 15 s and 25 s. Explain a horizontal line on position-time versus velocity-time.",
+        "rubric": [
+          "Use (v at 25 s \u2212 v at 15 s)/10 s and m/s\u00b2; do not invent values.",
+          "Horizontal position-time means stopped.",
+          "Horizontal velocity-time means constant velocity, which may be nonzero."
+        ],
+        "why": "Use (v at 25 s \u2212 v at 15 s)/10 s and m/s\u00b2; do not invent values. Horizontal position-time means stopped. Horizontal velocity-time means constant velocity, which may be nonzero.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION"
+      }
+    ],
+    "SCI.MOTION.FORCES": [
+      {
+        "id": "FORCES-0",
+        "q": "A box has 12 N right and 5 N left. Subtract opposing forces. Net force is\u2026",
+        "choices": [
+          "7 N left",
+          "7 N right",
+          "17 N right"
+        ],
+        "answer": 1,
+        "why": "Choose right positive: 12 \u2212 5 = 7 N.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CONCEPT",
+        "support": "Choose right positive: 12 \u2212 5 = 7 N."
+      },
+      {
+        "id": "FORCES-1",
+        "q": "A cart moves at constant velocity. What is its net force?",
+        "choices": [
+          "0 N",
+          "A forward force must be larger",
+          "Its weight must be zero"
+        ],
+        "answer": 0,
+        "why": "Constant velocity means zero acceleration.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "FORCES-2",
+        "q": "A 4 kg cart has 20 N net right. What is acceleration?",
+        "choices": [
+          "80 m/s\u00b2 right",
+          "16 m/s\u00b2 right",
+          "5 m/s\u00b2 right"
+        ],
+        "answer": 2,
+        "why": "a = Fnet/m = 20/4 = 5.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "FORCES-3",
+        "q": "Why do Earth\u2019s pull on a ball and the ball\u2019s pull on Earth not cancel on the ball?",
+        "choices": [
+          "Reaction forces happen later",
+          "They act on different objects",
+          "Earth always exerts more force"
+        ],
+        "answer": 1,
+        "why": "Third-law partners act on separate objects.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "FORCES-explain",
+        "q": "Draw forces on a box resting on a horizontal table with no extra pushes. Then explain how a moving cart can have zero net force.",
+        "rubric": [
+          "Weight downward and normal upward with equal magnitudes for this setup.",
+          "No acceleration means constant velocity; a forward net force is not required to maintain it."
+        ],
+        "why": "Weight downward and normal upward with equal magnitudes for this setup. No acceleration means constant velocity; a forward net force is not required to maintain it.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION"
+      }
+    ],
+    "SCI.MOTION.WEIGHT": [
+      {
+        "id": "WEIGHT-0",
+        "q": "A 3 kg object is near Earth. Use W = mg and g = 9.8 m/s\u00b2. Weight is\u2026",
+        "choices": [
+          "0.31 N",
+          "29.4 N",
+          "3 N"
+        ],
+        "answer": 1,
+        "why": "3 \u00d7 9.8 = 29.4 N downward.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CONCEPT",
+        "support": "3 \u00d7 9.8 = 29.4 N downward."
+      },
+      {
+        "id": "WEIGHT-1",
+        "q": "The same object moves from Earth to a place with weaker gravity. What stays the same?",
+        "choices": [
+          "Mass",
+          "Weight",
+          "Local gravitational acceleration"
+        ],
+        "answer": 0,
+        "why": "Mass remains the same; weight depends on g.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "WEIGHT-2",
+        "q": "Two balls of different mass are released together from the same height in a vacuum. They\u2026",
+        "choices": [
+          "Accelerate in proportion to mass",
+          "Have equal weights",
+          "Have the same downward acceleration"
+        ],
+        "answer": 2,
+        "why": "Both accelerate at the local g.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "WEIGHT-3",
+        "q": "Can impact force be determined from mass and gravitational acceleration alone?",
+        "choices": [
+          "Yes; mass alone gives impact force",
+          "No; stopping time or stopping process also matters",
+          "Yes; impact force is always mg"
+        ],
+        "answer": 1,
+        "why": "mg gives weight, not the contact force during a collision.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "WEIGHT-explain",
+        "q": "Compare a 1 kg and a 4 kg object dropped from equal height with negligible air resistance. Discuss acceleration, weight, landing time, and what is unknown about impact.",
+        "rubric": [
+          "Same g and landing time if released together from rest.",
+          "Weights 9.8 N and 39.2 N near Earth.",
+          "Impact force needs stopping-process information; report measured crater observations without pretending they are newtons."
+        ],
+        "why": "Same g and landing time if released together from rest. Weights 9.8 N and 39.2 N near Earth. Impact force needs stopping-process information; report measured crater observations without pretending they are newtons.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION"
+      }
+    ],
+    "SCI.MOTION.GRAVITY": [
+      {
+        "id": "GRAVITY-0",
+        "q": "Masses stay fixed and center separation doubles. Use the inverse-square relationship. Force becomes\u2026",
+        "choices": [
+          "One-fourth",
+          "One-half",
+          "Twice as large"
+        ],
+        "answer": 0,
+        "why": "(r/2r)\u00b2 = 1/4.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CONCEPT",
+        "support": "(r/2r)\u00b2 = 1/4."
+      },
+      {
+        "id": "GRAVITY-1",
+        "q": "One mass doubles while the other mass and separation stay fixed. Force becomes\u2026",
+        "choices": [
+          "Four times as large",
+          "Unchanged",
+          "Twice as large"
+        ],
+        "answer": 2,
+        "why": "Only one mass factor doubles.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "GRAVITY-2",
+        "q": "Both masses double and center separation also doubles. What happens to force?",
+        "choices": [
+          "It becomes one-fourth",
+          "It stays the same",
+          "It doubles"
+        ],
+        "answer": 1,
+        "why": "Mass product \u00d74 and separation squared \u00d74 cancel.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "GRAVITY-3",
+        "q": "A large planet and small moon attract. Which comparison is correct?",
+        "choices": [
+          "Equal force magnitudes, different accelerations",
+          "Planet exerts more force on the moon",
+          "Moon exerts no force on the planet"
+        ],
+        "answer": 0,
+        "why": "Third-law forces match; a = F/m differs.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "GRAVITY-explain",
+        "q": "Use the gravity simulation to design a fair comparison of mass versus separation. Predict, record actual results, and explain the two force arrows.",
+        "rubric": [
+          "Change one factor at a time and control the others.",
+          "Use center separation and record force units.",
+          "Compare equal/opposite force magnitudes without claiming equal accelerations."
+        ],
+        "why": "Change one factor at a time and control the others. Use center separation and record force units. Compare equal/opposite force magnitudes without claiming equal accelerations.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION"
+      }
+    ],
+    "SCI.MOTION.LAB": [
+      {
+        "id": "LAB-0",
+        "q": "Trial distances are 6, 8, and 7 cm at the same time. Use sum / number of trials. Mean is\u2026",
+        "choices": [
+          "8 cm",
+          "7 cm",
+          "21 cm"
+        ],
+        "answer": 1,
+        "why": "(6 + 8 + 7)/3 = 7 cm.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CONCEPT",
+        "support": "(6 + 8 + 7)/3 = 7 cm."
+      },
+      {
+        "id": "LAB-1",
+        "q": "Which x-axis label fits a motion graph?",
+        "choices": [
+          "Time (s)",
+          "Time with no units",
+          "Velocity (m/s) for every graph"
+        ],
+        "answer": 0,
+        "why": "State the quantity and its unit.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "LAB-2",
+        "q": "Your group forgot one measurement. What should you do?",
+        "choices": [
+          "Copy a convenient invented value",
+          "Present a guess as measured data",
+          "Ask how to recover or repeat it"
+        ],
+        "answer": 2,
+        "why": "Keep observations honest and follow the make-up directions.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "LAB-3",
+        "q": "Which evidence best supports a claim about an interval\u2019s acceleration?",
+        "choices": [
+          "Only the object\u2019s color",
+          "Its initial/final velocities and elapsed time",
+          "Only the graph title"
+        ],
+        "answer": 1,
+        "why": "a = change in velocity / elapsed time.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "LAB-explain",
+        "q": "Use your actual toy lab: state the question, label both graphs, calculate the 15\u201325 s acceleration, cite data, and name two limitations with improvements.",
+        "rubric": [
+          "Use actual values and units, not example numbers.",
+          "Explain position/distance slope versus velocity-time slope.",
+          "Use a 10 s interval; state claim, specific evidence, reasoning, and limitations."
+        ],
+        "why": "Use actual values and units, not example numbers. Explain position/distance slope versus velocity-time slope. Use a 10 s interval; state claim, specific evidence, reasoning, and limitations.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION"
+      }
+    ],
+    "SCI.MOTION.MAGNETS": [
+      {
+        "id": "MAGNETS-0",
+        "q": "Two north poles approach. Like poles\u2026",
+        "choices": [
+          "Repel",
+          "Attract",
+          "Lose all magnetic field"
+        ],
+        "answer": 0,
+        "why": "Like poles repel.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CONCEPT",
+        "support": "Like poles repel."
+      },
+      {
+        "id": "MAGNETS-1",
+        "q": "Current, core, and coil shape stay fixed. More wire turns generally\u2026",
+        "choices": [
+          "Remove its field",
+          "Make it independent of current",
+          "Strengthen the electromagnet"
+        ],
+        "answer": 2,
+        "why": "More turns add magnetic field contributions.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "MAGNETS-2",
+        "q": "A magnet remains still beside a stationary coil with no changing field. Is there sustained induced current?",
+        "choices": [
+          "Only because the magnet is heavy",
+          "No",
+          "Yes, indefinitely"
+        ],
+        "answer": 1,
+        "why": "Induction requires changing magnetic flux.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "MAGNETS-3",
+        "q": "Which energy change describes a generator?",
+        "choices": [
+          "Mechanical to electrical",
+          "Electrical to mechanical",
+          "Energy created from nothing"
+        ],
+        "answer": 0,
+        "why": "A generator receives mechanical energy and delivers electrical energy.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "MAGNETS-explain",
+        "q": "Explain a motor versus a generator. Describe how to test induction in the teacher\u2019s virtual lab without inventing observations.",
+        "rubric": [
+          "Motor: electrical to mechanical; generator: mechanical to electrical.",
+          "Change magnetic flux, such as moving a magnet relative to a coil.",
+          "Record actual simulation results and compare stationary versus changing conditions."
+        ],
+        "why": "Motor: electrical to mechanical; generator: mechanical to electrical. Change magnetic flux, such as moving a magnet relative to a coil. Record actual simulation results and compare stationary versus changing conditions.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION"
+      }
+    ],
+    "SCI.CIRCUITS.PATH": [
+      {
+        "id": "path-g",
+        "q": "A wire has a gap. Use this clue: a steady current needs a complete path. What happens to the bulb?",
+        "choices": [
+          "It changes color",
+          "It goes out",
+          "It becomes brighter"
+        ],
+        "answer": 1,
+        "why": "The gap opens the only path.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "MODEL",
+        "support": "Trace the path from one battery terminal through the bulb to the other terminal."
+      },
+      {
+        "id": "path-f",
+        "q": "A bulb circuit has a switch. Which change can complete the path?",
+        "choices": [
+          "Opening the switch",
+          "Closing the switch",
+          "Replacing wire with dry plastic"
+        ],
+        "answer": 1,
+        "why": "Closing the switch bridges the gap.",
+        "stage": "FADE_HELP",
+        "performanceMode": "MODEL",
+        "support": "Look for an uninterrupted conducting path."
+      },
+      {
+        "id": "path-i",
+        "q": "Which pair describes a useful wire and its outside covering?",
+        "choices": [
+          "Rubber conductor and copper insulator",
+          "Two rubber conductors",
+          "Copper conductor and rubber insulator"
+        ],
+        "answer": 2,
+        "why": "Copper allows charge movement; rubber resists it.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "path-x",
+        "q": "A battery-powered toy stops when its only wire comes loose. Explain why it stops and what connection must be restored.",
+        "rubric": [
+          "The loose wire opens the path.",
+          "Restore a complete path through the device back to the source."
+        ],
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "why": "Compare your explanation with these ideas: The loose wire opens the path. Restore a complete path through the device back to the source."
+      }
+    ],
+    "SCI.CIRCUITS.VIR": [
+      {
+        "id": "vir-g",
+        "q": "A meter reads 0.40 A. What is being measured?",
+        "choices": [
+          "Resistance",
+          "Voltage",
+          "Current"
+        ],
+        "answer": 2,
+        "why": "Amperes measure current.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "VOCABULARY",
+        "support": "A means amperes: charge passing a point per second."
+      },
+      {
+        "id": "vir-f",
+        "q": "Which row correctly names the quantities?",
+        "choices": [
+          "All three mean energy",
+          "V = current; I = voltage; R = resistance",
+          "V = voltage; I = current; R = resistance"
+        ],
+        "answer": 2,
+        "why": "V, I, and R name different quantities.",
+        "stage": "FADE_HELP",
+        "performanceMode": "VOCABULARY",
+        "support": "Match the symbol to the quantity, then the unit."
+      },
+      {
+        "id": "vir-i",
+        "q": "A resistor changes from 20 \u03a9 to 40 \u03a9 while battery voltage stays fixed. Current should\u2026",
+        "choices": [
+          "Increase",
+          "Decrease",
+          "Be measured in volts"
+        ],
+        "answer": 1,
+        "why": "I = V/R, so greater R gives less I at fixed V.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "vir-x",
+        "q": "A friend says voltage and current are the same thing. Explain the difference and give each unit.",
+        "rubric": [
+          "Voltage is energy per unit charge, in volts.",
+          "Current is rate of charge flow, in amperes."
+        ],
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "why": "Compare your explanation with these ideas: Voltage is energy per unit charge, in volts. Current is rate of charge flow, in amperes."
+      }
+    ],
+    "SCI.CIRCUITS.OHM_I": [
+      {
+        "id": "oi-g",
+        "q": "Use I = V/R. A 6 V source is across 15 \u03a9. What is current?",
+        "choices": [
+          "0.40 A",
+          "90 A",
+          "2.5 A"
+        ],
+        "answer": 0,
+        "why": "6 \u00f7 15 = 0.40 A.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CALCULATION_APPLICATION",
+        "support": "Unknown: I. Substitute 6 \u00f7 15. Check by multiplying the result by 15."
+      },
+      {
+        "id": "oi-f",
+        "q": "A 12 V source is across 60 \u03a9. Choose current.",
+        "choices": [
+          "0.20 A",
+          "720 A",
+          "5 A"
+        ],
+        "answer": 0,
+        "why": "12 \u00f7 60 = 0.20 A.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CALCULATION_APPLICATION",
+        "support": "Identify the unknown and divide voltage by resistance."
+      },
+      {
+        "id": "oi-i",
+        "q": "An ideal 18 V source is across 30 \u03a9. Calculate current.",
+        "choices": [
+          "540 A",
+          "0.60 A",
+          "0.06 A"
+        ],
+        "answer": 1,
+        "why": "I = 18/30 = 0.60 A.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CALCULATION_APPLICATION",
+        "support": null
+      },
+      {
+        "id": "oi-x",
+        "q": "Two model circuits use the same 12 V source. One is 20 \u03a9 and the other 60 \u03a9. Explain which has more current, using calculated values.",
+        "rubric": [
+          "12/20 = 0.60 A and 12/60 = 0.20 A.",
+          "At the same voltage, the lower-resistance circuit has more current."
+        ],
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "why": "Compare your explanation with these ideas: 12/20 = 0.60 A and 12/60 = 0.20 A. At the same voltage, the lower-resistance circuit has more current."
+      }
+    ],
+    "SCI.CIRCUITS.OHM_VR": [
+      {
+        "id": "ov-g",
+        "q": "Use V = IR. At 0.50 A through 20 \u03a9, voltage is\u2026",
+        "choices": [
+          "40 V",
+          "0.025 V",
+          "10 V"
+        ],
+        "answer": 2,
+        "why": "0.50 \u00d7 20 = 10 V.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CALCULATION_APPLICATION",
+        "support": "Multiply the current by the resistance."
+      },
+      {
+        "id": "ov-f",
+        "q": "At 9 V and 0.30 A, what is the resistance?",
+        "choices": [
+          "0.033 \u03a9",
+          "2.7 \u03a9",
+          "30 \u03a9"
+        ],
+        "answer": 2,
+        "why": "R = 9/0.30 = 30 \u03a9.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CALCULATION_APPLICATION",
+        "support": "The unknown is R; choose the equation with R alone."
+      },
+      {
+        "id": "ov-i",
+        "q": "A component has 24 V across it and 0.80 A through it. Find R.",
+        "choices": [
+          "19.2 \u03a9",
+          "30 \u03a9",
+          "3 \u03a9"
+        ],
+        "answer": 1,
+        "why": "24/0.80 = 30 \u03a9.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CALCULATION_APPLICATION",
+        "support": null
+      },
+      {
+        "id": "ov-x",
+        "q": "A friend multiplies 12 V by 0.60 A to find resistance. Explain the correction and check your answer.",
+        "rubric": [
+          "R = V/I = 12/0.60 = 20 \u03a9.",
+          "Check 0.60 \u00d7 20 = 12 V."
+        ],
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "why": "Compare your explanation with these ideas: R = V/I = 12/0.60 = 20 \u03a9. Check 0.60 \u00d7 20 = 12 V."
+      }
+    ],
+    "SCI.CIRCUITS.SERIES": [
+      {
+        "id": "se-g",
+        "q": "Two 20 \u03a9 resistors are in series across 12 V. Use total R = 20 + 20. What current flows?",
+        "choices": [
+          "0.60 A",
+          "40 A",
+          "0.30 A"
+        ],
+        "answer": 2,
+        "why": "Total R = 40 \u03a9, so I = 12/40 = 0.30 A.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CALCULATION_APPLICATION",
+        "support": "Add resistances before calculating current."
+      },
+      {
+        "id": "se-f",
+        "q": "An ammeter before resistor 1 reads 0.30 A. What is the current after resistor 2 in the same steady series loop?",
+        "choices": [
+          "0 A",
+          "0.15 A",
+          "0.30 A"
+        ],
+        "answer": 2,
+        "why": "Current is the same throughout a steady series circuit.",
+        "stage": "FADE_HELP",
+        "performanceMode": "MODEL",
+        "support": "There is only one path; charge does not disappear."
+      },
+      {
+        "id": "se-i",
+        "q": "Two series bulbs share the only loop. One bulb breaks open. What happens?",
+        "choices": [
+          "Only the broken bulb stops",
+          "Both bulbs stop",
+          "The other bulb gets the full current forever"
+        ],
+        "answer": 1,
+        "why": "The only path is broken.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MODEL",
+        "support": null
+      },
+      {
+        "id": "se-x",
+        "q": "A model circuit uses a fixed 12 V source. Its series resistance rises from 30 \u03a9 to 60 \u03a9. Explain the effect on current, with numbers.",
+        "rubric": [
+          "Current falls from 0.40 A to 0.20 A.",
+          "At fixed voltage, increased total resistance reduces current."
+        ],
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "why": "Compare your explanation with these ideas: Current falls from 0.40 A to 0.20 A. At fixed voltage, increased total resistance reduces current."
+      }
+    ],
+    "SCI.CIRCUITS.PARALLEL": [
+      {
+        "id": "pa-g",
+        "q": "Two separate 30 \u03a9 branches connect across 12 V. Each current is 12/30 = 0.40 A. What is total current?",
+        "choices": [
+          "0.40 A",
+          "0.80 A",
+          "0.20 A"
+        ],
+        "answer": 1,
+        "why": "Add the two branch currents: 0.40 + 0.40 = 0.80 A.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CALCULATION_APPLICATION",
+        "support": "Total source current is the sum of branch currents."
+      },
+      {
+        "id": "pa-f",
+        "q": "A 20 \u03a9 branch and a 40 \u03a9 branch share an ideal 12 V source. Which gets more current?",
+        "choices": [
+          "The 40 \u03a9 branch",
+          "They must get equal current",
+          "The 20 \u03a9 branch"
+        ],
+        "answer": 2,
+        "why": "At equal voltage, the lower-resistance branch has more current.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CONCEPT",
+        "support": "Compare current in each branch at the same voltage."
+      },
+      {
+        "id": "pa-i",
+        "q": "One of two parallel branches opens, but the other still connects both source terminals. What can happen?",
+        "choices": [
+          "Voltage in the remaining branch is necessarily zero",
+          "The other branch keeps working",
+          "Every branch must stop"
+        ],
+        "answer": 1,
+        "why": "An independent complete path remains.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MODEL",
+        "support": null
+      },
+      {
+        "id": "pa-x",
+        "q": "Two equal parallel branches are across an ideal fixed-voltage battery. A third equal branch is added. Explain what changes and what stays the same.",
+        "rubric": [
+          "Each branch still receives the source voltage.",
+          "Total source current increases and equivalent resistance decreases."
+        ],
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "why": "Compare your explanation with these ideas: Each branch still receives the source voltage. Total source current increases and equivalent resistance decreases."
+      }
+    ],
+    "SCI.CIRCUITS.MODELS": [
+      {
+        "id": "mo-g",
+        "q": "A wire bends around a corner but never splits. How many paths are there?",
+        "choices": [
+          "Two because of the corner",
+          "Three",
+          "One"
+        ],
+        "answer": 2,
+        "why": "A bend is not a junction.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "MODEL",
+        "support": "Count complete routes, not corners."
+      },
+      {
+        "id": "mo-f",
+        "q": "Which correctly compares directions in an external metal DC wire?",
+        "choices": [
+          "Neither moves charge",
+          "Electrons and conventional current are opposite",
+          "Both go from positive to negative"
+        ],
+        "answer": 1,
+        "why": "Electrons drift negative to positive; conventional current is positive to negative.",
+        "stage": "FADE_HELP",
+        "performanceMode": "MODEL",
+        "support": "Keep the type of arrow clear."
+      },
+      {
+        "id": "mo-i",
+        "q": "Where should a voltmeter connect to measure a resistor\u2019s voltage?",
+        "choices": [
+          "Across the resistor\u2019s two ends",
+          "Only to one end",
+          "In place of the battery"
+        ],
+        "answer": 0,
+        "why": "Voltage is measured between two points.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "INVESTIGATION",
+        "support": null
+      },
+      {
+        "id": "mo-x",
+        "q": "Two drawings have different shapes but identical connections. Explain how you would decide whether they represent the same circuit.",
+        "rubric": [
+          "Trace corresponding nodes, components, and complete paths.",
+          "Drawing shape alone does not determine series or parallel."
+        ],
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "why": "Compare your explanation with these ideas: Trace corresponding nodes, components, and complete paths. Drawing shape alone does not determine series or parallel."
+      }
+    ],
+    "SCI.CIRCUITS.MOTOR": [
+      {
+        "id": "mt-g",
+        "q": "A battery-powered fan spins. Which useful transformation occurs in the motor?",
+        "choices": [
+          "Electrical to mechanical",
+          "Mechanical to nuclear",
+          "Sound to chemical"
+        ],
+        "answer": 0,
+        "why": "The motor produces motion.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CONCEPT",
+        "support": "Ask which energy enters and which useful output is produced."
+      },
+      {
+        "id": "mt-f",
+        "q": "The motor also warms up and hums. What does this show?",
+        "choices": [
+          "Energy was destroyed",
+          "The charge disappeared",
+          "Some energy transfers as heat and sound"
+        ],
+        "answer": 2,
+        "why": "Thermal and sound outputs are part of the energy accounting.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CONCEPT",
+        "support": "Include useful and other outputs."
+      },
+      {
+        "id": "mt-i",
+        "q": "No motor current was measured. Which statement is justified?",
+        "choices": [
+          "The current change is not known yet",
+          "The current definitely doubled",
+          "The current definitely halved"
+        ],
+        "answer": 0,
+        "why": "A measurement or a specified motor model is needed.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "ARGUMENT_FROM_EVIDENCE",
+        "support": null
+      },
+      {
+        "id": "mt-x",
+        "q": "Explain a battery-powered toy car\u2019s energy changes and what evidence you would need to compare motor current with resistor current.",
+        "rubric": [
+          "Chemical energy transfers electrically and becomes motion, heat, and sound.",
+          "Compare actual current readings under clearly described conditions; do not invent the result."
+        ],
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "why": "Compare your explanation with these ideas: Chemical energy transfers electrically and becomes motion, heat, and sound. Compare actual current readings under clearly described conditions; do not invent the result."
+      }
+    ],
+    "SCI.CIRCUITS.DATA": [
+      {
+        "id": "da-g",
+        "q": "You test how resistance changes current. Battery voltage stays at 12 V. What is the independent variable?",
+        "choices": [
+          "The result you hope for",
+          "Resistance",
+          "Current"
+        ],
+        "answer": 1,
+        "why": "Resistance is deliberately changed.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "INVESTIGATION",
+        "support": "Independent = what you change; dependent = what you measure."
+      },
+      {
+        "id": "da-f",
+        "q": "At fixed 12 V, model currents for 15, 30, 60 \u03a9 are 0.80, 0.40, 0.20 A. What pattern is supported?",
+        "choices": [
+          "Current falls as resistance rises",
+          "Current rises with resistance",
+          "Current never changes"
+        ],
+        "answer": 0,
+        "why": "At fixed voltage, current and resistance vary inversely.",
+        "stage": "FADE_HELP",
+        "performanceMode": "DATA_GRAPH",
+        "support": "Compare both columns, including their units."
+      },
+      {
+        "id": "da-i",
+        "q": "A graph puts voltage on y and current on x. Which line represents the greatest resistance?",
+        "choices": [
+          "The flattest line",
+          "Any line with the largest x label",
+          "The steepest line"
+        ],
+        "answer": 2,
+        "why": "For V versus I, slope V/I is R.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "DATA_GRAPH",
+        "support": null
+      },
+      {
+        "id": "da-x",
+        "q": "Describe a fair resistance-current investigation and how you would label the graph. Include one limitation.",
+        "rubric": [
+          "Change resistance and observe current while holding voltage and arrangement fixed.",
+          "Label resistance in \u03a9 on x and current in A on y.",
+          "Name a real limitation, such as limited resistance choices or meter precision."
+        ],
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "why": "Compare your explanation with these ideas: Change resistance and observe current while holding voltage and arrangement fixed. Label resistance in \u03a9 on x and current in A on y. Name a real limitation, such as limited resistance choices or meter precision."
+      }
+    ],
+    "SCI.CIRCUITS.CER": [
+      {
+        "id": "ce-g",
+        "q": "Which statement is evidence rather than a general claim?",
+        "choices": [
+          "Resistance affects current",
+          "Circuits are interesting",
+          "At 12 V and 30 \u03a9, calculated current was 0.40 A"
+        ],
+        "answer": 2,
+        "why": "It supplies specific quantities and conditions.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "ARGUMENT_FROM_EVIDENCE",
+        "support": "Evidence is a checkable observation or result with context."
+      },
+      {
+        "id": "ce-f",
+        "q": "Which reasoning connects a result to science?",
+        "choices": [
+          "My graph has three dots",
+          "The current fell because I = V/R and voltage stayed fixed",
+          "It happened because that was the answer"
+        ],
+        "answer": 1,
+        "why": "It links the pattern to a relationship and a controlled condition.",
+        "stage": "FADE_HELP",
+        "performanceMode": "ARGUMENT_FROM_EVIDENCE",
+        "support": "Explain why the evidence supports the claim."
+      },
+      {
+        "id": "ce-i",
+        "q": "Your practice example used 12 V but your actual lab used 9 V. Which belongs in the lab evidence?",
+        "choices": [
+          "The actual 9 V investigation with its results",
+          "Only the practice numbers",
+          "Made-up values that fit the prediction"
+        ],
+        "answer": 0,
+        "why": "Use actual investigation data.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "ARGUMENT_FROM_EVIDENCE",
+        "support": null
+      },
+      {
+        "id": "ce-x",
+        "q": "Draft your own lab claim and outline the evidence, reasoning, and limitation you will include. If the lab has not been run, describe what evidence is still needed instead of inventing it.",
+        "rubric": [
+          "State a conditional claim.",
+          "Use at least three actual results with units and a labeled table or graph.",
+          "Connect the results to circuit rules and name a limitation or missing evidence."
+        ],
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "why": "Compare your explanation with these ideas: State a conditional claim. Use at least three actual results with units and a labeled table or graph. Connect the results to circuit rules and name a limitation or missing evidence."
+      }
+    ],
+    "SCI.CIRCUITS.MIXED": [
+      {
+        "id": "mi-g",
+        "q": "A model has two 15 \u03a9 resistors in series across 9 V. Total resistance is 30 \u03a9. Current is\u2026",
+        "choices": [
+          "0.30 A",
+          "0.60 A",
+          "270 A"
+        ],
+        "answer": 0,
+        "why": "I = 9/30 = 0.30 A.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CALCULATION_APPLICATION",
+        "support": "Use total circuit resistance."
+      },
+      {
+        "id": "mi-f",
+        "q": "The two 15 \u03a9 resistors are reconnected in parallel across the same ideal 9 V source. What is total current?",
+        "choices": [
+          "0.60 A",
+          "1.20 A",
+          "0.30 A"
+        ],
+        "answer": 1,
+        "why": "Each branch draws 0.60 A; total is 1.20 A.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CALCULATION_APPLICATION",
+        "support": "Calculate each branch before summing."
+      },
+      {
+        "id": "mi-i",
+        "q": "A battery lamp produces light and heat. Which earlier science idea helps explain this?",
+        "choices": [
+          "Current being consumed",
+          "Energy transformations",
+          "Energy vanishing"
+        ],
+        "answer": 1,
+        "why": "Chemical energy is transferred electrically into light and thermal energy.",
+        "stage": "MIX_OLD_AND_NEW",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "mi-x",
+        "q": "Design a model with two lamps so that removing one does not stop the other. Explain the paths, voltage, current, and one tradeoff.",
+        "rubric": [
+          "Use separate parallel branches across a source.",
+          "An intact branch can still work when another opens.",
+          "Discuss greater total source current at fixed voltage or more wiring; do not claim unlimited battery life."
+        ],
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "why": "Compare your explanation with these ideas: Use separate parallel branches across a source. An intact branch can still work when another opens. Discuss greater total source current at fixed voltage or more wiring; do not claim unlimited battery life."
+      }
+    ],
+    "SCI.WAVES.TYPES": [
+      {
+        "id": "waves-types-1",
+        "q": "Which can travel through empty space?",
+        "choices": [
+          "Light",
+          "Sound",
+          "Earthquake P waves"
+        ],
+        "answer": 0,
+        "why": "Light is electromagnetic.",
+        "transfer": false
+      },
+      {
+        "id": "waves-types-2",
+        "q": "A spring has alternating crowded and spread-out coils. What type is modeled?",
+        "choices": [
+          "Transverse",
+          "Electromagnetic only",
+          "Longitudinal"
+        ],
+        "answer": 2,
+        "why": "Vibration is parallel to travel.",
+        "transfer": false
+      },
+      {
+        "id": "waves-types-3",
+        "q": "Where is amplitude measured?",
+        "choices": [
+          "Crest to trough",
+          "Rest position to crest",
+          "Crest to next crest"
+        ],
+        "answer": 1,
+        "why": "Amplitude is maximum displacement from rest.",
+        "transfer": true
+      }
+    ],
+    "SCI.WAVES.RELATIONSHIPS": [
+      {
+        "id": "waves-relationships-1",
+        "q": "At the same speed, doubling wavelength makes frequency\u2026",
+        "choices": [
+          "Unchanged",
+          "Half as large",
+          "Twice as large"
+        ],
+        "answer": 1,
+        "why": "Speed stays fixed.",
+        "transfer": false
+      },
+      {
+        "id": "waves-relationships-2",
+        "q": "A sound becomes louder without changing pitch. What changes?",
+        "choices": [
+          "Amplitude increases",
+          "Frequency increases",
+          "Wavelength shortens"
+        ],
+        "answer": 0,
+        "why": "Amplitude affects loudness.",
+        "transfer": false
+      },
+      {
+        "id": "waves-relationships-3",
+        "q": "Two waves have equal amplitude; B has more cycles per second. Which has higher pitch?",
+        "choices": [
+          "A",
+          "Neither",
+          "B"
+        ],
+        "answer": 2,
+        "why": "Higher frequency means higher pitch.",
+        "transfer": true
+      }
+    ],
+    "SCI.WAVES.BEHAVIORS": [
+      {
+        "id": "waves-behaviors-1",
+        "q": "An echo is an example of\u2026",
+        "choices": [
+          "Refraction",
+          "Dispersion",
+          "Reflection"
+        ],
+        "answer": 2,
+        "why": "Sound bounces back.",
+        "transfer": false
+      },
+      {
+        "id": "waves-behaviors-2",
+        "q": "A straw appears bent at the water surface because of\u2026",
+        "choices": [
+          "Interference",
+          "Refraction",
+          "Reflection only"
+        ],
+        "answer": 1,
+        "why": "Light bends at the boundary.",
+        "transfer": false
+      },
+      {
+        "id": "waves-behaviors-3",
+        "q": "Sound reaching you around a corner demonstrates\u2026",
+        "choices": [
+          "Diffraction",
+          "Dispersion",
+          "Absorption"
+        ],
+        "answer": 0,
+        "why": "Waves spread around an edge.",
+        "transfer": true
+      }
+    ],
+    "SCI.WAVES.INTERFERENCE": [
+      {
+        "id": "waves-interference-1",
+        "q": "Two equal crests overlap. Result?",
+        "choices": [
+          "Destructive interference",
+          "Refraction",
+          "Constructive interference"
+        ],
+        "answer": 2,
+        "why": "Displacements add.",
+        "transfer": false
+      },
+      {
+        "id": "waves-interference-2",
+        "q": "An equal crest and trough overlap. Result?",
+        "choices": [
+          "Dispersion",
+          "Destructive interference",
+          "Constructive interference"
+        ],
+        "answer": 1,
+        "why": "Opposing displacements cancel locally.",
+        "transfer": false
+      },
+      {
+        "id": "waves-interference-3",
+        "q": "Frosted glass passes light but blurs objects. It is\u2026",
+        "choices": [
+          "Translucent",
+          "Opaque",
+          "Transparent"
+        ],
+        "answer": 0,
+        "why": "It transmits scattered light.",
+        "transfer": true
+      }
+    ],
+    "SCI.WAVES.SPEED": [
+      {
+        "id": "waves-speed-1",
+        "q": "Which cannot carry sound?",
+        "choices": [
+          "A vacuum",
+          "Water",
+          "Steel"
+        ],
+        "answer": 0,
+        "why": "Sound needs particles.",
+        "transfer": false
+      },
+      {
+        "id": "waves-speed-2",
+        "q": "Equal distance: sound at 340 m/s or 1500 m/s arrives first?",
+        "choices": [
+          "340 m/s",
+          "Same time",
+          "1500 m/s"
+        ],
+        "answer": 2,
+        "why": "Higher speed takes less time.",
+        "transfer": false
+      },
+      {
+        "id": "waves-speed-3",
+        "q": "Where is light fastest?",
+        "choices": [
+          "Water",
+          "Vacuum",
+          "Glass"
+        ],
+        "answer": 1,
+        "why": "Materials slow light relative to vacuum.",
+        "transfer": true
+      }
+    ],
+    "SCI.WAVES.LIGHT": [
+      {
+        "id": "waves-light-1",
+        "q": "Highest-frequency EM radiation?",
+        "choices": [
+          "Gamma rays",
+          "Radio waves",
+          "Infrared"
+        ],
+        "answer": 0,
+        "why": "Gamma has the highest frequency.",
+        "transfer": false
+      },
+      {
+        "id": "waves-light-2",
+        "q": "Longest visible wavelength?",
+        "choices": [
+          "Violet",
+          "Blue",
+          "Red"
+        ],
+        "answer": 2,
+        "why": "Red is longest in the visible spectrum.",
+        "transfer": false
+      },
+      {
+        "id": "waves-light-3",
+        "q": "A prism separates white light into colors. Name?",
+        "choices": [
+          "Echo",
+          "Dispersion",
+          "Destructive interference"
+        ],
+        "answer": 1,
+        "why": "Wavelengths bend differently.",
+        "transfer": true
+      }
+    ],
+    "SCI.WAVES.SEISMIC": [
+      {
+        "id": "waves-seismic-1",
+        "q": "Which seismic wave arrives first?",
+        "choices": [
+          "All arrive together",
+          "P",
+          "S"
+        ],
+        "answer": 1,
+        "why": "P waves are faster.",
+        "transfer": false
+      },
+      {
+        "id": "waves-seismic-2",
+        "q": "Which cannot travel through liquid?",
+        "choices": [
+          "S",
+          "P",
+          "Both P and S"
+        ],
+        "answer": 0,
+        "why": "S waves require shear support.",
+        "transfer": false
+      },
+      {
+        "id": "waves-seismic-3",
+        "q": "The surface point above the focus is the\u2026",
+        "choices": [
+          "Compression",
+          "Crest",
+          "Epicenter"
+        ],
+        "answer": 2,
+        "why": "Epicenter lies directly above the focus.",
+        "transfer": true
+      }
+    ],
+    "SCI.WAVES.DOPPLER": [
+      {
+        "id": "waves-doppler-1",
+        "q": "A horn approaches a stationary listener. Heard pitch?",
+        "choices": [
+          "Always unchanged",
+          "Higher",
+          "Lower"
+        ],
+        "answer": 1,
+        "why": "Fronts arrive more frequently.",
+        "transfer": false
+      },
+      {
+        "id": "waves-doppler-2",
+        "q": "A source moves away. Observed wavelength?",
+        "choices": [
+          "Longer",
+          "Shorter",
+          "Zero"
+        ],
+        "answer": 0,
+        "why": "Wave fronts are farther apart.",
+        "transfer": false
+      },
+      {
+        "id": "waves-doppler-3",
+        "q": "Light from a receding source shifts toward\u2026",
+        "choices": [
+          "Blue",
+          "No possible shift",
+          "Red"
+        ],
+        "answer": 2,
+        "why": "Recession lengthens observed wavelength.",
+        "transfer": true
+      }
+    ],
+    "SCI.SPS7A.ENERGY_FORMS": [
+      {
+        "id": "e1",
+        "q": "A moving football has which form of energy because it is moving?",
+        "choices": [
+          "Nuclear",
+          "Radiant",
+          "Kinetic",
+          "Chemical"
+        ],
+        "answer": 2,
+        "why": "Kinetic energy is energy of motion."
+      },
+      {
+        "id": "e2",
+        "q": "Energy stored in food is mainly which form?",
+        "choices": [
+          "Kinetic",
+          "Chemical",
+          "Sound",
+          "Radiant"
+        ],
+        "answer": 1,
+        "why": "Food stores chemical energy."
+      },
+      {
+        "id": "e3",
+        "q": "Sunlight reaching Earth is mainly which form?",
+        "choices": [
+          "Radiant",
+          "Mechanical",
+          "Chemical",
+          "Sound"
+        ],
+        "answer": 0,
+        "why": "Light from the Sun is radiant energy."
+      }
+    ],
+    "SCI.SPS7A.TRANSFER_TRANSFORMATION": [
+      {
+        "id": "tt1",
+        "q": "A warm mug heats your colder hand. Which best fits the school classification?",
+        "choices": [
+          "Transformation",
+          "Transfer"
+        ],
+        "answer": 1,
+        "why": "Thermal energy moves from the mug to the hand."
+      },
+      {
+        "id": "tt2",
+        "q": "A solar panel changes sunlight into electricity. Which best fits?",
+        "choices": [
+          "Transfer",
+          "Transformation"
+        ],
+        "answer": 1,
+        "why": "Radiant energy changes into electrical energy."
+      },
+      {
+        "id": "tt3",
+        "q": "An electric fan uses electricity to spin its blades. Which best fits?",
+        "choices": [
+          "Transformation",
+          "Transfer"
+        ],
+        "answer": 0,
+        "why": "Electrical energy changes into mechanical motion."
+      }
+    ],
+    "SCI.SPS7B.MECHANICAL": [
+      {
+        "id": "m1",
+        "q": "A coaster stopped at the top of the tallest hill has lots of\u2026",
+        "choices": [
+          "Nuclear energy",
+          "Gravitational potential energy",
+          "Sound energy"
+        ],
+        "answer": 1,
+        "why": "Its height stores gravitational potential energy."
+      },
+      {
+        "id": "m2",
+        "q": "As the coaster rolls downhill and speeds up, kinetic energy generally\u2026",
+        "choices": [
+          "Increases",
+          "Disappears",
+          "Becomes nuclear"
+        ],
+        "answer": 0,
+        "why": "More speed means more kinetic energy."
+      },
+      {
+        "id": "m3",
+        "q": "Mechanical energy combines\u2026",
+        "choices": [
+          "Thermal + sound",
+          "Electrical + chemical",
+          "Kinetic + potential"
+        ],
+        "answer": 2,
+        "why": "Mechanical energy is kinetic plus potential energy."
+      }
+    ],
+    "SCI.SPS7C.HEAT_TRANSFER": [
+      {
+        "id": "h1",
+        "q": "A metal spoon gets hot while sitting in soup. Which process?",
+        "choices": [
+          "Radiation",
+          "Conduction",
+          "Convection"
+        ],
+        "answer": 1,
+        "why": "The spoon is heated through direct contact."
+      },
+      {
+        "id": "h2",
+        "q": "Warm air rises while cooler air sinks. Which process?",
+        "choices": [
+          "Conduction",
+          "Convection",
+          "Radiation"
+        ],
+        "answer": 1,
+        "why": "Moving air carries thermal energy in a convection current."
+      },
+      {
+        "id": "h3",
+        "q": "You feel heat from a campfire without touching it. Which process?",
+        "choices": [
+          "Convection",
+          "Radiation",
+          "Conduction"
+        ],
+        "answer": 1,
+        "why": "Radiation can move energy across space without direct contact."
+      }
+    ],
+    "SCI.SPS7D.PARTICLE_MOTION": [
+      {
+        "id": "p1",
+        "q": "A substance heats up. What usually happens to average particle motion?",
+        "choices": [
+          "It stops",
+          "It becomes electrical",
+          "It speeds up"
+        ],
+        "answer": 2,
+        "why": "Higher temperature means greater average particle kinetic energy."
+      },
+      {
+        "id": "p2",
+        "q": "A gas cools from 80\u00b0C to 30\u00b0C. Its average kinetic energy becomes\u2026",
+        "choices": [
+          "Exactly zero",
+          "Lower",
+          "Higher"
+        ],
+        "answer": 1,
+        "why": "Cooling lowers average particle kinetic energy."
+      },
+      {
+        "id": "p3",
+        "q": "A solid is heated but does not melt. Its particles generally\u2026",
+        "choices": [
+          "Vibrate faster around their positions",
+          "Stop moving",
+          "Move freely like a gas"
+        ],
+        "answer": 0,
+        "why": "Particles in a heated solid vibrate more rapidly."
+      }
+    ],
+    "SCI.SPS7E.CONCEPT": [
+      {
+        "id": "s1",
+        "q": "Two equal masses receive equal heat. Sample A changes temperature less. Which has higher specific heat?",
+        "choices": [
+          "They must be equal",
+          "Sample A",
+          "Sample B"
+        ],
+        "answer": 1,
+        "why": "Less temperature change from the same heat means higher specific heat."
+      },
+      {
+        "id": "s2",
+        "q": "High specific heat means a substance needs\u2026",
+        "choices": [
+          "More energy for the same temperature change",
+          "No energy to warm up",
+          "Less mass"
+        ],
+        "answer": 0,
+        "why": "Specific heat measures energy needed per mass per degree."
+      },
+      {
+        "id": "s3",
+        "q": "Equal masses get equal heat. The metal warms much more than the water. The metal likely has\u2026",
+        "choices": [
+          "Higher specific heat",
+          "No specific heat",
+          "Lower specific heat"
+        ],
+        "answer": 2,
+        "why": "A bigger temperature rise from the same heat suggests lower specific heat."
+      }
+    ],
+    "SCI.SPS7E.SYMBOLS_UNITS": [
+      {
+        "id": "su1",
+        "q": "In Q = mc\u0394T, what does Q represent?",
+        "choices": [
+          "Temperature change",
+          "Heat energy transferred",
+          "Mass"
+        ],
+        "answer": 1,
+        "why": "Q represents heat energy transferred."
+      },
+      {
+        "id": "su2",
+        "q": "In Q = mc\u0394T, what does m represent?",
+        "choices": [
+          "Mass",
+          "Mechanical energy",
+          "Minutes"
+        ],
+        "answer": 0,
+        "why": "m represents mass."
+      },
+      {
+        "id": "su3",
+        "q": "In Q = mc\u0394T, what does \u0394T represent?",
+        "choices": [
+          "Total energy",
+          "Time",
+          "Temperature change"
+        ],
+        "answer": 2,
+        "why": "\u0394T means change in temperature."
+      }
+    ],
+    "SCI.SPS7E.DELTA_T": [
+      {
+        "id": "dt1",
+        "q": "A sample warms from 18\u00b0C to 43\u00b0C. What is \u0394T?",
+        "free": "25",
+        "why": "43 \u2212 18 = 25\u00b0C."
+      },
+      {
+        "id": "dt2",
+        "q": "A sample warms from 14\u00b0C to 39\u00b0C. What is \u0394T?",
+        "free": "25",
+        "why": "39 \u2212 14 = 25\u00b0C."
+      },
+      {
+        "id": "dt3",
+        "q": "A sample cools from 72\u00b0C to 50\u00b0C. Using final \u2212 initial, what is \u0394T?",
+        "free": "-22",
+        "why": "50 \u2212 72 = \u221222\u00b0C."
+      }
+    ],
+    "SCI.SPS7E.FORMULA_SETUP": [
+      {
+        "id": "fs1",
+        "q": "Which equation matches heat energy, mass, specific heat, and temperature change?",
+        "choices": [
+          "Q = m \u00f7 c \u00f7 \u0394T",
+          "Q = m \u00d7 c \u00d7 \u0394T",
+          "Q = m + c + \u0394T"
+        ],
+        "answer": 1,
+        "why": "The heat equation is Q = mc\u0394T."
+      },
+      {
+        "id": "fs2",
+        "q": "m = 12 g, c = 0.50, temperature goes 20\u00b0C \u2192 30\u00b0C. Which setup solves Q?",
+        "choices": [
+          "Q = 12 \u00d7 0.50 \u00d7 10",
+          "Q = 12 \u00d7 0.50 \u00d7 30",
+          "Q = 10 \u00f7 (12 \u00d7 0.50)"
+        ],
+        "answer": 0,
+        "why": "\u0394T is 10, so Q = 12 \u00d7 0.50 \u00d7 10."
+      },
+      {
+        "id": "fs3",
+        "q": "m = 8 g, c = 2, initial 15\u00b0C, final 25\u00b0C. Which three values belong in Q = mc\u0394T?",
+        "choices": [
+          "8, 2, 25",
+          "15, 25, 10",
+          "8, 2, 10"
+        ],
+        "answer": 2,
+        "why": "Mass 8, c 2, \u0394T 10."
+      }
+    ],
+    "SCI.SPS7E.LITERAL_REARRANGE": [
+      {
+        "id": "lr1",
+        "q": "Using Q = m \u00d7 c \u00d7 \u0394T, solve for c.",
+        "choices": [
+          "c = Q \u00f7 (m \u00d7 \u0394T)",
+          "c = Q \u00d7 m \u00d7 \u0394T",
+          "c = m \u00d7 \u0394T \u00f7 Q"
+        ],
+        "answer": 0,
+        "why": "Divide both sides by m \u00d7 \u0394T."
+      },
+      {
+        "id": "lr2",
+        "q": "Using Q = m \u00d7 c \u00d7 \u0394T, solve for m.",
+        "choices": [
+          "m = Q \u00d7 c \u00d7 \u0394T",
+          "m = c \u00d7 \u0394T \u00f7 Q",
+          "m = Q \u00f7 (c \u00d7 \u0394T)"
+        ],
+        "answer": 2,
+        "why": "Divide both sides by c \u00d7 \u0394T."
+      },
+      {
+        "id": "lr3",
+        "q": "Using Q = m \u00d7 c \u00d7 \u0394T, solve for \u0394T.",
+        "choices": [
+          "\u0394T = m \u00d7 c \u00f7 Q",
+          "\u0394T = Q \u00f7 (m \u00d7 c)",
+          "\u0394T = Q \u00d7 m \u00d7 c"
+        ],
+        "answer": 1,
+        "why": "Divide both sides by m \u00d7 c."
+      }
+    ],
+    "SCI.SPS7E.CALCULATION": [
+      {
+        "id": "c1",
+        "q": "Use Q = mc\u0394T. m = 10, c = 2, \u0394T = 5. What is Q?",
+        "free": "100",
+        "why": "10 \u00d7 2 \u00d7 5 = 100 J."
+      },
+      {
+        "id": "c2",
+        "q": "Use Q = mc\u0394T. m = 8, c = 1.5, \u0394T = 10. What is Q?",
+        "free": "120",
+        "why": "8 \u00d7 1.5 \u00d7 10 = 120 J."
+      },
+      {
+        "id": "c3",
+        "q": "If Q = 480, m = 12, \u0394T = 20 and c = Q \u00f7 (m\u0394T), what is c?",
+        "free": "2",
+        "why": "480 \u00f7 (12 \u00d7 20) = 2 J/g\u00b0C."
+      }
+    ],
+    "MATH.INVERSE_OPERATIONS": [
+      {
+        "id": "mi1",
+        "q": "Solve 3x = 12.",
+        "free": "4",
+        "why": "Divide both sides by 3. x = 4."
+      },
+      {
+        "id": "mi2",
+        "q": "Solve x \u00f7 5 = 7.",
+        "free": "35",
+        "why": "Multiply both sides by 5. x = 35."
+      },
+      {
+        "id": "mi3",
+        "q": "Solve x + 8 = 21.",
+        "free": "13",
+        "why": "Subtract 8 from both sides. x = 13."
+      }
+    ],
+    "MATH.LITERAL_EQUATIONS": [
+      {
+        "id": "ml1",
+        "q": "Solve d = r \u00d7 t for t.",
+        "choices": [
+          "t = r \u00f7 d",
+          "t = d \u00d7 r",
+          "t = d \u00f7 r"
+        ],
+        "answer": 2,
+        "why": "Divide both sides by r."
+      },
+      {
+        "id": "ml2",
+        "q": "Solve V = I \u00d7 R for R.",
+        "choices": [
+          "R = V \u00d7 I",
+          "R = V \u00f7 I",
+          "R = I \u00f7 V"
+        ],
+        "answer": 1,
+        "why": "Divide both sides by I."
+      },
+      {
+        "id": "ml3",
+        "q": "Solve y = mx + b for x.",
+        "choices": [
+          "x = (y \u2212 b) \u00f7 m",
+          "x = (y + b) \u00f7 m",
+          "x = y \u2212 (b \u00f7 m)"
+        ],
+        "answer": 0,
+        "why": "Subtract b, then divide by m."
+      }
+    ],
+    "MATH.SCHOOL.FUNCTION": [
+      {
+        "q": "For y = 3x + 2, input x = 2 gives which output?",
+        "choices": [
+          "12",
+          "8",
+          "7"
+        ],
+        "answer": 1,
+        "why": "3 \u00d7 2 + 2 = 8.",
+        "id": "FUNCTION-0",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": "Check repeated inputs in a table. (1,4), (2,4), (3,4) is a function because each input has one output. (1,4), (1,7) is not: input 1 has two different outputs."
+      },
+      {
+        "q": "Which set fails the function rule?",
+        "choices": [
+          "(2,5), (2,9)",
+          "(2,5), (3,5)",
+          "(0,1), (1,3)"
+        ],
+        "answer": 0,
+        "why": "The same input 2 is paired with different outputs.",
+        "id": "FUNCTION-1",
+        "stage": "FADE_HELP",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": "Use the method you just practiced. Explain the connection before choosing."
+      },
+      {
+        "q": "Can two different inputs in a function have the same output?",
+        "choices": [
+          "No, every output must be unique",
+          "Only if both inputs are zero",
+          "Yes, if each input still has only one output"
+        ],
+        "answer": 2,
+        "why": "The restriction is one output per input.",
+        "id": "FUNCTION-2",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": null
+      },
+      {
+        "q": "A vertical line crosses a graph twice. What does that show?",
+        "choices": [
+          "The graph must be proportional",
+          "One input has two outputs, so it is not a function",
+          "The slope must be zero"
+        ],
+        "answer": 1,
+        "why": "A vertical line holds x fixed.",
+        "id": "FUNCTION-3",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": null
+      },
+      {
+        "q": "A game rule gives 5 points at level 1 and 8 points at the same level 1. Explain why this rule is not a function and describe one repair.",
+        "rubric": [
+          "Identify the repeated input.",
+          "Explain the two conflicting outputs.",
+          "Give one consistent output for each input."
+        ],
+        "why": "Review your response against these ideas: Identify the repeated input. Explain the two conflicting outputs. Give one consistent output for each input.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "id": "FUNCTION-explain"
+      }
+    ],
+    "MATH.SCHOOL.DOMAIN_RANGE": [
+      {
+        "q": "For (0,2), (2,6), (3,6), what is the domain?",
+        "choices": [
+          "{0,2,3}",
+          "{2,6}",
+          "{0,2,3,6}"
+        ],
+        "answer": 0,
+        "why": "Read the distinct inputs.",
+        "id": "DOMAIN_RANGE-0",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": "For isolated points, read the x coordinates for domain and y coordinates for range. For a continuous segment, include all values along the segment, not just its endpoints."
+      },
+      {
+        "q": "For (0,2), (2,6), (3,6), what is the range?",
+        "choices": [
+          "{0,2,3}",
+          "{2,6,6}",
+          "{2,6}"
+        ],
+        "answer": 2,
+        "why": "Read each distinct output once.",
+        "id": "DOMAIN_RANGE-1",
+        "stage": "FADE_HELP",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": "Use the method you just practiced. Explain the connection before choosing."
+      },
+      {
+        "q": "A filled line segment runs from (1,4) to (5,12). Which describes its domain?",
+        "choices": [
+          "All real x without limits",
+          "All real x from 1 through 5",
+          "Only {1,5}"
+        ],
+        "answer": 1,
+        "why": "The continuous segment includes values between the endpoints.",
+        "id": "DOMAIN_RANGE-2",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": null
+      },
+      {
+        "q": "An endpoint at x = 3 is open. Is 3 included at that end?",
+        "choices": [
+          "No",
+          "Yes",
+          "Only if y is positive"
+        ],
+        "answer": 0,
+        "why": "An open circle excludes the endpoint.",
+        "id": "DOMAIN_RANGE-3",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": null
+      },
+      {
+        "q": "A table lists hours 0, 1, 2 and distances 0, 4, 8. State its domain and range. Explain why this table alone does not establish every value between the listed points.",
+        "rubric": [
+          "Domain {0,1,2}.",
+          "Range {0,4,8}.",
+          "A continuous interpretation needs context or a stated rule."
+        ],
+        "why": "Review your response against these ideas: Domain {0,1,2}. Range {0,4,8}. A continuous interpretation needs context or a stated rule.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "id": "DOMAIN_RANGE-explain"
+      }
+    ],
+    "MATH.SCHOOL.LINEAR": [
+      {
+        "q": "A table changes from (1,5) to (3,9). What is \u0394y/\u0394x?",
+        "choices": [
+          "2",
+          "4",
+          "1/2"
+        ],
+        "answer": 0,
+        "why": "(9 \u2212 5)/(3 \u2212 1) = 2.",
+        "id": "LINEAR-0",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": "A proportional relationship is the special linear case y = kx. Its graph passes through (0,0), and y/x = k when x is not zero. A starting fee makes a linear cost nonproportional."
+      },
+      {
+        "q": "Which rule describes a proportional relationship?",
+        "choices": [
+          "y = 4x + 2",
+          "y = x\u00b2",
+          "y = 4x"
+        ],
+        "answer": 2,
+        "why": "Proportional linear functions have no added starting amount.",
+        "id": "LINEAR-1",
+        "stage": "FADE_HELP",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": "Use the method you just practiced. Explain the connection before choosing."
+      },
+      {
+        "q": "x values are 0,1,2 and y values are 2,5,8. Is it linear and proportional?",
+        "choices": [
+          "Neither linear nor proportional",
+          "Linear, but not proportional",
+          "Both linear and proportional"
+        ],
+        "answer": 1,
+        "why": "The rate is 3 but the starting value is 2.",
+        "id": "LINEAR-2",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": null
+      },
+      {
+        "q": "Why compare \u0394y/\u0394x instead of \u0394y alone?",
+        "choices": [
+          "Input intervals may have different sizes",
+          "Outputs never matter",
+          "The y-intercept is always zero"
+        ],
+        "answer": 0,
+        "why": "Rate compares output change per input unit.",
+        "id": "LINEAR-3",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": null
+      },
+      {
+        "q": "A taxi charges a starting fee plus a fixed price per mile. Explain why the model can be linear without being proportional.",
+        "rubric": [
+          "Identify the constant per-mile rate.",
+          "Identify the nonzero cost at zero miles.",
+          "Connect proportionality to passing through the origin."
+        ],
+        "why": "Review your response against these ideas: Identify the constant per-mile rate. Identify the nonzero cost at zero miles. Connect proportionality to passing through the origin.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "id": "LINEAR-explain"
+      }
+    ],
+    "MATH.SCHOOL.SLOPE": [
+      {
+        "q": "Find slope between (0,2) and (3,8).",
+        "choices": [
+          "1/2",
+          "2",
+          "6"
+        ],
+        "answer": 1,
+        "why": "(8 \u2212 2)/(3 \u2212 0) = 2.",
+        "id": "SLOPE-0",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": "Mark the two points. Move horizontally and vertically. A change of +2 in x and \u22126 in y gives slope \u22126/2 = \u22123. State units: \u22123 liters per minute if y is liters and x is minutes."
+      },
+      {
+        "q": "A line drops 8 units when x increases 4. What is its slope?",
+        "choices": [
+          "\u22122",
+          "2",
+          "\u22124"
+        ],
+        "answer": 0,
+        "why": "\u0394y/\u0394x = \u22128/4.",
+        "id": "SLOPE-1",
+        "stage": "FADE_HELP",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": "Use the method you just practiced. Explain the connection before choosing."
+      },
+      {
+        "q": "What is the slope of a vertical line?",
+        "choices": [
+          "0",
+          "1",
+          "Undefined"
+        ],
+        "answer": 2,
+        "why": "Its input change is zero.",
+        "id": "SLOPE-2",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": null
+      },
+      {
+        "q": "A tank loses 5 liters each minute. What does m = \u22125 mean?",
+        "choices": [
+          "The starting volume is \u22125 liters",
+          "Volume decreases 5 liters per minute",
+          "Time decreases 5 minutes per liter"
+        ],
+        "answer": 1,
+        "why": "Slope describes change, including direction and units.",
+        "id": "SLOPE-3",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": null
+      },
+      {
+        "q": "Two points are (2,11) and (5,5). Calculate slope, show the subtraction order, and explain its sign.",
+        "rubric": [
+          "(5 \u2212 11)/(5 \u2212 2) = \u22126/3 = \u22122.",
+          "Use matching point order.",
+          "The output decreases as the input increases."
+        ],
+        "why": "Review your response against these ideas: (5 \u2212 11)/(5 \u2212 2) = \u22126/3 = \u22122. Use matching point order. The output decreases as the input increases.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "id": "SLOPE-explain"
+      }
+    ],
+    "MATH.SCHOOL.INTERCEPT": [
+      {
+        "q": "In y = 4x + 7, what is the y-intercept?",
+        "choices": [
+          "(0,7)",
+          "(7,0)",
+          "(0,4)"
+        ],
+        "answer": 0,
+        "why": "Set x = 0.",
+        "id": "INTERCEPT-0",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": "Use b = y \u2212 mx. Copy a known pair, multiply m by x, then subtract. With m = \u22122 and (3,8), b = 8 \u2212 (\u22122 \u00d7 3) = 14."
+      },
+      {
+        "q": "A line has slope 2 and passes through (3,10). Find b.",
+        "choices": [
+          "10",
+          "16",
+          "4"
+        ],
+        "answer": 2,
+        "why": "b = 10 \u2212 2 \u00d7 3 = 4.",
+        "id": "INTERCEPT-1",
+        "stage": "FADE_HELP",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": "Use the method you just practiced. Explain the connection before choosing."
+      },
+      {
+        "q": "Why is the first listed y value not always b?",
+        "choices": [
+          "A table can never show b",
+          "The table may not start at x = 0",
+          "b must be the largest y value"
+        ],
+        "answer": 1,
+        "why": "The intercept is specifically the output at zero input.",
+        "id": "INTERCEPT-2",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": null
+      },
+      {
+        "q": "Savings follow y = 6x + 20, with x weeks. What does 20 mean?",
+        "choices": [
+          "$20 saved at week zero",
+          "$20 added each week",
+          "20 weeks of saving"
+        ],
+        "answer": 0,
+        "why": "The constant term is the starting amount.",
+        "id": "INTERCEPT-3",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": null
+      },
+      {
+        "q": "A line has slope 4 and includes (2,13). Find b and state the intercept as a coordinate pair.",
+        "rubric": [
+          "b = 13 \u2212 8 = 5.",
+          "The coordinate pair is (0,5).",
+          "Check 13 = 4 \u00d7 2 + 5."
+        ],
+        "why": "Review your response against these ideas: b = 13 \u2212 8 = 5. The coordinate pair is (0,5). Check 13 = 4 \u00d7 2 + 5.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "id": "INTERCEPT-explain"
+      }
+    ],
+    "MATH.SCHOOL.EQUATION": [
+      {
+        "q": "A table includes (0,5), (1,8), (2,11). Which rule fits?",
+        "choices": [
+          "y = 3x",
+          "y = 3x + 5",
+          "y = 5x + 3"
+        ],
+        "answer": 1,
+        "why": "The rate is 3 and the initial output is 5.",
+        "id": "EQUATION-0",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": "For (0,6), (2,2), slope is \u22124/2 = \u22122 and b = 6. Write y = \u22122x + 6. A negative rate is allowed."
+      },
+      {
+        "q": "A line has slope \u22122 and intercept (0,9). Which rule fits?",
+        "choices": [
+          "y = \u22122x + 9",
+          "y = 9x \u2212 2",
+          "y = 2x + 9"
+        ],
+        "answer": 0,
+        "why": "Put m in front of x and b after it.",
+        "id": "EQUATION-1",
+        "stage": "FADE_HELP",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": "Use the method you just practiced. Explain the connection before choosing."
+      },
+      {
+        "q": "A rule fits one data point. Is it verified for the whole table?",
+        "choices": [
+          "Yes, one match proves it",
+          "Only if the point has positive coordinates",
+          "No; test other points and rates"
+        ],
+        "answer": 2,
+        "why": "Many different lines pass through one point.",
+        "id": "EQUATION-2",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": null
+      },
+      {
+        "q": "For y = 2x \u2212 1, which point lies on the line?",
+        "choices": [
+          "(7,4)",
+          "(4,7)",
+          "(4,9)"
+        ],
+        "answer": 1,
+        "why": "2 \u00d7 4 \u2212 1 = 7.",
+        "id": "EQUATION-3",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": null
+      },
+      {
+        "q": "Write the rule through (2,9) and (5,18), then verify both points.",
+        "rubric": [
+          "m = 9/3 = 3.",
+          "b = 9 \u2212 6 = 3; y = 3x + 3.",
+          "Check 9 = 3 \u00d7 2 + 3 and 18 = 3 \u00d7 5 + 3."
+        ],
+        "why": "Review your response against these ideas: m = 9/3 = 3. b = 9 \u2212 6 = 3; y = 3x + 3. Check 9 = 3 \u00d7 2 + 3 and 18 = 3 \u00d7 5 + 3.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "id": "EQUATION-explain"
+      }
+    ],
+    "MATH.SCHOOL.GRAPH": [
+      {
+        "q": "Where do you start when graphing y = 2x \u2212 3?",
+        "choices": [
+          "(0,2)",
+          "(0,\u22123)",
+          "(\u22123,0)"
+        ],
+        "answer": 1,
+        "why": "The y-intercept is \u22123.",
+        "id": "GRAPH-0",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": "For y = \u22123x + 4, start at (0,4), move right 1 and down 3 to (1,1). For slope 1/2, move right 2 and up 1."
+      },
+      {
+        "q": "Slope is \u22122/3. From a point, which move works?",
+        "choices": [
+          "Right 3, down 2",
+          "Right 2, down 3",
+          "Right 3, up 2"
+        ],
+        "answer": 0,
+        "why": "Rise is \u22122 and run is +3.",
+        "id": "GRAPH-1",
+        "stage": "FADE_HELP",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": "Use the method you just practiced. Explain the connection before choosing."
+      },
+      {
+        "q": "Which point belongs to y = \u2212x + 4?",
+        "choices": [
+          "(3,7)",
+          "(1,3.5)",
+          "(3,1)"
+        ],
+        "answer": 2,
+        "why": "1 = \u22123 + 4.",
+        "id": "GRAPH-2",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": null
+      },
+      {
+        "q": "A graph counts whole tickets sold. Should it automatically include fractional ticket inputs?",
+        "choices": [
+          "Only at negative x values",
+          "No; the domain should use whole ticket counts",
+          "Yes; every linear context uses all real x"
+        ],
+        "answer": 1,
+        "why": "A linear rule does not remove context restrictions.",
+        "id": "GRAPH-3",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": null
+      },
+      {
+        "q": "Explain how to graph y = (1/2)x + 2. Give the intercept and two more points, and describe the movement.",
+        "rubric": [
+          "Start at (0,2).",
+          "Move right 2 and up 1: (2,3), (4,4).",
+          "Check the points in the equation."
+        ],
+        "why": "Review your response against these ideas: Start at (0,2). Move right 2 and up 1: (2,3), (4,4). Check the points in the equation.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "id": "GRAPH-explain"
+      }
+    ],
+    "MATH.SCHOOL.CONTEXT": [
+      {
+        "q": "A ride costs $5 initially plus $2 per mile x. Which model fits?",
+        "choices": [
+          "y = 5x + 2",
+          "y = 7x",
+          "y = 2x + 5"
+        ],
+        "answer": 2,
+        "why": "Rate 2 goes with x; starting fee 5 is added.",
+        "id": "CONTEXT-0",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": "A tank begins with 24 liters and loses 3 liters per minute. Let t = minutes. V = 24 \u2212 3t, so the slope is \u22123 liters/minute and the starting volume is 24 liters."
+      },
+      {
+        "q": "A balance starts at 40 and falls 6 each week. Which slope fits?",
+        "choices": [
+          "40",
+          "\u22126",
+          "6"
+        ],
+        "answer": 1,
+        "why": "A decrease gives a negative rate.",
+        "id": "CONTEXT-1",
+        "stage": "FADE_HELP",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": "Use the method you just practiced. Explain the connection before choosing."
+      },
+      {
+        "q": "For y = 3x + 8 dollars, what are the units of slope if x is hours?",
+        "choices": [
+          "Dollars per hour",
+          "Hours per dollar",
+          "Dollars only"
+        ],
+        "answer": 0,
+        "why": "Slope is output units divided by input units.",
+        "id": "CONTEXT-2",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": null
+      },
+      {
+        "q": "A fixed-rate model predicts a negative amount of water after the tank empties. What should change?",
+        "choices": [
+          "Accept negative physical water",
+          "Change the graph label only",
+          "Restrict the model to meaningful times"
+        ],
+        "answer": 2,
+        "why": "The context limits the allowed input values.",
+        "id": "CONTEXT-3",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": null
+      },
+      {
+        "q": "A club pays $12 for setup and $3 per printed shirt. Define variables, write the cost rule, and explain both numbers.",
+        "rubric": [
+          "x is number of shirts, y is total dollars.",
+          "y = 3x + 12.",
+          "3 dollars/shirt is the rate and 12 dollars is the fixed charge."
+        ],
+        "why": "Review your response against these ideas: x is number of shirts, y is total dollars. y = 3x + 12. 3 dollars/shirt is the rate and 12 dollars is the fixed charge.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "id": "CONTEXT-explain"
+      }
+    ],
+    "MATH.SCHOOL.CONTEXT_DOMAIN": [
+      {
+        "q": "V = 20 \u2212 4t models draining from full to empty. What time domain fits?",
+        "choices": [
+          "0 \u2264 t \u2264 20",
+          "0 \u2264 t \u2264 5",
+          "All real t"
+        ],
+        "answer": 1,
+        "why": "Set V = 0: 20/4 = 5 minutes.",
+        "id": "CONTEXT_DOMAIN-0",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": "Tickets cost $4 each and at most 3 can be bought. If buying zero is allowed, n is in {0,1,2,3}; cost is in {0,4,8,12}. A $6 cost does not occur in this model."
+      },
+      {
+        "q": "With $5 tickets and at most 2, including zero tickets, what is the range?",
+        "choices": [
+          "{0,5,10}",
+          "Every real value from 0 to 10",
+          "{0,1,2}"
+        ],
+        "answer": 0,
+        "why": "The allowed costs come from whole ticket counts.",
+        "id": "CONTEXT_DOMAIN-1",
+        "stage": "FADE_HELP",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": "Use the method you just practiced. Explain the connection before choosing."
+      },
+      {
+        "q": "y = \u22122x + 12 for 1 \u2264 x \u2264 4. What is the range?",
+        "choices": [
+          "1 \u2264 y \u2264 4",
+          "10 \u2264 y \u2264 4",
+          "4 \u2264 y \u2264 10"
+        ],
+        "answer": 2,
+        "why": "At x = 1, y = 10; at x = 4, y = 4. Order the range.",
+        "id": "CONTEXT_DOMAIN-2",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": null
+      },
+      {
+        "q": "Why can a linear situation use isolated dots instead of a continuous line?",
+        "choices": [
+          "The y-intercept is missing",
+          "Only whole-number input values may be allowed",
+          "A linear relationship has no slope"
+        ],
+        "answer": 1,
+        "why": "The domain may be discrete even if the formula is linear.",
+        "id": "CONTEXT_DOMAIN-3",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": null
+      },
+      {
+        "q": "A bag starts with 15 marbles. Three are removed each turn until empty. Give the allowed turns and remaining-marble values, including turn zero. Explain why you use sets.",
+        "rubric": [
+          "Turns {0,1,2,3,4,5}.",
+          "Marbles {15,12,9,6,3,0}.",
+          "Turns are discrete; do not include partial turns."
+        ],
+        "why": "Review your response against these ideas: Turns {0,1,2,3,4,5}. Marbles {15,12,9,6,3,0}. Turns are discrete; do not include partial turns.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "id": "CONTEXT_DOMAIN-explain"
+      }
+    ],
+    "MATH.SCHOOL.QUALITATIVE": [
+      {
+        "q": "A distance-from-home graph falls as time increases. What can you infer?",
+        "choices": [
+          "Time runs backward",
+          "Distance from home is decreasing",
+          "The road goes downhill"
+        ],
+        "answer": 1,
+        "why": "Read the vertical-axis quantity, not the graph as a road.",
+        "id": "QUALITATIVE-0",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": "On a distance-from-home graph, a horizontal segment means the distance is constant; in a simple straight-route story this represents a stop. A steeper rising segment means distance increases faster."
+      },
+      {
+        "q": "On a straight-route distance-time model, a horizontal segment most naturally represents\u2026",
+        "choices": [
+          "A stop",
+          "Faster travel away",
+          "A jump in time"
+        ],
+        "answer": 0,
+        "why": "Distance stays constant while time passes.",
+        "id": "QUALITATIVE-1",
+        "stage": "FADE_HELP",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": "Use the method you just practiced. Explain the connection before choosing."
+      },
+      {
+        "q": "Two rising straight segments have different steepness on the same axes. Which has greater rate?",
+        "choices": [
+          "The higher starting one in every case",
+          "They must have equal rate",
+          "The steeper one"
+        ],
+        "answer": 2,
+        "why": "Rate depends on change per unit time, not height alone.",
+        "id": "QUALITATIVE-2",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": null
+      },
+      {
+        "q": "Does a graph with negative slope necessarily show negative physical speed?",
+        "choices": [
+          "Only when the intercept is zero",
+          "No; its output quantity may be decreasing",
+          "Yes; speed is always slope of every graph"
+        ],
+        "answer": 1,
+        "why": "Interpret the variables and units.",
+        "id": "QUALITATIVE-3",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "MATHEMATICAL_REASONING",
+        "support": null
+      },
+      {
+        "q": "Describe a graph of distance from school over time that rises, stays level, then falls. Explain what each part means and one thing the graph does not tell you.",
+        "rubric": [
+          "Moves farther from school, constant distance, then nearer.",
+          "Interpret distance and time rather than road shape.",
+          "The graph alone does not show the exact route."
+        ],
+        "why": "Review your response against these ideas: Moves farther from school, constant distance, then nearer. Interpret distance and time rather than road shape. The graph alone does not show the exact route.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "id": "QUALITATIVE-explain"
+      }
+    ],
+    "ELA.ODYSSEUS.READ": [
+      {
+        "q": "What makes a retelling an adaptation?",
+        "choices": [
+          "It removes the need to read the assigned version",
+          "It reshapes an existing story for an audience",
+          "It must repeat every original word"
+        ],
+        "answer": 1,
+        "why": "An adaptation changes presentation while drawing on an earlier story.",
+        "id": "READ-0",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": "Original practice: two storytellers describe the same storm. One stresses the captain\u2019s courage; the other stresses the crew\u2019s teamwork. The event is similar, but the emphasis changes the audience\u2019s impression."
+      },
+      {
+        "q": "Why might oral versions of a story differ?",
+        "choices": [
+          "Different tellers can emphasize or alter details",
+          "Stories are copied from one book",
+          "Listeners memorize every line"
+        ],
+        "answer": 0,
+        "why": "Stories change through repeated performance and transmission.",
+        "id": "READ-1",
+        "stage": "FADE_HELP",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": "Use the method you just practiced. Explain the connection before choosing."
+      },
+      {
+        "q": "Which note best helps trace a hero\u2019s journey?",
+        "choices": [
+          "Setting \u2192 page count \u2192 title",
+          "Words \u2192 definitions \u2192 spelling",
+          "Goal \u2192 obstacle \u2192 choice \u2192 consequence"
+        ],
+        "answer": 2,
+        "why": "The sequence links events with decisions and outcomes.",
+        "id": "READ-2",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": null
+      },
+      {
+        "q": "A modern retelling differs from another version. Which evidence should you use for class?",
+        "choices": [
+          "A quotation invented to fit the answer",
+          "Details from the assigned version",
+          "A remembered movie scene without checking"
+        ],
+        "answer": 1,
+        "why": "Use the text actually assigned.",
+        "id": "READ-3",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": null
+      },
+      {
+        "q": "After reading a short section of the assigned book, identify a goal and obstacle. Explain one choice and its consequence, using a page reference from your copy.",
+        "rubric": [
+          "Identify the assigned section.",
+          "Connect goal, obstacle, choice, and consequence.",
+          "Use a real detail with a page reference."
+        ],
+        "why": "Review your response against these ideas: Identify the assigned section. Connect goal, obstacle, choice, and consequence. Use a real detail with a page reference.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "id": "READ-explain"
+      }
+    ],
+    "ELA.ODYSSEUS.VOCAB_ENTRY": [
+      {
+        "q": "During lightning, the hikers sought refuge in a sturdy shelter. Refuge means\u2026",
+        "choices": [
+          "Protection from danger",
+          "A reward given for bravery",
+          "A route used to escape quickly"
+        ],
+        "answer": 0,
+        "why": "The shelter protects them from the storm.",
+        "id": "VOCAB_ENTRY-0",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": "Ask what is being taken over or overcome, what danger requires protection, or what religious significance is involved. Expensive does not automatically mean sacred, and a hiding place is useful refuge only if it offers protection."
+      },
+      {
+        "q": "Which use of conquer is figurative?",
+        "choices": [
+          "Conquer a neighboring kingdom",
+          "Conquer the walled harbor town",
+          "Conquer a fear of speaking"
+        ],
+        "answer": 2,
+        "why": "A fear is overcome rather than physically captured.",
+        "id": "VOCAB_ENTRY-1",
+        "stage": "FADE_HELP",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": "Use the method you just practiced. Explain the connection before choosing."
+      },
+      {
+        "q": "Which fact most directly supports describing an object as sacred?",
+        "choices": [
+          "It is the largest object there",
+          "It is important in religious worship",
+          "It is rare and expensive"
+        ],
+        "answer": 1,
+        "why": "Sacred concerns religious or holy significance.",
+        "id": "VOCAB_ENTRY-2",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": null
+      },
+      {
+        "q": "Which sentence uses conqueror correctly?",
+        "choices": [
+          "The conqueror took control of the territory",
+          "They conqueror their worries",
+          "The shelter was a conqueror"
+        ],
+        "answer": 0,
+        "why": "Conqueror is a noun naming a person.",
+        "id": "VOCAB_ENTRY-3",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": null
+      },
+      {
+        "q": "Write an original sentence using refuge and one using sacred. Explain the context clue that makes each meaning clear.",
+        "rubric": [
+          "Use refuge for protection or shelter from a danger.",
+          "Use sacred for religious or holy importance.",
+          "Explain the clues without copying the examples."
+        ],
+        "why": "Review your response against these ideas: Use refuge for protection or shelter from a danger. Use sacred for religious or holy importance. Explain the clues without copying the examples.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "id": "VOCAB_ENTRY-explain"
+      }
+    ],
+    "ELA.ODYSSEUS.VOCAB_CYCLOPS": [
+      {
+        "q": "A host gives a weary visitor food and a safe place to sleep. Which word fits?",
+        "choices": [
+          "Reciprocity",
+          "Hospitality",
+          "Mortality"
+        ],
+        "answer": 1,
+        "why": "The host welcomes and cares for a guest.",
+        "id": "VOCAB_CYCLOPS-0",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": "Original practice: a traveler is offered water and a bed after a long trip. That is hospitality. When a rescue seems impossible, the traveler feels despair. The two words name different things: an action toward a guest and a feeling about hope."
+      },
+      {
+        "q": "What does immortal mean in a myth?",
+        "choices": [
+          "Not subject to death",
+          "Extremely unhappy",
+          "Unfriendly to travelers"
+        ],
+        "answer": 0,
+        "why": "The prefix changes mortal to its opposite.",
+        "id": "VOCAB_CYCLOPS-1",
+        "stage": "FADE_HELP",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": "Use the method you just practiced. Explain the connection before choosing."
+      },
+      {
+        "q": "Which feeling most clearly fits despair?",
+        "choices": [
+          "Brief irritation at a slow line",
+          "Excitement about a trip",
+          "Believing there is no hope left"
+        ],
+        "answer": 2,
+        "why": "Despair is a deep loss of hope.",
+        "id": "VOCAB_CYCLOPS-2",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": null
+      },
+      {
+        "q": "Which sentence uses mortal as a noun?",
+        "choices": [
+          "The wound was mortal",
+          "The mortal asked the goddess for help",
+          "The hero faced mortal danger"
+        ],
+        "answer": 1,
+        "why": "The mortal names a being; the other uses describe a noun.",
+        "id": "VOCAB_CYCLOPS-3",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": null
+      },
+      {
+        "q": "Create a brief scene showing hospitality. Explain why the scene demonstrates that word, then add a sentence showing despair without simply using the word sad.",
+        "rubric": [
+          "Identify host and guest.",
+          "Show welcoming care.",
+          "Show loss of hope rather than mild frustration."
+        ],
+        "why": "Review your response against these ideas: Identify host and guest. Show welcoming care. Show loss of hope rather than mild frustration.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "id": "VOCAB_CYCLOPS-explain"
+      }
+    ],
+    "ELA.ODYSSEUS.VOCAB_WINDS": [
+      {
+        "q": "Two clubs agree to share equipment with each other. Which idea fits?",
+        "choices": [
+          "Reciprocity",
+          "Hospitality",
+          "Mortality"
+        ],
+        "answer": 0,
+        "why": "Both groups give and receive a benefit.",
+        "id": "VOCAB_WINDS-0",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": "For reciprocity, identify both sides and the return action. For turmoil, name the disruption. For sprawling, describe the spread. Large is not always sprawling, and a one-way favor alone does not establish reciprocity."
+      },
+      {
+        "q": "Which situation most clearly suggests turmoil?",
+        "choices": [
+          "A quiet library reading period",
+          "A neatly labeled map",
+          "Conflicting instructions and a chaotic evacuation"
+        ],
+        "answer": 2,
+        "why": "Turmoil involves disruption or confusion.",
+        "id": "VOCAB_WINDS-1",
+        "stage": "FADE_HELP",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": "Use the method you just practiced. Explain the connection before choosing."
+      },
+      {
+        "q": "Which description best fits a sprawling neighborhood?",
+        "choices": [
+          "A crowded, noisy room packed tightly with people",
+          "Homes spread widely across the surrounding land",
+          "One tall apartment tower on a tiny corner lot"
+        ],
+        "answer": 1,
+        "why": "Sprawling describes broad spread.",
+        "id": "VOCAB_WINDS-2",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": null
+      },
+      {
+        "q": "Choose the correct word form: We hope to ___ their kindness.",
+        "choices": [
+          "reciprocate",
+          "reciprocal",
+          "reciprocity"
+        ],
+        "answer": 0,
+        "why": "After to, use the verb form.",
+        "id": "VOCAB_WINDS-3",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": null
+      },
+      {
+        "q": "Describe a reciprocal arrangement between two groups. Name what each gives and receives, then explain how broken expectations could create turmoil.",
+        "rubric": [
+          "Include both parties and the exchange.",
+          "Use reciprocity or reciprocate accurately.",
+          "Connect broken expectations to disturbance or confusion."
+        ],
+        "why": "Review your response against these ideas: Include both parties and the exchange. Use reciprocity or reciprocate accurately. Connect broken expectations to disturbance or confusion.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "id": "VOCAB_WINDS-explain"
+      }
+    ],
+    "ELA.ODYSSEUS.ANNOTATE": [
+      {
+        "q": "Which annotation best supports an inference?",
+        "choices": [
+          "She checks every knot; this suggests caution",
+          "She checks knots and life jackets",
+          "I would be careful too"
+        ],
+        "answer": 0,
+        "why": "The note connects a detail to a reasonable interpretation.",
+        "id": "ANNOTATE-0",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": "Use a two-column note: exact detail or accurate paraphrase on one side, what it suggests on the other. Add the page or location. Separate what the text states from what you infer."
+      },
+      {
+        "q": "Which is an inference rather than a stated action?",
+        "choices": [
+          "Nia counts the life jackets",
+          "Nia checks the boat twice",
+          "Nia is cautious"
+        ],
+        "answer": 2,
+        "why": "Cautious interprets the observed actions.",
+        "id": "ANNOTATE-1",
+        "stage": "FADE_HELP",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": "Use the method you just practiced. Explain the connection before choosing."
+      },
+      {
+        "q": "Why record the page with evidence?",
+        "choices": [
+          "So the detail no longer needs any explanation",
+          "So the detail can be found and checked",
+          "So the response looks longer and more complete"
+        ],
+        "answer": 1,
+        "why": "A reference makes the support traceable.",
+        "id": "ANNOTATE-2",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": null
+      },
+      {
+        "q": "A later detail challenges your first interpretation. What should you do?",
+        "choices": [
+          "Revise or qualify it using both details",
+          "Ignore the new detail",
+          "Invent an agreeing quotation"
+        ],
+        "answer": 0,
+        "why": "Interpretations should respond to evidence.",
+        "id": "ANNOTATE-3",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": null
+      },
+      {
+        "q": "Annotate one detail in your assigned reading. Record the page, paraphrase the detail, and explain an inference plus one limit on what you can conclude.",
+        "rubric": [
+          "Use a real detail and location.",
+          "Connect the detail to an inference.",
+          "Avoid claiming more than the evidence supports."
+        ],
+        "why": "Review your response against these ideas: Use a real detail and location. Connect the detail to an inference. Avoid claiming more than the evidence supports.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "id": "ANNOTATE-explain"
+      }
+    ],
+    "ELA.ODYSSEUS.WORD_CHOICE": [
+      {
+        "q": "Compared with walked, crept most strongly suggests\u2026",
+        "choices": [
+          "Quiet or cautious movement",
+          "Moving at exactly half the normal speed",
+          "Walking confidently with heavy footsteps"
+        ],
+        "answer": 0,
+        "why": "Crept carries a different connotation, not an exact speed.",
+        "id": "WORD_CHOICE-0",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": "Replace one important word with a neutral alternative. Ask what impression is weakened or strengthened. Do not just say the word is descriptive: explain what it suggests and why that matters."
+      },
+      {
+        "q": "Which statement analyzes mood?",
+        "choices": [
+          "The narrator disapproves of greed",
+          "The story has twelve chapters",
+          "The dim hallway and scraping sound create unease"
+        ],
+        "answer": 2,
+        "why": "Mood concerns the atmosphere experienced by readers.",
+        "id": "WORD_CHOICE-1",
+        "stage": "FADE_HELP",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": "Use the method you just practiced. Explain the connection before choosing."
+      },
+      {
+        "q": "Which is the strongest word-choice explanation?",
+        "choices": [
+          "Snatched means the same as received in every case",
+          "Snatched suggests rough, hurried taking",
+          "Snatched is a strong verb because it is long"
+        ],
+        "answer": 1,
+        "why": "Explain the connotation and its effect.",
+        "id": "WORD_CHOICE-2",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": null
+      },
+      {
+        "q": "Does the same event always create the same tone in different retellings?",
+        "choices": [
+          "No; wording and emphasis can change the attitude",
+          "Yes; tone never changes",
+          "Only page count affects tone"
+        ],
+        "answer": 0,
+        "why": "Authors shape presentation through language.",
+        "id": "WORD_CHOICE-3",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": null
+      },
+      {
+        "q": "Choose a short phrase from your assigned reading and identify its page. Explain a connotation or image and how replacing one word would change its effect.",
+        "rubric": [
+          "Use an accurate phrase or paraphrase with location.",
+          "Explain a specific effect.",
+          "Describe how the alternate word changes meaning or tone."
+        ],
+        "why": "Review your response against these ideas: Use an accurate phrase or paraphrase with location. Explain a specific effect. Describe how the alternate word changes meaning or tone.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "id": "WORD_CHOICE-explain"
+      }
+    ],
+    "ELA.ODYSSEUS.CHARACTER": [
+      {
+        "q": "Which action most clearly suggests hubris?",
+        "choices": [
+          "Checking all of the equipment twice before a climb",
+          "Asking an expert guide for advice about the route",
+          "Ignoring a warning to prove he is the best"
+        ],
+        "answer": 2,
+        "why": "Hubris is excessive pride, especially when it overrides limits.",
+        "id": "CHARACTER-0",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": "Build the chain: trait or motive \u2192 choice \u2192 result. Confidence alone is not automatically hubris. Look for excessive pride that overrides a warning, limit, or responsibility."
+      },
+      {
+        "q": "How are hubris and hamartia related?",
+        "choices": [
+          "They always mean ordinary courage",
+          "Hubris can be a form of hamartia",
+          "Every mistake is hubris"
+        ],
+        "answer": 1,
+        "why": "Hamartia is broader than excessive pride.",
+        "id": "CHARACTER-1",
+        "stage": "FADE_HELP",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": "Use the method you just practiced. Explain the connection before choosing."
+      },
+      {
+        "q": "What makes a character analysis stronger?",
+        "choices": [
+          "Connecting a choice to its motive and consequence",
+          "Labeling the character as good or bad in one word",
+          "Listing several page numbers without any details"
+        ],
+        "answer": 0,
+        "why": "Analysis explains relationships, not just labels.",
+        "id": "CHARACTER-2",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": null
+      },
+      {
+        "q": "Can one action suggest both courage and a risky flaw?",
+        "choices": [
+          "No, a character has only one trait",
+          "Only if there is no narrator",
+          "Yes, if the interpretation is supported by details"
+        ],
+        "answer": 2,
+        "why": "Complex actions can have more than one supported interpretation.",
+        "id": "CHARACTER-3",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": null
+      },
+      {
+        "q": "Choose a decision in the assigned reading. Explain a strength or flaw it reveals and the consequence. Use a real detail and page reference; consider whether another interpretation is possible.",
+        "rubric": [
+          "Identify the decision and evidence.",
+          "Explain the trait rather than merely naming it.",
+          "Connect the decision to a consequence and any reasonable qualification."
+        ],
+        "why": "Review your response against these ideas: Identify the decision and evidence. Explain the trait rather than merely naming it. Connect the decision to a consequence and any reasonable qualification.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "id": "CHARACTER-explain"
+      }
+    ],
+    "ELA.ODYSSEUS.XENIA": [
+      {
+        "q": "Which pair captures the two sides of xenia?",
+        "choices": [
+          "A caring host and a respectful guest",
+          "A wealthy host and a silent guest",
+          "A guest who takes everything offered or hidden"
+        ],
+        "answer": 0,
+        "why": "The concept involves obligations on both sides.",
+        "id": "XENIA-0",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": "Use a comparison table with host action, guest action, evidence, and outcome. Generosity by one side does not prove the other side behaved respectfully. A setting may offer clues, but a grand house alone does not prove kindness."
+      },
+      {
+        "q": "A guest steals from a welcoming host. Which conclusion is supported?",
+        "choices": [
+          "The host must have been cruel",
+          "The theft shows reciprocity",
+          "The guest violates respectful hospitality"
+        ],
+        "answer": 2,
+        "why": "The guest\u2019s behavior must be evaluated separately.",
+        "id": "XENIA-1",
+        "stage": "FADE_HELP",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": "Use the method you just practiced. Explain the connection before choosing."
+      },
+      {
+        "q": "What makes a comparison well supported?",
+        "choices": [
+          "Judging each host mainly by the size of the home",
+          "Using the same categories and real details for both",
+          "Describing one encounter fully and guessing about the other"
+        ],
+        "answer": 1,
+        "why": "Comparable categories make the similarities and differences meaningful.",
+        "id": "XENIA-2",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": null
+      },
+      {
+        "q": "A palace is described as splendid. Does that alone prove the host is kind?",
+        "choices": [
+          "No; examine the host\u2019s actions",
+          "Yes; wealth always means hospitality",
+          "Only if the visitor is famous"
+        ],
+        "answer": 0,
+        "why": "Setting can suggest an impression but does not establish behavior.",
+        "id": "XENIA-3",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": null
+      },
+      {
+        "q": "Compare two host-and-guest encounters from the assigned reading. Explain how each side behaves and how those choices affect the outcome. Add page references.",
+        "rubric": [
+          "Use comparable evidence for both encounters.",
+          "Consider both host and guest.",
+          "Connect behavior, xenia, and outcomes without inventing details."
+        ],
+        "why": "Review your response against these ideas: Use comparable evidence for both encounters. Consider both host and guest. Connect behavior, xenia, and outcomes without inventing details.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "id": "XENIA-explain"
+      }
+    ],
+    "ELA.ODYSSEUS.SENTENCES": [
+      {
+        "q": "Complete: Leo stayed inside because\u2026",
+        "choices": [
+          "but he packed a bag for the trip",
+          "so he waited by the window all day",
+          "the storm made travel unsafe"
+        ],
+        "answer": 2,
+        "why": "Because must introduce a reason that fits the first clause.",
+        "id": "SENTENCES-0",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": "A sentence beginning Because the bridge was flooded needs an independent clause: Because the bridge was flooded, Mara waited. That introductory dependent clause takes a comma before the main clause."
+      },
+      {
+        "q": "Which sentence uses but for contrast?",
+        "choices": [
+          "She was tired but because",
+          "She was tired, but she kept rowing",
+          "She was tired, but she needed rest because she was tired"
+        ],
+        "answer": 1,
+        "why": "The first sentence contrasts fatigue with continued action.",
+        "id": "SENTENCES-1",
+        "stage": "FADE_HELP",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": "Use the method you just practiced. Explain the connection before choosing."
+      },
+      {
+        "q": "Which is a complete sentence?",
+        "choices": [
+          "Because the path was blocked, they turned back",
+          "Because the path was blocked",
+          "Although they were ready"
+        ],
+        "answer": 0,
+        "why": "The dependent clause needs an independent clause.",
+        "id": "SENTENCES-2",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": null
+      },
+      {
+        "q": "Which revision repairs the comma splice: The rope broke, the boat drifted?",
+        "choices": [
+          "The rope broke, the boat drifted.",
+          "Because the rope broke.",
+          "The rope broke, so the boat drifted."
+        ],
+        "answer": 2,
+        "why": "So connects two independent clauses with a clear result.",
+        "id": "SENTENCES-3",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": null
+      },
+      {
+        "q": "Using a choice from your assigned reading, write one complete sentence with because and another with but or so. Explain the relationship each connector expresses.",
+        "rubric": [
+          "Keep all details faithful to the text.",
+          "Use complete clauses and appropriate punctuation.",
+          "Explain reason, contrast, or consequence."
+        ],
+        "why": "Review your response against these ideas: Keep all details faithful to the text. Use complete clauses and appropriate punctuation. Explain reason, contrast, or consequence.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "id": "SENTENCES-explain"
+      }
+    ],
+    "ELA.ODYSSEUS.EVIDENCE": [
+      {
+        "q": "Which is a theme statement rather than just a topic?",
+        "choices": [
+          "Ignoring good advice can make success fragile",
+          "Advice and boats",
+          "Success and failure"
+        ],
+        "answer": 0,
+        "why": "A theme states an idea about life or behavior.",
+        "id": "EVIDENCE-0",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": "For a theme, move beyond a topic such as pride. State a message: unchecked pride can turn success into danger. Then support that message with choices and consequences from the assigned text, including details that complicate it."
+      },
+      {
+        "q": "Which part explains evidence?",
+        "choices": [
+          "Before leaving, she checked the radio and the weather on page 2",
+          "In this paragraph I will discuss Nia and her trip",
+          "Her safety checks show she values preventing risk"
+        ],
+        "answer": 2,
+        "why": "Analysis connects the detail to the claim.",
+        "id": "EVIDENCE-1",
+        "stage": "FADE_HELP",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": "Use the method you just practiced. Explain the connection before choosing."
+      },
+      {
+        "q": "You remember an event but not its exact words. What should you do?",
+        "choices": [
+          "Invent a quotation that fits",
+          "Check the passage or paraphrase it with its location",
+          "Put quotation marks around a guess"
+        ],
+        "answer": 1,
+        "why": "Direct quotations must be exact and verifiable.",
+        "id": "EVIDENCE-2",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": null
+      },
+      {
+        "q": "A classmate offers a different supported interpretation. What is a strong response?",
+        "choices": [
+          "Compare the evidence and explain where the readings differ",
+          "Dismiss it because it is different from your own reading",
+          "Change every one of your claims without checking the text"
+        ],
+        "answer": 0,
+        "why": "Discussion should test ideas against the text.",
+        "id": "EVIDENCE-3",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "TEXT_ANALYSIS",
+        "support": null
+      },
+      {
+        "q": "Write a short paragraph about a value, trait, or developing theme in the assigned section. Include a focused claim, evidence with a real page reference, and an explanation of how the detail supports your claim.",
+        "rubric": [
+          "Answer a clear question or make a focused claim.",
+          "Use accurate textual evidence with location.",
+          "Explain the connection and use complete sentences."
+        ],
+        "why": "Review your response against these ideas: Answer a clear question or make a focused claim. Use accurate textual evidence with location. Explain the connection and use complete sentences.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION",
+        "id": "EVIDENCE-explain"
+      }
+    ],
+    "CODING.SCHOOL.PLAN": [
+      {
+        "id": "PLAN-0",
+        "q": "Which plan is most useful?",
+        "choices": [
+          "A goal, controls, rules, and win/loss conditions",
+          "Only a colorful title",
+          "Only the final score"
+        ],
+        "answer": 0,
+        "why": "A playable design needs clear behavior.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CONCEPT",
+        "support": "First make one sprite appear and move. Then add one collectible and test scoring. Add a timer only after that works. Keep a test log: expected result, actual result, one change, retest."
+      },
+      {
+        "id": "PLAN-1",
+        "q": "What should a first prototype do?",
+        "choices": [
+          "Every feature at once",
+          "Only show the credits",
+          "One small working mechanic"
+        ],
+        "answer": 2,
+        "why": "Small tests make bugs easier to locate.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "PLAN-2",
+        "q": "A feature fails. What is a useful debugging step?",
+        "choices": [
+          "Delete the project immediately",
+          "Compare expected and actual behavior",
+          "Change every block at once"
+        ],
+        "answer": 1,
+        "why": "Change one thing and retest.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "PLAN-3",
+        "q": "What proves a school project is submitted?",
+        "choices": [
+          "The required link/file and school submission confirmation",
+          "Completing practice here",
+          "Opening MakeCode"
+        ],
+        "answer": 0,
+        "why": "Follow the teacher\u2019s submission instructions.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "PLAN-explain",
+        "q": "Write your game\u2019s goal, controls, sprites, rules, win/loss condition, and first three build steps.",
+        "rubric": [
+          "Make each rule observable.",
+          "Identify a small working prototype and how to test it.",
+          "Compare your own design against the teacher\u2019s rubric."
+        ],
+        "why": "Make each rule observable. Identify a small working prototype and how to test it. Compare your own design against the teacher\u2019s rubric.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION"
+      }
+    ],
+    "CODING.SCHOOL.SPRITES": [
+      {
+        "id": "SPRITES-0",
+        "q": "Where should initial setup usually go?",
+        "choices": [
+          "on start",
+          "Only after game over",
+          "In a paragraph tag"
+        ],
+        "answer": 0,
+        "why": "Setup creates the starting scene.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CONCEPT",
+        "support": "Change the sprite image or starting position, run the simulator, and describe what changed. In the usual screen coordinates, x increases rightward and y increases downward. Check the tutorial\u2019s coordinate range."
+      },
+      {
+        "id": "SPRITES-1",
+        "q": "What is a sprite kind useful for?",
+        "choices": [
+          "Changing the computer password",
+          "Storing only a page title",
+          "Distinguishing roles in event handlers"
+        ],
+        "answer": 2,
+        "why": "Kinds help identify which objects interact.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "SPRITES-2",
+        "q": "In usual MakeCode screen coordinates, increasing y moves a sprite\u2026",
+        "choices": [
+          "Only left",
+          "Down",
+          "Up"
+        ],
+        "answer": 1,
+        "why": "The origin is near the upper-left of the screen.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "SPRITES-3",
+        "q": "Movement refers to the wrong sprite variable. What should you check?",
+        "choices": [
+          "The variable used by the movement block",
+          "Only the background color",
+          "Only the browser title"
+        ],
+        "answer": 0,
+        "why": "The movement block must control the intended sprite.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "SPRITES-explain",
+        "q": "Create an original background and player sprite in the school tool. Explain the setup blocks and show that your controls work.",
+        "rubric": [
+          "Use your own art as required.",
+          "Identify the player variable and movement block.",
+          "Test direction and edge behavior."
+        ],
+        "why": "Use your own art as required. Identify the player variable and movement block. Test direction and edge behavior.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION"
+      }
+    ],
+    "CODING.SCHOOL.EVENTS": [
+      {
+        "id": "EVENTS-0",
+        "q": "Which code runs after each A-button press?",
+        "choices": [
+          "A page heading",
+          "An A-button event handler",
+          "Only the on start code"
+        ],
+        "answer": 1,
+        "why": "Events connect an action to a trigger.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CONCEPT",
+        "support": "A countdown measures seconds remaining. Decide what happens when it reaches zero, and how that interacts with the score goal. Follow the particular tutorial\u2019s blocks; some skillmaps use extensions with their own timer behavior."
+      },
+      {
+        "id": "EVENTS-1",
+        "q": "Score starts at 0, then change score by 2 runs three times. Score is\u2026",
+        "choices": [
+          "6",
+          "2",
+          "3"
+        ],
+        "answer": 0,
+        "why": "Repeated addition gives 0 + 2 + 2 + 2.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "EVENTS-2",
+        "q": "Why might touching one item add many points?",
+        "choices": [
+          "Score cannot change",
+          "Every sprite is a website",
+          "The overlap event can repeat while touching"
+        ],
+        "answer": 2,
+        "why": "Handle the collected item so it cannot count again unintentionally.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "EVENTS-3",
+        "q": "What should happen at countdown end?",
+        "choices": [
+          "The browser must close",
+          "The explicitly designed timer-end behavior",
+          "An assumed automatic win in every tutorial"
+        ],
+        "answer": 1,
+        "why": "Define and test the end condition for this project.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "EVENTS-explain",
+        "q": "Trace your own game: what happens on start, on one player action, and when time ends? Include a test for repeated scoring.",
+        "rubric": [
+          "Identify each trigger and its result.",
+          "Distinguish setting a value from changing it.",
+          "Test a single intended collection and the end condition."
+        ],
+        "why": "Identify each trigger and its result. Distinguish setting a value from changing it. Test a single intended collection and the end condition.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION"
+      }
+    ],
+    "CODING.SCHOOL.DEBUG": [
+      {
+        "id": "DEBUG-0",
+        "q": "Which bug report is clearest?",
+        "choices": [
+          "It is bad",
+          "Nothing is right",
+          "Pressing A once adds 10 points instead of 1"
+        ],
+        "answer": 2,
+        "why": "State expected, actual, and reproduction steps.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CONCEPT",
+        "support": "After a fix, restart and test normal play, repeated actions, edge cases, and win/loss. Keep versions or exports as supported by the school tool so you can recover your work."
+      },
+      {
+        "id": "DEBUG-1",
+        "q": "After changing one block, what should come next?",
+        "choices": [
+          "Delete the test log",
+          "Retest the behavior",
+          "Assume all bugs are fixed"
+        ],
+        "answer": 1,
+        "why": "Testing checks whether the fix worked.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "DEBUG-2",
+        "q": "Which is different from completing a project?",
+        "choices": [
+          "Submitting the required evidence to the teacher",
+          "Running one simulator test",
+          "Naming a sprite"
+        ],
+        "answer": 0,
+        "why": "A finished project still needs the required delivery step.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "DEBUG-3",
+        "q": "A project link opens the wrong version. What should you do?",
+        "choices": [
+          "Submit it anyway",
+          "Change the assignment title only",
+          "Verify and replace it with the intended saved version"
+        ],
+        "answer": 2,
+        "why": "Check the deliverable itself.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "DEBUG-explain",
+        "q": "Write a short test log for one bug in your own project, then explain your save/link/submission checklist.",
+        "rubric": [
+          "Record expected, actual, change, and retest.",
+          "Verify the correct project/version and intended access.",
+          "Confirm the school submission; app completion does not submit it."
+        ],
+        "why": "Record expected, actual, change, and retest. Verify the correct project/version and intended access. Confirm the school submission; app completion does not submit it.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION"
+      }
+    ],
+    "CODING.SCHOOL.HTML": [
+      {
+        "id": "HTML-0",
+        "q": "Which language gives a page its content structure?",
+        "choices": [
+          "HTML",
+          "CSS only",
+          "A countdown timer"
+        ],
+        "answer": 0,
+        "why": "HTML marks up content.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CONCEPT",
+        "support": "<ul><li>Distance</li><li>Time</li></ul> is an unordered list. Use ol when order matters. Each item goes inside li. Nest elements correctly instead of closing tags in a random order."
+      },
+      {
+        "id": "HTML-1",
+        "q": "Which is a correctly closed paragraph?",
+        "choices": [
+          "<p>Hello<p>",
+          "</p>Hello<p>",
+          "<p>Hello</p>"
+        ],
+        "answer": 2,
+        "why": "The closing paragraph tag includes a slash.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "HTML-2",
+        "q": "Which element represents one list item?",
+        "choices": [
+          "h1 only",
+          "li",
+          "ul only"
+        ],
+        "answer": 1,
+        "why": "li goes inside ul or ol.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "HTML-3",
+        "q": "What is CSS mainly used for?",
+        "choices": [
+          "Presentation and styling",
+          "Storing the school password",
+          "Replacing every HTML element"
+        ],
+        "answer": 0,
+        "why": "HTML structure and CSS presentation have different jobs.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "HTML-explain",
+        "q": "Write a small original HTML page with a heading, paragraph, and three-item list. Explain each element and check it in the school editor.",
+        "rubric": [
+          "Use a meaningful heading and paragraph.",
+          "Use ul or ol with li children and correct nesting.",
+          "Preview and explain your own code."
+        ],
+        "why": "Use a meaningful heading and paragraph. Use ul or ol with li children and correct nesting. Preview and explain your own code.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION"
+      }
+    ],
+    "CODING.SCHOOL.LINKS_IMAGES": [
+      {
+        "id": "LINKS_IMAGES-0",
+        "q": "Which attribute sets a link destination?",
+        "choices": [
+          "alt",
+          "href",
+          "src"
+        ],
+        "answer": 1,
+        "why": "href belongs to the anchor destination.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CONCEPT",
+        "support": "Use strong for strong importance and em for stress emphasis. Their usual bold or italic appearance can be changed with CSS. Inspect the closing tags and preview the result. An image element is void: do not add an img closing tag."
+      },
+      {
+        "id": "LINKS_IMAGES-1",
+        "q": "Which attribute points to an image file?",
+        "choices": [
+          "src",
+          "href only",
+          "class only"
+        ],
+        "answer": 0,
+        "why": "The image src supplies the resource location.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "LINKS_IMAGES-2",
+        "q": "Which markup makes an image clickable?",
+        "choices": [
+          "<img href=\"page.html\">",
+          "<p src=\"a.png\">Link</p>",
+          "<a href=\"page.html\"><img src=\"a.png\" alt=\"A drawing\"></a>"
+        ],
+        "answer": 2,
+        "why": "Wrap the image in an anchor.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "LINKS_IMAGES-3",
+        "q": "Which element expresses strong importance?",
+        "choices": [
+          "img",
+          "strong",
+          "ul"
+        ],
+        "answer": 1,
+        "why": "strong has semantic meaning as well as a default appearance.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "LINKS_IMAGES-explain",
+        "q": "Write your own descriptive link and linked image, then test the paths. Explain href, src, alt, and the nesting.",
+        "rubric": [
+          "Use a valid anchor and image relationship.",
+          "Choose suitable alternative text and permitted media.",
+          "Test the actual destination and file paths."
+        ],
+        "why": "Use a valid anchor and image relationship. Choose suitable alternative text and permitted media. Test the actual destination and file paths.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION"
+      }
+    ],
+    "CODING.SCHOOL.CSS": [
+      {
+        "id": "CSS-0",
+        "q": "Which selector matches class=\"notice\"?",
+        "choices": [
+          "notice()",
+          ".notice",
+          "#notice"
+        ],
+        "answer": 1,
+        "why": "A dot introduces a class selector.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CONCEPT",
+        "support": "For <p class=\"notice\">Hello</p>, use .notice { color: blue; }. An internal stylesheet goes in a style element. An external stylesheet is connected with a link element in the page head. Check the filename and path."
+      },
+      {
+        "id": "CSS-1",
+        "q": "Which selector matches id=\"intro\"?",
+        "choices": [
+          "#intro",
+          ".intro",
+          "intro()"
+        ],
+        "answer": 0,
+        "why": "A hash introduces an ID selector.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "CSS-2",
+        "q": "Which rule styles all p elements blue?",
+        "choices": [
+          "p = color blue",
+          "<p color.css>",
+          "p { color: blue; }"
+        ],
+        "answer": 2,
+        "why": "A CSS rule uses braces and a property/value declaration.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "CSS-3",
+        "q": "Several elements need the same group style. Which is suitable?",
+        "choices": [
+          "Only an image src",
+          "A shared class",
+          "Duplicate the same id on all elements"
+        ],
+        "answer": 1,
+        "why": "Classes can be reused; IDs should be unique.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "CSS-explain",
+        "q": "Create one rule by tag, one by class, and one by ID for your original page. Explain which elements each rule matches.",
+        "rubric": [
+          "Use correct selectors and declarations.",
+          "Keep IDs unique and use reusable classes.",
+          "Preview and explain which rule affects which element."
+        ],
+        "why": "Use correct selectors and declarations. Keep IDs unique and use reusable classes. Preview and explain which rule affects which element.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION"
+      }
+    ],
+    "CODING.SCHOOL.TABLES": [
+      {
+        "id": "TABLES-0",
+        "q": "Which element creates a table row?",
+        "choices": [
+          "li",
+          "tr",
+          "td only"
+        ],
+        "answer": 1,
+        "why": "tr contains the row\u2019s cells.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CONCEPT",
+        "support": "Decide the column meanings, add the headers, then place corresponding values in each row. A calendar needs a clear relationship between its day headings and date cells. Preview for misplaced or missing cells."
+      },
+      {
+        "id": "TABLES-1",
+        "q": "Which element represents a header cell?",
+        "choices": [
+          "th",
+          "td only",
+          "ul"
+        ],
+        "answer": 0,
+        "why": "th identifies a table header.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "TABLES-2",
+        "q": "Which content is naturally tabular?",
+        "choices": [
+          "An unrelated page layout",
+          "A single heading",
+          "Song titles paired with artists and years"
+        ],
+        "answer": 2,
+        "why": "The values have row and column relationships.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "TABLES-3",
+        "q": "What does td represent?",
+        "choices": [
+          "A CSS class selector",
+          "A table data cell",
+          "An entire webpage"
+        ],
+        "answer": 1,
+        "why": "Data cells belong inside rows.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "TABLES-explain",
+        "q": "Build a small original table with a caption, column headers, and two rows. Explain the relationship between each data cell and its header.",
+        "rubric": [
+          "Use table, tr, th, and td correctly.",
+          "Use meaningful headings and a caption.",
+          "Check each value against the intended row/column."
+        ],
+        "why": "Use table, tr, th, and td correctly. Use meaningful headings and a caption. Check each value against the intended row/column.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION"
+      }
+    ],
+    "CODING.SCHOOL.PORTFOLIO": [
+      {
+        "id": "PORTFOLIO-0",
+        "q": "What should define the required portfolio features?",
+        "choices": [
+          "Only the browser color",
+          "The teacher\u2019s requirements and rubric",
+          "A random game score"
+        ],
+        "answer": 1,
+        "why": "Start from the actual assignment.",
+        "stage": "GUIDED_PRACTICE",
+        "performanceMode": "CONCEPT",
+        "support": "Ask someone to perform a task, such as finding a project. Observe without doing it for them. Record where they get stuck, revise one issue, and retest. Check links, images, headings, readability, and keyboard access."
+      },
+      {
+        "id": "PORTFOLIO-1",
+        "q": "Which test gives useful navigation evidence?",
+        "choices": [
+          "Ask someone to find a named project and observe",
+          "Tell them every click in advance",
+          "Only admire the homepage colors"
+        ],
+        "answer": 0,
+        "why": "Observe whether the site supports a real task.",
+        "stage": "FADE_HELP",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "PORTFOLIO-2",
+        "q": "A link points to an old file. What needs checking?",
+        "choices": [
+          "Only the font size",
+          "Only the title punctuation",
+          "Its destination and the intended saved version"
+        ],
+        "answer": 2,
+        "why": "The actual delivered file/link matters.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "PORTFOLIO-3",
+        "q": "What is a reasonable build sequence?",
+        "choices": [
+          "Add every feature before any testing",
+          "Plan, prototype, test, improve, verify submission",
+          "Publish private details first"
+        ],
+        "answer": 1,
+        "why": "Build and check in small steps.",
+        "stage": "INDEPENDENT_CHECK",
+        "performanceMode": "CONCEPT",
+        "support": null
+      },
+      {
+        "id": "PORTFOLIO-explain",
+        "q": "Use the school portfolio rubric to create your own checklist: required item, file/link, test, next step, and submission proof.",
+        "rubric": [
+          "Map actual requirements to your own files.",
+          "Include user testing and corrections.",
+          "Verify the final version and submission rather than assuming completion."
+        ],
+        "why": "Map actual requirements to your own files. Include user testing and corrections. Verify the final version and submission rather than assuming completion.",
+        "stage": "GENERALIZE",
+        "performanceMode": "EXPLANATION"
+      }
+    ]
+  }
+}
