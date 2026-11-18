@@ -116,3 +116,6 @@ jobs:
 
       - name: School recovery content and homework persistence
         run: node tests/school-recovery.test.mjs
+
+      - name: Visual teaching models and universal read-aloud
+        run: node tests/visual-teaching.test.mjs
