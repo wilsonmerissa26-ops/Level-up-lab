@@ -4399,7 +4399,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Send the delivery robot home. Separate total path length from change in position. Advance the trip one leg at a time. Change the return distance, then compare the two quantities. Try with support. A toy goes 12 m east in 4 s along a straight path. Divide distance by time: 12/4 = 3 m/s. Its average velocity is 3 m/s east. Write the units and direction when needed. Distance = 8 + 2 = 10 m. Displacement = 8 − 2 = 6 m east. In 5 s: average speed 2 m/s; average velocity 1.2 m/s east "
+          "text": "We try · change the model. Send the delivery robot home. Separate total path length from change in position. Advance the trip one leg at a time. Change the return distance, then compare the two quantities. Try with support. A toy goes 12 m east in 4 s along a straight path. Divide distance by time: 12/4 = 3 m/s. Its average velocity is 3 m/s east. Write the units and direction when needed. Distance = 8 + 2 = 10 m. Displacement = 8 − 2 = 6 m east. In 5 s: average speed 2 m/s; average velocity 1.2 m/s east. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -4504,7 +4504,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Tune the robot’s speed change. Calculate change in velocity over the elapsed interval. Change the initial and final velocities. Compare speeding up with slowing down; read the sign as direction. Try with support. A car moving east slows from +10 to +4 m/s in 3 s. a = (4 − 10)/3 = −2 m/s². The negative acceleration points west. The car still moves east during this interval. Acceleration = (final velocity − initial velocity)/time = (10 − (2))/4 = 2 m/s² "
+          "text": "We try · change the model. Tune the robot’s speed change. Calculate change in velocity over the elapsed interval. Change the initial and final velocities. Compare speeding up with slowing down; read the sign as direction. Try with support. A car moving east slows from +10 to +4 m/s in 3 s. a = (4 − 10)/3 = −2 m/s². The negative acceleration points west. The car still moves east during this interval. Acceleration = (final velocity − initial velocity)/time = (10 − (2))/4 = 2 m/s². Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -4602,7 +4602,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Decode the robot’s travel log. Read slope as velocity when the vertical axis is position. Choose rising, flat, or falling position lines. Read two points and calculate slope before comparing the explanation. Use a graph model. A horizontal position segment means position stays the same: the object is stopped in this one-dimensional model. A straight sloping segment means constant velocity. Greater slope magnitude means greater speed, regardless of graph height. Start 2 m, finish 10 m in 4 s. Slope = (10 − 2)/4 = 2 m/s "
+          "text": "We try · change the model. Decode the robot’s travel log. Read slope as velocity when the vertical axis is position. Choose rising, flat, or falling position lines. Read two points and calculate slope before comparing the explanation. Use a graph model. A horizontal position segment means position stays the same: the object is stopped in this one-dimensional model. A straight sloping segment means constant velocity. Greater slope magnitude means greater speed, regardless of graph height. Start 2 m, finish 10 m in 4 s. Slope = (10 − 2)/4 = 2 m/s. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -4712,7 +4712,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Read the speed controller. Use velocity-time height and slope for different jobs. Compare a rising, flat, or falling velocity line. Change signs and explain whether speed grows or shrinks. Connect area and motion. Signed area under velocity-time gives displacement. A rectangle at +3 m/s for 4 s gives +12 m. Area under speed-time gives distance traveled. Speed is never negative. Start 2 m/s, finish 10 m/s in 4 s. Slope = (10 − 2)/4 = 2 m/s² "
+          "text": "We try · change the model. Read the speed controller. Use velocity-time height and slope for different jobs. Compare a rising, flat, or falling velocity line. Change signs and explain whether speed grows or shrinks. Connect area and motion. Signed area under velocity-time gives displacement. A rectangle at +3 m/s for 4 s gives +12 m. Area under speed-time gives distance traveled. Speed is never negative. Start 2 m/s, finish 10 m/s in 4 s. Slope = (10 − 2)/4 = 2 m/s². Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -4823,7 +4823,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Move the rescue cart. Combine forces acting on one object before calculating acceleration. Change a push or the mass. Match the arrows to the calculation. Keep track of which object each force acts on. Connect force and motion. Zero net force means zero acceleration: an object can stay at rest OR keep constant velocity. An unbalanced net force changes velocity. For the same net force, greater mass gives less acceleration. Right is positive. Net horizontal force = 10 − 4 = 6 N. a = Fnet/m = 6/3 = 2 m/s² "
+          "text": "We try · change the model. Move the rescue cart. Combine forces acting on one object before calculating acceleration. Change a push or the mass. Match the arrows to the calculation. Keep track of which object each force acts on. Connect force and motion. Zero net force means zero acceleration: an object can stay at rest OR keep constant velocity. An unbalanced net force changes velocity. For the same net force, greater mass gives less acceleration. Right is positive. Net horizontal force = 10 − 4 = 6 N. a = Fnet/m = 6/3 = 2 m/s². Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -4925,7 +4925,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Pack for a Moon mission. Keep mass, gravitational weight, contact force, and falling motion separate. Switch worlds and compare weight. Release the two masses and advance the fall by one second at a time. Explain free fall. Ignoring air resistance, dropped objects near the same location accelerate downward at about 9.8 m/s² regardless of mass. Greater mass gives greater gravitational force but also greater inertia; a = mg/m = g. After release from rest, speed is about 9.8 m/s after 1 s. g = 9.8 m/s². The 2 kg weight is 19.6 N; the 4 kg weight is 39.2 N. Released together from rest without air resistance, both fall 0 m in 0 s "
+          "text": "We try · change the model. Pack for a Moon mission. Keep mass, gravitational weight, contact force, and falling motion separate. Switch worlds and compare weight. Release the two masses and advance the fall by one second at a time. Explain free fall. Ignoring air resistance, dropped objects near the same location accelerate downward at about 9.8 m/s² regardless of mass. Greater mass gives greater gravitational force but also greater inertia; a = mg/m = g. After release from rest, speed is about 9.8 m/s after 1 s. g = 9.8 m/s². The 2 kg weight is 19.6 N; the 4 kg weight is 39.2 N. Released together from rest without air resistance, both fall 0 m in 0 s. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -5039,7 +5039,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Investigate invisible pulls. Change mass or center separation while controlling the other factor. Double one mass, reset, then double the separation. Compare the force factor and the two equal arrows. Read positions as a separation. An object centered at 3 m and another at 7 m are 4 m apart, not 7 m. Moving their centers to 1 m and 9 m makes separation 8 m. With the same masses, force becomes one-fourth the first value. F = Gm₁m₂/r² = 2.607e-9 N on each object. Compared with 25 kg, 25 kg, and 4 m, force is 1 times as large "
+          "text": "We try · change the model. Investigate invisible pulls. Change mass or center separation while controlling the other factor. Double one mass, reset, then double the separation. Compare the force factor and the two equal arrows. Read positions as a separation. An object centered at 3 m and another at 7 m are 4 m apart, not 7 m. Moving their centers to 1 m and 9 m makes separation 8 m. With the same masses, force becomes one-fourth the first value. F = Gm₁m₂/r² = 2.607e-9 N on each object. Compared with 25 kg, 25 kg, and 4 m, force is 1 times as large. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -5153,7 +5153,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Build a convincing lab explanation. Use actual data, graph labels, calculations, and reasoning. Read the practice graph and explain the slope. Use it as a model, then use your own school data in your actual report. Connect a claim to evidence. State a claim that answers the research question. Cite actual values and intervals, then explain the relevant relationship. For toy motion, compare graph slopes and calculate acceleration from the correct elapsed interval. Start 2 m, finish 10 m in 4 s. Slope = (10 − 2)/4 = 2 m/s "
+          "text": "We try · change the model. Build a convincing lab explanation. Use actual data, graph labels, calculations, and reasoning. Read the practice graph and explain the slope. Use it as a model, then use your own school data in your actual report. Connect a claim to evidence. State a claim that answers the research question. Cite actual values and intervals, then explain the relevant relationship. For toy motion, compare graph slopes and calculate acceleration from the correct elapsed interval. Start 2 m, finish 10 m in 4 s. Slope = (10 − 2)/4 = 2 m/s. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -5261,7 +5261,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Power the generator. Connect magnetism, current, and changing magnetic flux. Flip the facing pole. Then move the magnet into the coil, stop, and move it out. Compare the relative meter directions. Understand a generator. A changing magnetic flux through a coil can induce voltage. Moving a magnet into or out of a coil is one way to change that flux; a closed circuit permits induced current. A stationary magnet next to a stationary coil does not provide a sustained induced current. Like facing poles repel. A stationary magnet and coil have no changing magnetic flux, so no induced voltage "
+          "text": "We try · change the model. Power the generator. Connect magnetism, current, and changing magnetic flux. Flip the facing pole. Then move the magnet into the coil, stop, and move it out. Compare the relative meter directions. Understand a generator. A changing magnetic flux through a coil can induce voltage. Moving a magnet into or out of a coil is one way to change that flux; a closed circuit permits induced current. A stationary magnet next to a stationary coil does not provide a sustained induced current. Like facing poles repel. A stationary magnet and coil have no changing magnetic flux, so no induced voltage. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -5376,7 +5376,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Light the rescue beacon. Build a conducting loop through the lamp and back to both battery terminals. The beacon starts with an open switch and a missing return connection. Close the switch, then connect the return wire. Watch what each change does. Try with support. Point to every connection in the picture. Follow the path without jumping a gap. Copper conducts charge well; the insulating coating limits charge movement through the outside of a wire. The lamp is off. The switch is open, and the return wire is missing. Find every gap: one repaired connection may leave another gap "
+          "text": "We try · change the model. Light the rescue beacon. Build a conducting loop through the lamp and back to both battery terminals. The beacon starts with an open switch and a missing return connection. Close the switch, then connect the return wire. Watch what each change does. Try with support. Point to every connection in the picture. Follow the path without jumping a gap. Copper conducts charge well; the insulating coating limits charge movement through the outside of a wire. The lamp is off. The switch is open, and the return wire is missing. Find every gap: one repaired connection may leave another gap. Fix both gaps. Copper should carry charge; rubber should block charge. Your copper choice: not chosen. Your rubber choice: not chosen "
         },
         {
           "step": 4,
@@ -5463,7 +5463,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Read the control panel. Tell voltage, current, and resistance apart using a working model. Change only the voltage. Put it back, then change only resistance. Read each quantity with its own unit. Try with support. Use the matching pairs V–volts, I–amperes, R–ohms. The letter I stands for current; A is its unit. Do not put an ohm label on a current answer. single circuit. Switch closed. Return wire connected. Source current 0.400 amperes. A complete conducting loop exists "
+          "text": "We try · change the model. Read the control panel. Tell voltage, current, and resistance apart using a working model. Change only the voltage. Put it back, then change only resistance. Read each quantity with its own unit. Try with support. Use the matching pairs V–volts, I–amperes, R–ohms. The letter I stands for current; A is its unit. Do not put an ohm label on a current answer. single circuit. Switch closed. Return wire connected. Source current 0.400 amperes. A complete conducting loop exists. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -5556,7 +5556,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Power a sensor. Calculate current by naming the unknown and showing every step. Set a new voltage and resistance. Predict whether current will rise or fall before reading the model result. Try with support. For 9 V across 15 Ω: unknown I; formula I = V/R; substitute 9/15; calculate 0.60; report 0.60 A. Explain why the answer is smaller than 9. If division is the obstacle, use the numeric inverse-operations Math Bridge. single circuit. Switch closed. Return wire connected. Source current 0.400 amperes. A complete conducting loop exists "
+          "text": "We try · change the model. Power a sensor. Calculate current by naming the unknown and showing every step. Set a new voltage and resistance. Predict whether current will rise or fall before reading the model result. Try with support. For 9 V across 15 Ω: unknown I; formula I = V/R; substitute 9/15; calculate 0.60; report 0.60 A. Explain why the answer is smaller than 9. If division is the obstacle, use the numeric inverse-operations Math Bridge. single circuit. Switch closed. Return wire connected. Source current 0.400 amperes. A complete conducting loop exists. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -5638,7 +5638,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Find the missing reading. Choose the relationship from the unknown rather than guessing an operation. Use the voltage and resistance controls. Cover the current result, calculate it, then uncover it. Explain a rearrangement in words. Try with support. In 12 = I × 30, divide both sides by 30 to isolate I. In 12 = 0.40 × R, divide both sides by 0.40 to isolate R. Use the Math Bridge for inverse operations before science rearrangement if needed. single circuit. Switch closed. Return wire connected. Source current 0.400 amperes. A complete conducting loop exists "
+          "text": "We try · change the model. Find the missing reading. Choose the relationship from the unknown rather than guessing an operation. Use the voltage and resistance controls. Cover the current result, calculate it, then uncover it. Explain a rearrangement in words. Try with support. In 12 = I × 30, divide both sides by 30 to isolate I. In 12 = 0.40 × R, divide both sides by 0.40 to isolate R. Use the Math Bridge for inverse operations before science rearrangement if needed. single circuit. Switch closed. Return wire connected. Source current 0.400 amperes. A complete conducting loop exists. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -5725,7 +5725,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Keep the whole string lit. Trace one path through two components and explain what happens when it breaks. Disconnect the second component, reconnect it, then change R₂. Watch both current readings together. Try with support. Trace the single path. Add series resistances first, then divide source voltage by total resistance. At fixed ideal voltage, adding another positive series resistance raises total resistance and lowers current. series circuit. Switch closed. Return wire connected. Source current 0.133 amperes. A complete conducting loop exists "
+          "text": "We try · change the model. Keep the whole string lit. Trace one path through two components and explain what happens when it breaks. Disconnect the second component, reconnect it, then change R₂. Watch both current readings together. Try with support. Trace the single path. Add series resistances first, then divide source voltage by total resistance. At fixed ideal voltage, adding another positive series resistance raises total resistance and lowers current. series circuit. Switch closed. Return wire connected. Source current 0.133 amperes. A complete conducting loop exists. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -5816,7 +5816,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Protect the second branch. Build two complete routes across the same two battery-connected junctions. Open branch 2. Trace the path that remains. Reconnect it, then compare unequal branch resistances. Try with support. Calculate each branch current using the full source voltage, then add them. Do not add parallel resistances as if they were series. For equal branches only, equivalent resistance is one branch resistance divided by the number of branches. parallel circuit. Switch closed. Return wire connected. Source current 0.600 amperes. A complete conducting loop exists "
+          "text": "We try · change the model. Protect the second branch. Build two complete routes across the same two battery-connected junctions. Open branch 2. Trace the path that remains. Reconnect it, then compare unequal branch resistances. Try with support. Calculate each branch current using the full source voltage, then add them. Do not add parallel resistances as if they were series. For equal branches only, equivalent resistance is one branch resistance divided by the number of branches. parallel circuit. Switch closed. Return wire connected. Source current 0.600 amperes. A complete conducting loop exists. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -5906,7 +5906,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Read the wiring, not the artwork. Identify series and parallel from their connections. Switch the arrangement and trace each complete route. Describe the connections without counting bends. Use the meter correctly. A voltmeter measures a difference between two points and is placed across a component. A conventional in-line ammeter measures the current through a path and is placed in series. A simulator may also offer a non-contact current probe. single circuit. Switch closed. Return wire connected. Source current 0.400 amperes. A complete conducting loop exists "
+          "text": "We try · change the model. Read the wiring, not the artwork. Identify series and parallel from their connections. Switch the arrangement and trace each complete route. Describe the connections without counting bends. Use the meter correctly. A voltmeter measures a difference between two points and is placed across a component. A conventional in-line ammeter measures the current through a path and is placed in series. A simulator may also offer a non-contact current probe. single circuit. Switch closed. Return wire connected. Source current 0.400 amperes. A complete conducting loop exists. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -6001,7 +6001,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Bring a robot to life. Follow energy from the source through a motor. Switch between a motor, lamp, and speaker. Name the useful output and another output each time. Do not invent a motor reading. Replacing a resistor with a motor does not guarantee one fixed current change. Motor design, load, speed, and the model all matter. Observe the teacher’s actual setup and record its current before drawing a conclusion. The battery stores chemical energy. It transfers energy electrically to the motor. Outputs: motion + thermal + sound "
+          "text": "We try · change the model. Bring a robot to life. Follow energy from the source through a motor. Switch between a motor, lamp, and speaker. Name the useful output and another output each time. Do not invent a motor reading. Replacing a resistor with a motor does not guarantee one fixed current change. Motor design, load, speed, and the model all matter. Observe the teacher’s actual setup and record its current before drawing a conclusion. The battery stores chemical energy. It transfers energy electrically to the motor. Outputs: motion + thermal + sound. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -6095,7 +6095,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Run a fair circuit experiment. Change one factor and turn model readings into evidence. Keep voltage fixed. Collect three resistance/current pairs from this model. Explain which factor you controlled. Build and read a graph. For current versus resistance, put resistance (Ω) on x and current (A) on y. The ideal I = V/R graph curves downward; it is not a straight inverse-sloping line. If a different graph uses V versus I, its slope is resistance. If I versus V, its slope is 1/R. Check axis labels first. single circuit. Switch closed. Return wire connected. Source current 0.400 amperes. A complete conducting loop exists "
+          "text": "We try · change the model. Run a fair circuit experiment. Change one factor and turn model readings into evidence. Keep voltage fixed. Collect three resistance/current pairs from this model. Explain which factor you controlled. Build and read a graph. For current versus resistance, put resistance (Ω) on x and current (A) on y. The ideal I = V/R graph curves downward; it is not a straight inverse-sloping line. If a different graph uses V versus I, its slope is resistance. If I versus V, its slope is 1/R. Check axis labels first. single circuit. Switch closed. Return wire connected. Source current 0.400 amperes. A complete conducting loop exists. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -6193,7 +6193,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Explain the evidence. Build a claim from actual values and the relationship that connects them. Generate a different pair of controlled readings. Say a claim, cite both values, and connect them with I = V/R. Explain why the evidence matters. Reasoning connects the result to I = V/R, series and parallel rules, and energy transformations. Repeating the numbers is not reasoning. A calculation from practice is not a measurement from your investigation. single circuit. Switch closed. Return wire connected. Source current 0.400 amperes. A complete conducting loop exists "
+          "text": "We try · change the model. Explain the evidence. Build a claim from actual values and the relationship that connects them. Generate a different pair of controlled readings. Say a claim, cite both values, and connect them with I = V/R. Explain why the evidence matters. Reasoning connects the result to I = V/R, series and parallel rules, and energy transformations. Repeating the numbers is not reasoning. A calculation from practice is not a measurement from your investigation. single circuit. Switch closed. Return wire connected. Source current 0.400 amperes. A complete conducting loop exists. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -6294,7 +6294,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Design the festival lights. Use earlier circuit ideas in a new design decision. Compare arrangements, then disconnect the second device. Decide which design meets the stated goal. Mix old and new science. Trace stored chemical energy into electrical transfer and then light and heat. Compare this with the earlier fan motor. Both transfer energy; the useful output differs. Current and energy are not interchangeable. parallel circuit. Switch closed. Return wire connected. Source current 0.600 amperes. A complete conducting loop exists "
+          "text": "We try · change the model. Design the festival lights. Use earlier circuit ideas in a new design decision. Compare arrangements, then disconnect the second device. Decide which design meets the stated goal. Mix old and new science. Trace stored chemical energy into electrical transfer and then light and heat. Compare this with the earlier fan motor. Both transfer energy; the useful output differs. Current and energy are not interchangeable. parallel circuit. Switch closed. Return wire connected. Source current 0.600 amperes. A complete conducting loop exists. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -6389,7 +6389,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Send a signal. Separate motion of the disturbance from motion of the material. Advance the model and watch one marked particle. Switch wave types and compare its movement direction. A crest is a high point, a trough a low point. Wavelength joins matching points; amplitude measures from rest to crest.. Guided practice: sketch and label a rope wave, then a spring wave. Explain the vibration direction before checking yourself. Transverse: particles move perpendicular to wave travel. In this fixed-speed model, λ = v/f = 12/2 = 6 m. Amplitude 1 is a relative scale, not wavelength "
+          "text": "We try · change the model. Send a signal. Separate motion of the disturbance from motion of the material. Advance the model and watch one marked particle. Switch wave types and compare its movement direction. A crest is a high point, a trough a low point. Wavelength joins matching points; amplitude measures from rest to crest.. Guided practice: sketch and label a rope wave, then a spring wave. Explain the vibration direction before checking yourself. Transverse: particles move perpendicular to wave travel. In this fixed-speed model, λ = v/f = 12/2 = 6 m. Amplitude 1 is a relative scale, not wavelength. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -6462,7 +6462,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Tune the signal. Connect frequency and wavelength at fixed wave speed. Change frequency, keeping the speed fixed, then change amplitude. Describe which visual feature each control changes. Read table headings and units before comparing numbers.. Guided: sketch one louder wave with the SAME pitch, and one higher-pitched wave with the SAME loudness. Say which feature you changed. Transverse: particles move perpendicular to wave travel. In this fixed-speed model, λ = v/f = 12/2 = 6 m. Amplitude 1 is a relative scale, not wavelength "
+          "text": "We try · change the model. Tune the signal. Connect frequency and wavelength at fixed wave speed. Change frequency, keeping the speed fixed, then change amplitude. Describe which visual feature each control changes. Read table headings and units before comparing numbers.. Guided: sketch one louder wave with the SAME pitch, and one higher-pitched wave with the SAME loudness. Say which feature you changed. Transverse: particles move perpendicular to wave travel. In this fixed-speed model, λ = v/f = 12/2 = 6 m. Amplitude 1 is a relative scale, not wavelength. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -6537,7 +6537,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Find the signal around a corner. Compare reflection, refraction, and diffraction. Switch among the three behaviors. Change the incident angle and read the labeled normal. Diffraction is spreading around an edge or through an opening.. Model: draw straight wave fronts reaching a doorway and curved fronts beyond it. Guided: distinguish a mirror, a bent straw, and hearing around a corner. Reflection: incidence 40°, reflection 40°. Both angles are measured from the normal, perpendicular to the surface "
+          "text": "We try · change the model. Find the signal around a corner. Compare reflection, refraction, and diffraction. Switch among the three behaviors. Change the incident angle and read the labeled normal. Diffraction is spreading around an edge or through an opening.. Model: draw straight wave fronts reaching a doorway and curved fronts beyond it. Guided: distinguish a mirror, a bent straw, and hearing around a corner. Reflection: incidence 40°, reflection 40°. Both angles are measured from the normal, perpendicular to the surface. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -6606,7 +6606,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Combine two signals. Add displacement without treating cancellation as energy destruction. Toggle aligned and opposite waves. Trace both inputs and the sum. Separate overlapping waves from waves bending or bouncing.. Guided: explain noise-canceling headphones using opposing sound waves. Compare them with a curtain absorbing sound. Equal in-phase displacements add: A + A = 2A "
+          "text": "We try · change the model. Combine two signals. Add displacement without treating cancellation as energy destruction. Toggle aligned and opposite waves. Trace both inputs and the sum. Separate overlapping waves from waves bending or bouncing.. Guided: explain noise-canceling headphones using opposing sound waves. Compare them with a curtain absorbing sound. Equal in-phase displacements add: A + A = 2A. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -6675,7 +6675,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Find a path for sound. Use the medium, not a memorized density rule, to reason about sound. Remove the medium from the model. Compare what happens to the sound signal and the light signal. Compare the same wave over the same distance; do not mix sound and light rules.. Guided: explain why you see lightning before hearing thunder. Identify which data supports your explanation. Air particles carry sound to the microphone. Light also travels through air "
+          "text": "We try · change the model. Find a path for sound. Use the medium, not a memorized density rule, to reason about sound. Remove the medium from the model. Compare what happens to the sound signal and the light signal. Compare the same wave over the same distance; do not mix sound and light rules.. Guided: explain why you see lightning before hearing thunder. Identify which data supports your explanation. Air particles carry sound to the microphone. Light also travels through air. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -6745,7 +6745,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Choose the right detector. Read the electromagnetic spectrum and reason about reflected color. Choose a spectrum band, then compare the ideal red object in white and blue light. An object’s visible color depends on light it reflects or transmits to your eyes.. Guided: compare red and violet using the packet table. Explain why a rainbow shows many colors rather than white. Selected band: visible. All electromagnetic waves have the same speed in vacuum. Under white light, an ideal red object reflects red wavelengths "
+          "text": "We try · change the model. Choose the right detector. Read the electromagnetic spectrum and reason about reflected color. Choose a spectrum band, then compare the ideal red object in white and blue light. An object’s visible color depends on light it reflects or transmits to your eyes.. Guided: compare red and violet using the packet table. Explain why a rainbow shows many colors rather than white. Selected band: visible. All electromagnetic waves have the same speed in vacuum. Under white light, an ideal red object reflects red wavelengths. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -6816,7 +6816,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Read an earthquake trace. Connect P and S waves with arrival records and material behavior. Compare each labeled arrival, then switch between a solid and liquid layer to compare permitted wave types. Focus is where rupture begins underground; epicenter is directly above it at the surface.. Guided: draw Earth’s surface, focus, epicenter, and waves. Describe why a wave may reach one station sooner. Illustrative arrival times only: P arrives at 2 s. S arrives at 5 s, a 3 s S–P interval. P is longitudinal; S is transverse "
+          "text": "We try · change the model. Read an earthquake trace. Connect P and S waves with arrival records and material behavior. Compare each labeled arrival, then switch between a solid and liquid layer to compare permitted wave types. Focus is where rupture begins underground; epicenter is directly above it at the surface.. Guided: draw Earth’s surface, focus, epicenter, and waves. Describe why a wave may reach one station sooner. Illustrative arrival times only: P arrives at 2 s. S arrives at 5 s, a 3 s S–P interval. P is longitudinal; S is transverse. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -6885,7 +6885,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Track the siren. Connect wavefront spacing with observed frequency. Toggle stationary, toward, and away. Look at where each older wavefront was emitted, not just the current source position. For light, approach produces blueshift and recession produces redshift. They are both Doppler shifts.. Guided: draw the plane, direction arrow, compressed fronts ahead and spread fronts behind. Explain the car’s approach using wavelength, position, frequency, and pitch; then explain departure. Stationary source: wavefront spacing is equal on both sides "
+          "text": "We try · change the model. Track the siren. Connect wavefront spacing with observed frequency. Toggle stationary, toward, and away. Look at where each older wavefront was emitted, not just the current source position. For light, approach produces blueshift and recession produces redshift. They are both Doppler shifts.. Guided: draw the plane, direction arrow, compressed fronts ahead and spread fronts behind. Explain the car’s approach using wavelength, position, frequency, and pitch; then explain departure. Stationary source: wavefront spacing is equal on both sides. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -6959,7 +6959,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Power the science fair. Recognize energy stores and useful outputs. Choose a lamp, motor, or speaker. Follow the energy path and name the outputs. The battery stores chemical energy. It transfers energy electrically to the lamp. Outputs: light + thermal energy "
+          "text": "We try · change the model. Power the science fair. Recognize energy stores and useful outputs. Choose a lamp, motor, or speaker. Follow the energy path and name the outputs. The battery stores chemical energy. It transfers energy electrically to the lamp. Outputs: light + thermal energy. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -7038,7 +7038,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Follow where energy goes. Distinguish movement of energy from a change in its form. Change the device and describe one transfer and one transformation in its energy path. The battery stores chemical energy. It transfers energy electrically to the lamp. Outputs: light + thermal energy "
+          "text": "We try · change the model. Follow where energy goes. Distinguish movement of energy from a change in its form. Change the device and describe one transfer and one transformation in its energy path. The battery stores chemical energy. It transfers energy electrically to the lamp. Outputs: light + thermal energy. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -7123,7 +7123,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Run the ramp coaster. Track potential, kinetic, and thermal energy without losing the total. Advance the cart down the ramp. Compare the energy bars with friction off and on. 2 kg object; starting height 5 m; g = 9.8 m/s². At height 5 m: PE 98 J + KE 0 J + thermal 0 J = 98 J "
+          "text": "We try · change the model. Run the ramp coaster. Track potential, kinetic, and thermal energy without losing the total. Advance the cart down the ramp. Compare the energy bars with friction off and on. 2 kg object; starting height 5 m; g = 9.8 m/s². At height 5 m: PE 98 J + KE 0 J + thermal 0 J = 98 J. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -7202,7 +7202,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Keep the shelter comfortable. Identify the mechanism of energy transfer due to a temperature difference. Switch mechanisms and trace the labeled energy direction. Explain what moves in each case. Radiation transfers energy by electromagnetic waves and does not require direct contact.. You can feel heat from a campfire without touching it. Conduction: energy passes through contact and microscopic interactions; the material need not flow "
+          "text": "We try · change the model. Keep the shelter comfortable. Identify the mechanism of energy transfer due to a temperature difference. Switch mechanisms and trace the labeled energy direction. Explain what moves in each case. Radiation transfers energy by electromagnetic waves and does not require direct contact.. You can feel heat from a campfire without touching it. Conduction: energy passes through contact and microscopic interactions; the material need not flow. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -7280,7 +7280,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Zoom inside a warming material. Connect temperature with average microscopic motion. Toggle cooler and warmer, then advance the particle snapshot. Watch movement without changing the number of particles. Same particles, same size. Lower temperature means less average microscopic kinetic energy in this within-phase model "
+          "text": "We try · change the model. Zoom inside a warming material. Connect temperature with average microscopic motion. Toggle cooler and warmer, then advance the particle snapshot. Watch movement without changing the number of particles. Same particles, same size. Lower temperature means less average microscopic kinetic energy in this within-phase model. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -7359,7 +7359,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Compare two materials. Explain what specific heat means. Change one given value. Follow the thermometer and calculation ladder; explain why the result changes. ΔT = Tf − Ti = 35 − 20 = 15 °C. Q = mcΔT = (20 g)(4 J/(g·°C))(15 °C) = 1200 J "
+          "text": "We try · change the model. Compare two materials. Explain what specific heat means. Change one given value. Follow the thermometer and calculation ladder; explain why the result changes. ΔT = Tf − Ti = 35 − 20 = 15 °C. Q = mcΔT = (20 g)(4 J/(g·°C))(15 °C) = 1200 J. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -7430,7 +7430,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Read the heat equation. Match each quantity with a compatible unit. Change one given value. Follow the thermometer and calculation ladder; explain why the result changes. ΔT = Tf − Ti = 35 − 20 = 15 °C. Q = mcΔT = (20 g)(4 J/(g·°C))(15 °C) = 1200 J "
+          "text": "We try · change the model. Read the heat equation. Match each quantity with a compatible unit. Change one given value. Follow the thermometer and calculation ladder; explain why the result changes. ΔT = Tf − Ti = 35 − 20 = 15 °C. Q = mcΔT = (20 g)(4 J/(g·°C))(15 °C) = 1200 J. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -7503,7 +7503,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Read the thermometer change. Subtract in the correct order. Change one given value. Follow the thermometer and calculation ladder; explain why the result changes. ΔT = Tf − Ti = 35 − 20 = 15 °C. Q = mcΔT = (20 g)(4 J/(g·°C))(15 °C) = 1200 J "
+          "text": "We try · change the model. Read the thermometer change. Subtract in the correct order. Change one given value. Follow the thermometer and calculation ladder; explain why the result changes. ΔT = Tf − Ti = 35 − 20 = 15 °C. Q = mcΔT = (20 g)(4 J/(g·°C))(15 °C) = 1200 J. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -7562,7 +7562,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Build the calculation. Identify values and unknown before calculating. Change one given value. Follow the thermometer and calculation ladder; explain why the result changes. ΔT = Tf − Ti = 35 − 20 = 15 °C. Q = mcΔT = (20 g)(4 J/(g·°C))(15 °C) = 1200 J "
+          "text": "We try · change the model. Build the calculation. Identify values and unknown before calculating. Change one given value. Follow the thermometer and calculation ladder; explain why the result changes. ΔT = Tf − Ti = 35 − 20 = 15 °C. Q = mcΔT = (20 g)(4 J/(g·°C))(15 °C) = 1200 J. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -7641,7 +7641,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Isolate the unknown. Use inverse operations on the entire product. Change one given value. Follow the thermometer and calculation ladder; explain why the result changes. ΔT = Tf − Ti = 35 − 20 = 15 °C. Q = mcΔT = (20 g)(4 J/(g·°C))(15 °C) = 1200 J "
+          "text": "We try · change the model. Isolate the unknown. Use inverse operations on the entire product. Change one given value. Follow the thermometer and calculation ladder; explain why the result changes. ΔT = Tf − Ti = 35 − 20 = 15 °C. Q = mcΔT = (20 g)(4 J/(g·°C))(15 °C) = 1200 J. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -7714,7 +7714,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Check a complete solution. Calculate energy and verify that the answer makes sense. Change one given value. Follow the thermometer and calculation ladder; explain why the result changes. ΔT = Tf − Ti = 35 − 20 = 15 °C. Q = mcΔT = (20 g)(4 J/(g·°C))(15 °C) = 1200 J "
+          "text": "We try · change the model. Check a complete solution. Calculate energy and verify that the answer makes sense. Change one given value. Follow the thermometer and calculation ladder; explain why the result changes. ΔT = Tf − Ti = 35 − 20 = 15 °C. Q = mcΔT = (20 g)(4 J/(g·°C))(15 °C) = 1200 J. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -10227,7 +10227,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Design a star-collector game. Turn an idea into observable rules before adding features. Change the goal and run the little collection model. State what counts as success before playing. Build in small steps. First make one sprite appear and move. Then add one collectible and test scoring. Add a timer only after that works. Keep a test log: expected result, actual result, one change, retest. Event trace: 0. On collect: change score by 1. The goal condition is not yet true "
+          "text": "We try · change the model. Design a star-collector game. Turn an idea into observable rules before adding features. Change the goal and run the little collection model. State what counts as success before playing. Build in small steps. First make one sprite appear and move. Then add one collectible and test scoring. Add a timer only after that works. Keep a test log: expected result, actual result, one change, retest. Event trace: 0. On collect: change score by 1. The goal condition is not yet true. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -10344,7 +10344,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Draw and move a game character. Connect a custom image, a sprite object, and movement controls. Paint a custom character with the palette, then move it in the scene. Explain image versus position. Try one change. Change the sprite image or starting position, run the simulator, and describe what changed. In the usual screen coordinates, x increases rightward and y increases downward. Check the tutorial’s coordinate range. Your image has 64 pixels. A sprite combines an image with a position and game behavior. Current x = 80; y is held fixed "
+          "text": "We try · change the model. Draw and move a game character. Connect a custom image, a sprite object, and movement controls. Paint a custom character with the palette, then move it in the scene. Explain image versus position. Try one change. Change the sprite image or starting position, run the simulator, and describe what changed. In the usual screen coordinates, x increases rightward and y increases downward. Check the tutorial’s coordinate range. Your image has 64 pixels. A sprite combines an image with a position and game behavior. Current x = 80; y is held fixed. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -10449,7 +10449,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Make one collection worth one point. Distinguish initialization, event triggers, and updating a value. Switch the collection rule between “add 1” and “set to 1.” Run several collections and compare the trace. Make the rule precise. A countdown measures seconds remaining. Decide what happens when it reaches zero, and how that interacts with the score goal. Follow the particular tutorial’s blocks; some skillmaps use extensions with their own timer behavior. Event trace: 0. On collect: change score by 1. The goal condition is not yet true "
+          "text": "We try · change the model. Make one collection worth one point. Distinguish initialization, event triggers, and updating a value. Switch the collection rule between “add 1” and “set to 1.” Run several collections and compare the trace. Make the rule precise. A countdown measures seconds remaining. Decide what happens when it reaches zero, and how that interacts with the score goal. Follow the particular tutorial’s blocks; some skillmaps use extensions with their own timer behavior. Event trace: 0. On collect: change score by 1. The goal condition is not yet true. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -10560,7 +10560,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Repair the scoring bug. Use expected result, actual result, one change, and retest. Reproduce the wrong trace, change one rule, restart, and show that the intended trace now works. Retest the whole path. After a fix, restart and test normal play, repeated actions, edge cases, and win/loss. Keep versions or exports as supported by the school tool so you can recover your work. Event trace: 0. On collect: set score to 1. The goal condition is not yet true "
+          "text": "We try · change the model. Repair the scoring bug. Use expected result, actual result, one change, and retest. Reproduce the wrong trace, change one rule, restart, and show that the intended trace now works. Retest the whole path. After a fix, restart and test normal play, repeated actions, edge cases, and win/loss. Keep versions or exports as supported by the school tool so you can recover your work. Event trace: 0. On collect: set score to 1. The goal condition is not yet true. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -10677,7 +10677,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Build a tiny science page. See how HTML structure becomes visible content. Edit the heading, paragraph, and list. Use “Build my preview” to see your own changes. Build a list. <ul><li>Distance</li><li>Time</li></ul> is an unordered list. Use ol when order matters. Each item goes inside li. Nest elements correctly instead of closing tags in a random order. The preview renders the HTML and CSS you last built. Robot.svg and moon.svg are built-in practice pictures. External network resources and scripts are blocked in this practice preview "
+          "text": "We try · change the model. Build a tiny science page. See how HTML structure becomes visible content. Edit the heading, paragraph, and list. Use “Build my preview” to see your own changes. Build a list. <ul><li>Distance</li><li>Time</li></ul> is an unordered list. Use ol when order matters. Each item goes inside li. Nest elements correctly instead of closing tags in a random order. The preview renders the HTML and CSS you last built. Robot.svg and moon.svg are built-in practice pictures. External network resources and scripts are blocked in this practice preview. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -10789,7 +10789,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Make a picture into a link. Use attributes and nesting to connect pages and images. Change robot.svg to moon.svg and update the alt text. Put a strong or em element in a paragraph, then preview. Try one change. Use strong for strong importance and em for stress emphasis. Their usual bold or italic appearance can be changed with CSS. Inspect the closing tags and preview the result. An image element is void: do not add an img closing tag. The preview renders the HTML and CSS you last built. Robot.svg and moon.svg are built-in practice pictures. External network resources and scripts are blocked in this practice preview "
+          "text": "We try · change the model. Make a picture into a link. Use attributes and nesting to connect pages and images. Change robot.svg to moon.svg and update the alt text. Put a strong or em element in a paragraph, then preview. Try one change. Use strong for strong importance and em for stress emphasis. Their usual bold or italic appearance can be changed with CSS. Inspect the closing tags and preview the result. An image element is void: do not add an img closing tag. The preview renders the HTML and CSS you last built. Robot.svg and moon.svg are built-in practice pictures. External network resources and scripts are blocked in this practice preview. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -10897,7 +10897,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Style the mission card. Match a CSS selector with the correct HTML elements. Change the notice style, then add one class to another element. Check which elements change together. Try a small rule. For <p class=\"notice\">Hello</p>, use .notice { color: blue; }. An internal stylesheet goes in a style element. An external stylesheet is connected with a link element in the page head. Check the filename and path. The preview renders the HTML and CSS you last built. Robot.svg and moon.svg are built-in practice pictures. External network resources and scripts are blocked in this practice preview "
+          "text": "We try · change the model. Style the mission card. Match a CSS selector with the correct HTML elements. Change the notice style, then add one class to another element. Check which elements change together. Try a small rule. For <p class=\"notice\">Hello</p>, use .notice { color: blue; }. An internal stylesheet goes in a style element. An external stylesheet is connected with a link element in the page head. Check the filename and path. The preview renders the HTML and CSS you last built. Robot.svg and moon.svg are built-in practice pictures. External network resources and scripts are blocked in this practice preview. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -11008,7 +11008,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Organize a mission log. Use rows, headers, and data cells for related values. Add a row to the log. Keep the quantity and its unit in the appropriate column. Build one row at a time. Decide the column meanings, add the headers, then place corresponding values in each row. A calendar needs a clear relationship between its day headings and date cells. Preview for misplaced or missing cells. The preview renders the HTML and CSS you last built. Robot.svg and moon.svg are built-in practice pictures. External network resources and scripts are blocked in this practice preview "
+          "text": "We try · change the model. Organize a mission log. Use rows, headers, and data cells for related values. Add a row to the log. Keep the quantity and its unit in the appropriate column. Build one row at a time. Decide the column meanings, add the headers, then place corresponding values in each row. A calendar needs a clear relationship between its day headings and date cells. Preview for misplaced or missing cells. The preview renders the HTML and CSS you last built. Robot.svg and moon.svg are built-in practice pictures. External network resources and scripts are blocked in this practice preview. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -11121,7 +11121,7 @@
         },
         {
           "step": 3,
-          "text": "We try · change the model. Build and test a portfolio prototype. Map the school requirements to files, features, and tests. Edit this small prototype, then test a navigation link and explain one improvement. Keep personal details out of a public portfolio. Run a real user test. Ask someone to perform a task, such as finding a project. Observe without doing it for them. Record where they get stuck, revise one issue, and retest. Check links, images, headings, readability, and keyboard access. The preview renders the HTML and CSS you last built. Robot.svg and moon.svg are built-in practice pictures. External network resources and scripts are blocked in this practice preview "
+          "text": "We try · change the model. Build and test a portfolio prototype. Map the school requirements to files, features, and tests. Edit this small prototype, then test a navigation link and explain one improvement. Keep personal details out of a public portfolio. Run a real user test. Ask someone to perform a task, such as finding a project. Observe without doing it for them. Record where they get stuck, revise one issue, and retest. Check links, images, headings, readability, and keyboard access. The preview renders the HTML and CSS you last built. Robot.svg and moon.svg are built-in practice pictures. External network resources and scripts are blocked in this practice preview. Change the model and observe the result. This is practice, not proof of mastery "
         },
         {
           "step": 4,
@@ -11211,8 +11211,7 @@
             "Verify the final version and submission rather than assuming completion."
           ],
           "termsNotFoundInTeaching": [
-            "create",
-            "proof"
+            "create"
           ],
           "reviewStatus": "REQUIRES_CONCEPT_AND_WORKED_EXAMPLE_CHECK"
         }

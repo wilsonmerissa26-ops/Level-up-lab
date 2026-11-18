@@ -1,7 +1,7 @@
 // Review aid only. Keyword overlap cannot establish instructional completeness.
 import fs from 'node:fs';import vm from 'node:vm';
 const ctx={};ctx.window=ctx;
-for(const file of ['content.js','science-school.js','science-motion.js','school-coding.js','school-academics.js','question-revisions.js','academic-activities.js','learner-repair.js','visual-teaching.js','science-curriculum.js','science-gap-diagnostic.js','review-engine.js','school-homework.js'])vm.runInNewContext(fs.readFileSync(file,'utf8'),ctx,{filename:file});
+for(const file of ['content.js','science-school.js','science-motion.js','school-coding.js','school-academics.js','question-revisions.js','academic-activities.js','learner-repair.js','visual-teaching.js','learner-progression.js','science-curriculum.js','science-gap-diagnostic.js','review-engine.js','school-homework.js'])vm.runInNewContext(fs.readFileSync(file,'utf8'),ctx,{filename:file});
 const C=ctx.LEVEL_UP_CONTENT,R=ctx.LEVEL_UP_REPAIR,V=ctx.LEVEL_UP_VISUAL_TEACHING;
 const lessons=[...C.science,...C.math,...C.ela,...C.coding];
 const stop=new Set('which what when where does have has that this with from into each same than only more less they their there them about through before after because using between without under over these those would should could find choose example following correct answer'.split(' '));
